@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CharacterMovements : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class CharacterMovements : MonoBehaviour
     public float speed = 5f;            
     public float turnSpeed = 10f;
     public Animator animator;
+  
+       
 
     CharacterController _controller; 
     Vector3 _moveDirection;
