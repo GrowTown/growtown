@@ -10,6 +10,8 @@ public class UI_Manager : MonoBehaviour
     [Header("Panels")]
     public GameObject marketPopUp;
     public GameObject inventoryPanel;
+    public GameObject[] PopupImg;
+    
 
     [Header("Buttons")]
     public Button wheatSeedBT;
@@ -21,10 +23,14 @@ public class UI_Manager : MonoBehaviour
 
     [Header("References")]
 
-    public TriggerZoneCallBacks triggerCallBacks;
     [SerializeField]
-    public ShopManager shopManager;
+    private TriggerZoneCallBacks triggerCallBacks;
+    [SerializeField]
+    private ShopManager shopManager;
+    [SerializeField]
+    private CharacterMovements characterMovements;
 
+    InventoryNames[] inventoryNames;
     #region Fields
     internal int scoreIn = 100;
     #endregion
@@ -34,6 +40,18 @@ public class UI_Manager : MonoBehaviour
     {
         get => shopManager;
         set => shopManager = value;
+    }
+
+    TriggerZoneCallBacks TriggerZoneCallBacks
+    {
+        get => triggerCallBacks;
+        set => triggerCallBacks = value;
+    }
+
+    CharacterMovements CharacterMovements
+    {
+        get => characterMovements;
+        set => characterMovements = value;
     }
 
     #endregion
@@ -71,27 +89,25 @@ public class UI_Manager : MonoBehaviour
     void TestM()
     {
         for (int i = 0; i < inventoryPanel.transform.childCount; i++)
-        {
-              var item=inventoryPanel.transform.GetChild(i).gameObject.GetComponent<SelectionFunctionality>();
+        { 
+            var item=inventoryPanel.transform.GetChild(i).gameObject.GetComponent<SelectionFunctionality>();
             item.OnClick += (i) =>
             {
                 if (currentSelected != null)
                 {
                     currentSelected.IsSelected = false;
                 }
+                    
                 item.IsSelected = true;
                 currentSelected = item;
             };
         }
-
-        
-
     }
 
     void CallBackEvents()
     {
-        triggerCallBacks.onPlayerEnter+=(a)=>marketPopUp.SetActive(true);
-        triggerCallBacks.onPlayerExit+=(e)=>marketPopUp.SetActive(false);
+        TriggerZoneCallBacks.onPlayerEnter+=(a)=>marketPopUp.SetActive(true);
+        TriggerZoneCallBacks.onPlayerExit+=(e)=>marketPopUp.SetActive(false);
 
         carrotsSeedBT.onClick.AddListener(() => { shopManager.ToBuyCarrots(); });
         wheatSeedBT.onClick.AddListener(() => { shopManager.ToBuyWheat(); });

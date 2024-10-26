@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
         else
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // If you want the GameManager to persist between scenes
+            DontDestroyOnLoad(gameObject);
         }
     }
 

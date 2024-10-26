@@ -45,8 +45,6 @@ public class CharacterMovements : MonoBehaviour
         {
             animator.SetBool("IsRunning", false); // Play idle animation
         }
-
-
         // Rotate the character towards the movement direction
         if (isMoving)
         {
