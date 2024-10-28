@@ -11,6 +11,5 @@ public class Crop : MonoBehaviour
     int _harvestYield;
     int _salePrice;
 
-
 }
 

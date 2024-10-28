@@ -11,6 +11,7 @@ public class UI_Manager : MonoBehaviour
     public GameObject marketPopUp;
     public GameObject inventoryPanel;
     public GameObject[] PopupImg;
+    public GameObject sickleWeapon;
     
 
     [Header("Buttons")]
@@ -36,19 +37,19 @@ public class UI_Manager : MonoBehaviour
     #endregion
 
     #region Properties
-    ShopManager ShopManager
+    public ShopManager ShopManager
     {
         get => shopManager;
         set => shopManager = value;
     }
 
-    TriggerZoneCallBacks TriggerZoneCallBacks
+    public TriggerZoneCallBacks TriggerZoneCallBacks
     {
         get => triggerCallBacks;
         set => triggerCallBacks = value;
     }
 
-    CharacterMovements CharacterMovements
+   public  CharacterMovements CharacterMovements
     {
         get => characterMovements;
         set => characterMovements = value;
@@ -80,18 +81,18 @@ public class UI_Manager : MonoBehaviour
     void Update()
     {
        
-        TestM();
+        InventorySetUp();
     }
 
     #region Functions
 
     SelectionFunctionality currentSelected;
-    void TestM()
+    void InventorySetUp()
     {
         for (int i = 0; i < inventoryPanel.transform.childCount; i++)
         { 
             var item=inventoryPanel.transform.GetChild(i).gameObject.GetComponent<SelectionFunctionality>();
-            item.OnClick += (i) =>
+            item.onClick += (i) =>
             {
                 if (currentSelected != null)
                 {

@@ -6,13 +6,15 @@ using UnityEngine.UI;
 
 public class SelectionFunctionality : MonoBehaviour, IPointerClickHandler
 {
-    internal Action<SelectionFunctionality> OnClick;
-    public TextMeshProUGUI productCount;
+    internal Action<SelectionFunctionality> onClick;
+    internal TextMeshProUGUI productCount;
     [SerializeField]
     GameObject _backGround;
     bool _isSelected;
+    string _name;
 
-    public InventoryNames InventoryNames;
+
+   // public InventoryNames InventoryNames;
     public bool IsSelected
     {
         get => _isSelected;
@@ -33,7 +35,7 @@ public class SelectionFunctionality : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        OnClick.Invoke(this);
+        onClick.Invoke(this);
     }
 }
 public enum InventoryNames

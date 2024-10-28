@@ -42,7 +42,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
     #region Functions
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && currentStep <= actionSequence.Length - 1)
+        if (other.CompareTag("Player") && currentStep <actionSequence.Length - 1)
         {
             switch (zoneType)
             {
@@ -95,42 +95,54 @@ public class TriggerZoneCallBacks : MonoBehaviour
 
         // Show the current image based on the step
         UI_Manager.Instance.PopupImg[currentStep].SetActive(true);
-
-        switch (actionSequence[currentStep])
+        var select = UI_Manager.Instance.PopupImg[currentStep].GetComponent<SelectionFunctionality>();
+        select.onClick += (f) =>
         {
-            case PlayerAction.Clean:
-                //playerAnimator.SetTrigger("Run");
-                Debug.Log("Seeding");
-                break;
-            case PlayerAction.Seed:
-                // playerAnimator.SetTrigger("ThrowSeed");
-                Debug.Log("Seeding");
-                break;
-            case PlayerAction.Water:
-                //playerAnimator.SetTrigger("Water");
-                Debug.Log("Water");
-                break;
-            case PlayerAction.Harvest:
-                // playerAnimator.SetTrigger("Harvest");
-                Debug.Log("Harvest");
-                break;
-        }
+
+            switch (actionSequence[currentStep])
+            {
+                case PlayerAction.Clean:
+                    //playerAnimator.SetTrigger("Run");
+                    CompleteAction();
+                    Debug.Log("Cleaning");
+                    break;
+                case PlayerAction.Seed:
+                    // playerAnimator.SetTrigger("ThrowSeed");
+                    CompleteAction();
+                    Debug.Log("Seeding");
+                    break;
+                case PlayerAction.Water:
+                    //playerAnimator.SetTrigger("Water");
+                    CompleteAction();
+                    Debug.Log("Water");
+                    break;
+                case PlayerAction.Harvest:
+                    // playerAnimator.SetTrigger("Harvest");
+                    UI_Manager.Instance.sickleWeapon.SetActive(true);
+                    UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 1);
+                    CompleteAction();
+                    Debug.Log("Harvest");
+                    break;
+            }
+        };
     }
 
     private void HidePopup()
     {
         // Hide the current popup image
-        if (currentStep <= UI_Manager.Instance.PopupImg.Length - 1)
+        if (currentStep <=UI_Manager.Instance.PopupImg.Length - 1)
         {
             UI_Manager.Instance.PopupImg[currentStep].SetActive(false);
         }
+        UI_Manager.Instance.sickleWeapon.SetActive(false);
+        UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 0);
+
     }
 
     public void CompleteAction()
     {
-
         // Move to the next step if available
-        if (currentStep <= actionSequence.Length - 1)
+        if (currentStep < actionSequence.Length - 1)
         {
             UI_Manager.Instance.PopupImg[currentStep].SetActive(false);
             currentStep++;
