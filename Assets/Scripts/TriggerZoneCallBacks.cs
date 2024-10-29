@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TriggerZoneCallBacks : MonoBehaviour
@@ -37,13 +38,14 @@ public class TriggerZoneCallBacks : MonoBehaviour
     public Action<TriggerZoneCallBacks> onPlayerEnter;
     public Action<TriggerZoneCallBacks> onPlayerExit;
 
-
+    private static Dictionary<TriggerZoneCallBacks, int> zoneProgress = new Dictionary<TriggerZoneCallBacks, int>();
 
     #region Functions
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") && currentStep <actionSequence.Length - 1)
         {
+            // currentStep = zoneProgress.ContainsKey(this) ? zoneProgress[this] : 0;
             switch (zoneType)
             {
                 case ZoneType.Market:
@@ -64,6 +66,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+           // zoneProgress[this] = currentStep;
             switch (zoneType)
             {
                 case ZoneType.Market:
@@ -96,10 +99,10 @@ public class TriggerZoneCallBacks : MonoBehaviour
         // Show the current image based on the step
         UI_Manager.Instance.PopupImg[currentStep].SetActive(true);
         var select = UI_Manager.Instance.PopupImg[currentStep].GetComponent<SelectionFunctionality>();
+        select.onClick = null;
         select.onClick += (f) =>
         {
-
-            switch (actionSequence[currentStep])
+             switch (actionSequence[currentStep])
             {
                 case PlayerAction.Clean:
                     //playerAnimator.SetTrigger("Run");
@@ -113,13 +116,14 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     break;
                 case PlayerAction.Water:
                     //playerAnimator.SetTrigger("Water");
+                    UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 1);
                     CompleteAction();
                     Debug.Log("Water");
                     break;
                 case PlayerAction.Harvest:
                     // playerAnimator.SetTrigger("Harvest");
                     UI_Manager.Instance.sickleWeapon.SetActive(true);
-                    UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 1);
+                    UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
                     CompleteAction();
                     Debug.Log("Harvest");
                     break;
@@ -135,6 +139,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
             UI_Manager.Instance.PopupImg[currentStep].SetActive(false);
         }
         UI_Manager.Instance.sickleWeapon.SetActive(false);
+        UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 0);
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 0);
 
     }
