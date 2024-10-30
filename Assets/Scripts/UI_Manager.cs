@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 public class UI_Manager : MonoBehaviour
 {
@@ -25,11 +26,13 @@ public class UI_Manager : MonoBehaviour
     [Header("References")]
 
     [SerializeField]
-    private TriggerZoneCallBacks triggerCallBacks;
+    private TriggerZoneCallBacks _triggerCallBacks;
     [SerializeField]
-    private ShopManager shopManager;
+    private ShopManager _shopManager;
     [SerializeField]
-    private CharacterMovements characterMovements;
+    private CharacterMovements _characterMovements;
+    [SerializeField]
+    private FieldGrid _fieldGrid;
 
     InventoryNames[] inventoryNames;
     #region Fields
@@ -39,20 +42,26 @@ public class UI_Manager : MonoBehaviour
     #region Properties
     public ShopManager ShopManager
     {
-        get => shopManager;
-        set => shopManager = value;
+        get => _shopManager;
+        set => _shopManager = value;
     }
 
     public TriggerZoneCallBacks TriggerZoneCallBacks
     {
-        get => triggerCallBacks;
-        set => triggerCallBacks = value;
+        get => _triggerCallBacks;
+        set => _triggerCallBacks = value;
     }
 
    public  CharacterMovements CharacterMovements
     {
-        get => characterMovements;
-        set => characterMovements = value;
+        get => _characterMovements;
+        set => _characterMovements = value;
+    }
+
+    public FieldGrid FieldGrid
+    {
+        get => _fieldGrid;
+        set => _fieldGrid = value;
     }
 
     #endregion
@@ -110,11 +119,109 @@ public class UI_Manager : MonoBehaviour
         TriggerZoneCallBacks.onPlayerEnter+=(a)=>marketPopUp.SetActive(true);
         TriggerZoneCallBacks.onPlayerExit+=(e)=>marketPopUp.SetActive(false);
 
-        carrotsSeedBT.onClick.AddListener(() => { shopManager.ToBuyCarrots(); });
-        wheatSeedBT.onClick.AddListener(() => { shopManager.ToBuyWheat(); });
-        strawberriesSeedBT.onClick.AddListener(() => { shopManager.ToBuyStrawberries(); });
+        carrotsSeedBT.onClick.AddListener(() => { _shopManager.ToBuyCarrots(); });
+        wheatSeedBT.onClick.AddListener(() => { _shopManager.ToBuyWheat(); });
+        strawberriesSeedBT.onClick.AddListener(() => { _shopManager.ToBuyStrawberries(); });
 
     }
+
+    /*internal void HideFieldPopup()
+    {
+        // Hide the current popup image
+        if (TriggerZoneCallBacks.currentStep <= PopupImg.Length - 1)
+        {
+           PopupImg[TriggerZoneCallBacks.currentStep].SetActive(false);
+        }
+        sickleWeapon.SetActive(false);
+        CharacterMovements.animator.SetLayerWeight(2, 0);
+        CharacterMovements.animator.SetLayerWeight(1, 0);
+
+    }
+
+    /// <summary>
+    /// Show the popup based on the current action
+    /// </summary>
+    public void ShowPopup(PlayerAction currentAction)
+    {
+        HideFieldPopup();  // Ensure all other popups are hidden first
+
+        int popupIndex = (int)currentAction;
+        if (popupIndex >= 0 && popupIndex < PopupImg.Length)
+        {
+            var popup = PopupImg[popupIndex];
+            popup.SetActive(true);
+
+            // Set the onClick action for this popup's SelectionFunctionality
+            var selectionFunctionality = popup.GetComponent<SelectionFunctionality>();
+            if (selectionFunctionality != null)
+            {
+                selectionFunctionality.onClick = (selected) =>
+                {
+                    GameManager.Instance.StartPlayerAction(currentAction);
+                };
+            }
+        }
+    }
+*/
+
+
+    public void ShowPopup(PlayerAction currentAction)
+    {
+        HideFieldPopup();  // Ensure all other popups are hidden first
+        int popupIndex = (int)currentAction;
+
+        if (popupIndex >= 0 && popupIndex < PopupImg.Length)
+        {
+            var popup = PopupImg[popupIndex];
+            popup.SetActive(true);
+            var selectionFunctionality = popup.GetComponent<SelectionFunctionality>();
+            selectionFunctionality.onClick = (selected) =>
+            {
+                GameManager.Instance.StartPlayerAction(currentAction);
+            };
+        }
+    }
+
+    internal void HideFieldPopup()
+    {
+        if (_triggerCallBacks.currentStep <= PopupImg.Length - 1)
+        {
+            PopupImg[_triggerCallBacks.currentStep].SetActive(false);
+        }
+        sickleWeapon.SetActive(false);
+        StopCurrentAction(); // Stop any active animations
+    }
+
+    public void StartActionAnimation(PlayerAction action)
+    {
+        switch (action)
+        {
+            case PlayerAction.Clean:
+                // _characterMovements.animator.SetLayerWeight(1, 1);
+                Debug.Log("Cleanig");
+                break;
+            case PlayerAction.Seed:
+                //_characterMovements.animator.SetLayerWeight(2, 1);
+                Debug.Log("Seeding");
+                break;
+            case PlayerAction.Water:
+               _characterMovements.animator.SetLayerWeight(1, 1);
+                break;
+            case PlayerAction.Harvest:
+                _characterMovements.animator.SetLayerWeight(1, 1);
+                break;
+        }
+    }
+
+    public void StopCurrentAction()
+    {
+        _characterMovements.animator.SetLayerWeight(1, 0);
+        _characterMovements.animator.SetLayerWeight(2, 0);
+        _characterMovements.animator.SetLayerWeight(3, 0);
+        _characterMovements.animator.SetLayerWeight(4, 0);
+    }
+
+
     #endregion
 
 }

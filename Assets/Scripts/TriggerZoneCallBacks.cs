@@ -5,6 +5,58 @@ using UnityEngine;
 public class TriggerZoneCallBacks : MonoBehaviour
 {
 
+
+    public ZoneType zoneType;
+    public PlayerAction[] actionSequence;
+    internal int currentStep = 0;
+    public bool playerInZone = false;
+    public Action<TriggerZoneCallBacks> onPlayerEnter;
+    public Action<TriggerZoneCallBacks> onPlayerExit;
+
+    private FieldGrid fieldGrid; // Reference to FieldGrid for tile tracking
+
+    private void Start()
+    {
+        fieldGrid = FindObjectOfType<FieldGrid>();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player") && currentStep < actionSequence.Length)
+        {
+            playerInZone = true;
+
+            switch (zoneType)
+            {
+                case ZoneType.Field:
+                    GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
+                    break;
+                case ZoneType.Market:
+                    onPlayerEnter?.Invoke(this);
+                    break;
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInZone = false;
+
+            switch (zoneType)
+            {
+                case ZoneType.Field:
+                    GameManager.Instance.HideFieldPopup();
+                    GameManager.Instance.StopCurrentAction();
+                    break;
+                case ZoneType.Market:
+                    onPlayerExit?.Invoke(this);
+                    break;
+            }
+        }
+    }
+
     /*// UnityEvents for trigger enter and exit events
     public Action<TriggerZoneCallBacks> onPlayerEnter;
     public Action<TriggerZoneCallBacks> onPlayerExit;
@@ -30,10 +82,10 @@ public class TriggerZoneCallBacks : MonoBehaviour
             // Invoke all events associated with the onPlayerExit event
             onPlayerExit?.Invoke(this);
         }
-    }*/
+    }*//*
     public ZoneType zoneType;
     public PlayerAction[] actionSequence;
-    private int currentStep = 0;
+    internal int currentStep = 0;
     public bool playerInZone = false;
     public Action<TriggerZoneCallBacks> onPlayerEnter;
     public Action<TriggerZoneCallBacks> onPlayerExit;
@@ -54,7 +106,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
 
                 case ZoneType.Field:
                     playerInZone = true;
-                    ShowPopup();
+                    GameManager.Instance.ShowFieldPopup();
                     break;
             }
 
@@ -74,7 +126,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     break;
 
                 case ZoneType.Field:
-                    HidePopup();
+                    UI_Manager.Instance.HideFieldPopup();
                     playerInZone = false;
                     break;
             }
@@ -86,11 +138,11 @@ public class TriggerZoneCallBacks : MonoBehaviour
         // Check for player input if the player is in the zone and the current action isn't complete
         if (playerInZone && Input.GetKeyDown(KeyCode.E))
         {
-            CompleteAction();
+           // CompleteAction();
         }
-    }
+    }*/
 
-    private void ShowPopup()
+  /*  private void ShowPopup()
     {
         // Hide all images first
         foreach (var image in UI_Manager.Instance.PopupImg)
@@ -153,10 +205,10 @@ public class TriggerZoneCallBacks : MonoBehaviour
             currentStep++;
             ShowPopup();  // Show the next popup if there's another step
         }
-    }
-
-    #endregion
+    }*/
 }
+
+
 
 public enum PlayerAction
 {
