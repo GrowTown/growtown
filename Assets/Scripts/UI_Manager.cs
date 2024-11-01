@@ -118,7 +118,7 @@ public class UI_Manager : MonoBehaviour
     {
         TriggerZoneCallBacks.onPlayerEnter+=(a)=>marketPopUp.SetActive(true);
         TriggerZoneCallBacks.onPlayerExit+=(e)=>marketPopUp.SetActive(false);
-
+        
         carrotsSeedBT.onClick.AddListener(() => { _shopManager.ToBuyCarrots(); });
         wheatSeedBT.onClick.AddListener(() => { _shopManager.ToBuyWheat(); });
         strawberriesSeedBT.onClick.AddListener(() => { _shopManager.ToBuyStrawberries(); });
@@ -175,6 +175,7 @@ public class UI_Manager : MonoBehaviour
             var popup = PopupImg[popupIndex];
             popup.SetActive(true);
             var selectionFunctionality = popup.GetComponent<SelectionFunctionality>();
+            selectionFunctionality.onClick = null;
             selectionFunctionality.onClick = (selected) =>
             {
                 GameManager.Instance.StartPlayerAction(currentAction);
@@ -206,9 +207,10 @@ public class UI_Manager : MonoBehaviour
                 break;
             case PlayerAction.Water:
                _characterMovements.animator.SetLayerWeight(1, 1);
-                break;
+                break; 
             case PlayerAction.Harvest:
-                _characterMovements.animator.SetLayerWeight(1, 1);
+                _characterMovements.animator.SetLayerWeight(2, 1);
+                sickleWeapon.SetActive(true) ;
                 break;
         }
     }
@@ -217,8 +219,8 @@ public class UI_Manager : MonoBehaviour
     {
         _characterMovements.animator.SetLayerWeight(1, 0);
         _characterMovements.animator.SetLayerWeight(2, 0);
-        _characterMovements.animator.SetLayerWeight(3, 0);
-        _characterMovements.animator.SetLayerWeight(4, 0);
+       // _characterMovements.animator.SetLayerWeight(3, 0);
+      //  _characterMovements.animator.SetLayerWeight(4, 0);
     }
 
 

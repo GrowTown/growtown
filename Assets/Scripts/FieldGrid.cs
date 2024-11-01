@@ -9,9 +9,10 @@ public class FieldGrid : MonoBehaviour
     public int columns = 7;
     public float cellSpacing = 1.1f;
 
-    private HashSet<Vector2Int> coveredTiles = new HashSet<Vector2Int>();
+    internal HashSet<Vector2Int> coveredTiles = new HashSet<Vector2Int>();
+    internal List<GameObject> tiles = new List<GameObject>();
     private PlayerAction currentAction;
-    private bool isTracking = false;
+    internal bool isTracking = false;
 
     private void Start()
     {
@@ -29,6 +30,7 @@ public class FieldGrid : MonoBehaviour
                 Vector3 cellPosition = new Vector3(col * cellSpacing, 0.02f, row * cellSpacing) - gridOffset;
                 GameObject cell = Instantiate(cellPrefab, transform.position + cellPosition, Quaternion.identity);
                 cell.transform.SetParent(transform);
+                tiles.Add(cell);
             }
         }
     }
@@ -49,18 +51,25 @@ public class FieldGrid : MonoBehaviour
 
     private void Update()
     {
-        if (isTracking)
+       
+    }
+    public void AddCoveredTile(Vector2Int tilePosition,GameObject tileGo)
+    {
+        if (!coveredTiles.Contains(tilePosition))
         {
-            Vector2Int playerTile = GetPlayerTile();
-            if (!coveredTiles.Contains(playerTile))
-            {
-                coveredTiles.Add(playerTile);
-                CheckIfCoverageComplete();
-            }
+            coveredTiles.Add(tilePosition);
+            tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9098039f, 0.6431373f, 0.6431373f, 1f));
+
+            Debug.Log("Tile added at position: " + tilePosition);
         }
     }
 
-    private Vector2Int GetPlayerTile()
+    public bool IsCoverageComplete()
+    {
+        return coveredTiles.Count >= rows * columns;
+    }
+
+    internal Vector2Int GetPlayerTile()
     {
         Vector3 playerPos = UI_Manager.Instance.CharacterMovements.transform.position;
         int row = Mathf.RoundToInt(playerPos.z / cellSpacing);
@@ -68,7 +77,7 @@ public class FieldGrid : MonoBehaviour
         return new Vector2Int(col, row);  // Ensure row/col order matches your grid
     }
 
-    private void CheckIfCoverageComplete()
+    internal void CheckIfCoverageComplete()
     {
         if (coveredTiles.Count >= rows * columns)
         {

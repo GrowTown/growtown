@@ -22,13 +22,13 @@ public class TriggerZoneCallBacks : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && currentStep < actionSequence.Length)
+        if (other.CompareTag("Player") )
         {
             playerInZone = true;
-
             switch (zoneType)
             {
                 case ZoneType.Field:
+                    if(currentStep < actionSequence.Length)
                     GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
                     break;
                 case ZoneType.Market:
