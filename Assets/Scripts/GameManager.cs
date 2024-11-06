@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
     {
         HideFieldPopup();
         if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length - 1)
-        {
+         {
             UI_Manager.Instance.TriggerZoneCallBacks.currentStep++;
             ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
         }

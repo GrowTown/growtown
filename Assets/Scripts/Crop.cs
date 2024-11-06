@@ -2,14 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Crop : MonoBehaviour
+[CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Inventory/Inventory Item")]
+public class InventoryItem : ScriptableObject
 {
+    public string itemName;
+    public Sprite icon;
+    public int price;
+}
 
-    string _name;
-    float _growthTime;
-    int _seedCost;
-    int _harvestYield;
-    int _salePrice;
+
+[CreateAssetMenu(fileName = "NewCrop", menuName = "Inventory/Crop")]
+public class Crop : InventoryItem
+{
+    [SerializeField]GameObject plant;
+    [SerializeField]float _growthTime;
+    [SerializeField] int _harvestYield;
+    [SerializeField]int _salePrice;
 
 }
 

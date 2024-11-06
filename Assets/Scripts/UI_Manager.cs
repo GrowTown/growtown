@@ -13,6 +13,7 @@ public class UI_Manager : MonoBehaviour
     public GameObject inventoryPanel;
     public GameObject[] PopupImg;
     public GameObject sickleWeapon;
+    public GameObject timerPanel;
     
 
     [Header("Buttons")]

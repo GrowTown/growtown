@@ -35,6 +35,10 @@ public class FieldGrid : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// start the action
+    /// </summary>
+    /// <param name="action"></param>
     public void StartCoverageTracking(PlayerAction action)
     {
         coveredTiles.Clear();
@@ -43,16 +47,20 @@ public class FieldGrid : MonoBehaviour
         UI_Manager.Instance.StartActionAnimation(action);  // Start animation for the action
     }
 
+    /// <summary>
+    /// Stoping action
+    /// </summary>
     public void StopCoverageTracking()
     {
         isTracking = false;
         UI_Manager.Instance.StopCurrentAction(); // Stop the action animation
     }
 
-    private void Update()
-    {
-       
-    }
+    /// <summary>
+    /// Adding the player covered tiles
+    /// </summary>
+    /// <param name="tilePosition"></param>
+    /// <param name="tileGo"></param>
     public void AddCoveredTile(Vector2Int tilePosition,GameObject tileGo)
     {
         if (!coveredTiles.Contains(tilePosition))
@@ -64,11 +72,19 @@ public class FieldGrid : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checking the player covered all tiles are not
+    /// </summary>
+    /// <returns></returns>
     public bool IsCoverageComplete()
     {
         return coveredTiles.Count >= rows * columns;
     }
 
+    /// <summary>
+    /// Getting the tile according to player position on the grid
+    /// </summary>
+    /// <returns></returns>
     internal Vector2Int GetPlayerTile()
     {
         Vector3 playerPos = UI_Manager.Instance.CharacterMovements.transform.position;
