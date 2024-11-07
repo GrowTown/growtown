@@ -7,9 +7,9 @@ using UnityEngine.Events;
 public class Timer : MonoBehaviour
 {
 
-    public int year;
+    /*public int year;
     public int hours;
-    public int minutes;
+    public int minutes;*/
 
     public string Name {  get; private set; }
     private DateTime _startTime;
@@ -29,23 +29,18 @@ public class Timer : MonoBehaviour
         _finishTime = start.Add(time);
         TimerFinishedEvent = new UnityEvent();
     }
-    private void StartTimer()
+    public void StartTimer()
     {
         secondsLeft=timeToFinish.TotalSeconds;
         _isRunning=true;
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-    public Timer(int year, int hours, int minutes)
+  /*  public Timer(int year, int hours, int minutes)
     {
         this.year = year;
         this.hours = hours;
         this.minutes = minutes;
-    }
+    }*/
 
     // Update is called once per frame
     void Update()
@@ -65,6 +60,11 @@ public class Timer : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// For Display Time in game
+    /// </summary>
+    /// <returns></returns>
     public string DisplayTime()
     {
         string text = "";

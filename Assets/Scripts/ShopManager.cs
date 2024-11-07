@@ -5,21 +5,6 @@ using UnityEngine;
 public class ShopManager : MonoBehaviour
 {
  
-    // public static ShopManager Instance { get; private set; }
-
-    /* private void Awake()
-     {
-         if (Instance != null && Instance != this)
-         {
-             Destroy(gameObject);
-         }
-         else
-         {
-             Instance = this;
-             DontDestroyOnLoad(gameObject); // If you want the GameManager to persist between scenes
-         }
-     }*/
-
     // Start is called before the first frame update
     void Start()
     {
@@ -34,6 +19,7 @@ public class ShopManager : MonoBehaviour
     int ForWheatAdd=0 ;
     int ForCarrotsAdd=0 ;
     int ForStrawberriesAdd = 0;
+    int ForWeaponAdd = 0;
     #region Functions
     public void ToBuyWheat()
     {
@@ -47,7 +33,8 @@ public class ShopManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("You didn't have enough money");
+            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
+            //Debug.Log("You didn't have enough money");
         }
     }
     public void ToBuyCarrots()
@@ -61,21 +48,40 @@ public class ShopManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("You didn't have enough money");
+            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
+           // Debug.Log("You didn't have enough money");
         }
     }
     public void ToBuyStrawberries()
     {
-        if(UI_Manager.Instance.scoreIn>=12)
+        if (UI_Manager.Instance.scoreIn >= 12)
         {
-            UI_Manager.Instance.scoreIn -=12;
+            UI_Manager.Instance.scoreIn -= 12;
             UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
             ForStrawberriesAdd += 1;
             UI_Manager.Instance.inventoryPanel.transform.GetChild(2).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForStrawberriesAdd.ToString();
         }
         else
         {
-            Debug.Log("You didn't have enough money");
+            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
+           // Debug.Log("You didn't have enough money");
+        }
+    }
+
+
+    public void ToBuySickle()
+    {
+        if (UI_Manager.Instance.scoreIn >= 10)
+        {
+            UI_Manager.Instance.scoreIn -= 10;
+            UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+            ForWeaponAdd += 1;
+            UI_Manager.Instance.inventoryPanel.transform.GetChild(3).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForWeaponAdd.ToString();
+        }
+        else
+        {
+            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
+            //Debug.Log("You didn't have enough money");
         }
     }
 

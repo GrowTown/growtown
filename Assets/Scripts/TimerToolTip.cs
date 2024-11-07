@@ -17,10 +17,17 @@ public class TimerToolTip : MonoBehaviour
     private Slider _progressbar;
     private bool countDown;
 
+
+    private void Awake()
+    {
+        toolTipInstance = this;
+        transform.parent.gameObject.SetActive(false);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        toolTipInstance=this;
+       
     }
 
     // Update is called once per frame
@@ -41,6 +48,7 @@ public class TimerToolTip : MonoBehaviour
 
         _nameText.text = _timer.Name;
         countDown = true;
+        transform.parent.gameObject.SetActive(true);
     }
 
     private void FixedUpdate()

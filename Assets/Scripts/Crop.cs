@@ -15,7 +15,7 @@ public class InventoryItem : ScriptableObject
 public class Crop : InventoryItem
 {
     [SerializeField]GameObject plant;
-    [SerializeField]float _growthTime;
+    [SerializeField]float _growthTime;  
     [SerializeField] int _harvestYield;
     [SerializeField]int _salePrice;
 

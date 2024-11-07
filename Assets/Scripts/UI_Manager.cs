@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using static UnityEditor.Progress;
 
 public class UI_Manager : MonoBehaviour
 {
@@ -20,9 +21,11 @@ public class UI_Manager : MonoBehaviour
     public Button wheatSeedBT;
     public Button carrotsSeedBT;
     public Button strawberriesSeedBT;
+    public Button sickleWeaponBT;
 
     [Header("Text")]
     public TextMeshProUGUI score;
+    public TextMeshProUGUI notEnoughMoneyText;
 
     [Header("References")]
 
@@ -120,52 +123,14 @@ public class UI_Manager : MonoBehaviour
         TriggerZoneCallBacks.onPlayerEnter+=(a)=>marketPopUp.SetActive(true);
         TriggerZoneCallBacks.onPlayerExit+=(e)=>marketPopUp.SetActive(false);
         
-        carrotsSeedBT.onClick.AddListener(() => { _shopManager.ToBuyCarrots(); });
-        wheatSeedBT.onClick.AddListener(() => { _shopManager.ToBuyWheat(); });
-        strawberriesSeedBT.onClick.AddListener(() => { _shopManager.ToBuyStrawberries(); });
+        carrotsSeedBT.onClick.AddListener(() => { ShopManager.ToBuyCarrots(); });
+        wheatSeedBT.onClick.AddListener(() => { ShopManager.ToBuyWheat(); });
+        strawberriesSeedBT.onClick.AddListener(() => { ShopManager.ToBuyStrawberries(); });
+        sickleWeaponBT.onClick.AddListener(() => { ShopManager.ToBuySickle(); });
 
     }
 
-    /*internal void HideFieldPopup()
-    {
-        // Hide the current popup image
-        if (TriggerZoneCallBacks.currentStep <= PopupImg.Length - 1)
-        {
-           PopupImg[TriggerZoneCallBacks.currentStep].SetActive(false);
-        }
-        sickleWeapon.SetActive(false);
-        CharacterMovements.animator.SetLayerWeight(2, 0);
-        CharacterMovements.animator.SetLayerWeight(1, 0);
-
-    }
-
-    /// <summary>
-    /// Show the popup based on the current action
-    /// </summary>
-    public void ShowPopup(PlayerAction currentAction)
-    {
-        HideFieldPopup();  // Ensure all other popups are hidden first
-
-        int popupIndex = (int)currentAction;
-        if (popupIndex >= 0 && popupIndex < PopupImg.Length)
-        {
-            var popup = PopupImg[popupIndex];
-            popup.SetActive(true);
-
-            // Set the onClick action for this popup's SelectionFunctionality
-            var selectionFunctionality = popup.GetComponent<SelectionFunctionality>();
-            if (selectionFunctionality != null)
-            {
-                selectionFunctionality.onClick = (selected) =>
-                {
-                    GameManager.Instance.StartPlayerAction(currentAction);
-                };
-            }
-        }
-    }
-*/
-
-
+    POPSelectionFunctionality currentSelectedPopUp;
     public void ShowPopup(PlayerAction currentAction)
     {
         HideFieldPopup();  // Ensure all other popups are hidden first
@@ -175,10 +140,11 @@ public class UI_Manager : MonoBehaviour
         {
             var popup = PopupImg[popupIndex];
             popup.SetActive(true);
-            var selectionFunctionality = popup.GetComponent<SelectionFunctionality>();
+            var selectionFunctionality = popup.GetComponent<POPSelectionFunctionality>();
             selectionFunctionality.onClick = null;
             selectionFunctionality.onClick = (selected) =>
             {
+                selectionFunctionality.IsSelected = true;
                 GameManager.Instance.StartPlayerAction(currentAction);
             };
         }

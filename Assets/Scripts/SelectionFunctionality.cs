@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class SelectionFunctionality : MonoBehaviour, IPointerClickHandler
 {
     internal Action<SelectionFunctionality> onClick;
-    internal TextMeshProUGUI productCount;
+    [SerializeField] internal TextMeshProUGUI productCount;
     [SerializeField]
     GameObject _backGround;
     bool _isSelected;
