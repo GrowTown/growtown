@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Market
   - Field
+  - SeedBag
   layers:
   - Default
   - TransparentFX

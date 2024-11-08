@@ -24,19 +24,7 @@ public class TimerToolTip : MonoBehaviour
         transform.parent.gameObject.SetActive(false);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-       
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
+  
     void ShowTimer(GameObject go)
     {
         _timer=go.GetComponent<Timer>();

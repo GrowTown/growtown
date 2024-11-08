@@ -28,8 +28,8 @@ public class PlayerInteraction : MonoBehaviour
             GameObject hitTileGameObject = hit.collider.gameObject;
             // Get the tile position for the player and try to add it
             Vector2Int playerTile = UI_Manager.Instance.FieldGrid.GetPlayerTile();
-            UI_Manager.Instance.FieldGrid.AddCoveredTile(playerTile, hitTileGameObject); // Store the tile if uncovered
-
+            UI_Manager.Instance.FieldGrid.AddCoveredTile(/*hitTileGameObject.transform.position,*/ hitTileGameObject); // Store the tile if uncovered
+            UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().CoveredTile = hitTileGameObject;
             // Check if grid coverage is complete to show completion popup
             if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
             {

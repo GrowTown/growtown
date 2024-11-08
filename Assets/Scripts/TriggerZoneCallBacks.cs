@@ -30,6 +30,11 @@ public class TriggerZoneCallBacks : MonoBehaviour
                 case ZoneType.Field:
                     if(currentStep < actionSequence.Length)
                     GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
+                    if (UI_Manager.Instance.isPlanted == true) 
+                    { 
+                    
+                       TimerToolTip.ShowTimerStatic(UI_Manager.Instance.plantHolder);
+                    }
                     break;
                 case ZoneType.Market:
                     onPlayerEnter?.Invoke(this);

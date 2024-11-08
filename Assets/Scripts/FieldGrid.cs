@@ -7,10 +7,11 @@ public class FieldGrid : MonoBehaviour
     public GameObject cellPrefab;
     public int rows = 5;
     public int columns = 7;
-    public float cellSpacing = 1.1f;
+    public float cellSpacing = 0.01f;
 
     internal HashSet<Vector2Int> coveredTiles = new HashSet<Vector2Int>();
     internal List<GameObject> tiles = new List<GameObject>();
+    internal List<GameObject> coveredtiles = new List<GameObject>();
     private PlayerAction currentAction;
     internal bool isTracking = false;
 
@@ -41,10 +42,10 @@ public class FieldGrid : MonoBehaviour
     /// <param name="action"></param>
     public void StartCoverageTracking(PlayerAction action)
     {
-        coveredTiles.Clear();
+        coveredtiles.Clear();
         currentAction = action;
         isTracking = true;
-        UI_Manager.Instance.StartActionAnimation(action);  // Start animation for the action
+        GameManager.Instance.StartActionAnimation(action);  // Start animation for the action
     }
 
     /// <summary>
@@ -53,7 +54,7 @@ public class FieldGrid : MonoBehaviour
     public void StopCoverageTracking()
     {
         isTracking = false;
-        UI_Manager.Instance.StopCurrentAction(); // Stop the action animation
+        GameManager.Instance.StopCurrentAnimations(); // Stop the action animation
     }
 
     /// <summary>
@@ -61,14 +62,22 @@ public class FieldGrid : MonoBehaviour
     /// </summary>
     /// <param name="tilePosition"></param>
     /// <param name="tileGo"></param>
-    public void AddCoveredTile(Vector2Int tilePosition,GameObject tileGo)
+    public void AddCoveredTile(/*Vector2Int tilePosition,*/GameObject tileGo)
     {
-        if (!coveredTiles.Contains(tilePosition))
+        /*  if (!coveredTiles.Contains(tilePosition))
+          {
+              coveredTiles.Add(tilePosition);
+              tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9098039f, 0.6431373f, 0.6431373f, 1f));
+
+              Debug.Log("Tile added at position: " + tilePosition);
+          }*/
+
+        if (!coveredtiles.Contains(tileGo))
         {
-            coveredTiles.Add(tilePosition);
+            coveredtiles.Add(tileGo);
             tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9098039f, 0.6431373f, 0.6431373f, 1f));
 
-            Debug.Log("Tile added at position: " + tilePosition);
+            Debug.Log("Tile added: " + tileGo);
         }
     }
 
@@ -78,7 +87,7 @@ public class FieldGrid : MonoBehaviour
     /// <returns></returns>
     public bool IsCoverageComplete()
     {
-        return coveredTiles.Count >= rows * columns;
+        return coveredtiles.Count >= rows * columns;
     }
 
     /// <summary>
@@ -95,7 +104,7 @@ public class FieldGrid : MonoBehaviour
 
     internal void CheckIfCoverageComplete()
     {
-        if (coveredTiles.Count >= rows * columns)
+        if (coveredtiles.Count >= rows * columns)
         {
             StopCoverageTracking();
             GameManager.Instance.CompleteAction();

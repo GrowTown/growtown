@@ -9,12 +9,19 @@ using static UnityEditor.Progress;
 public class UI_Manager : MonoBehaviour
 {
   
-    [Header("Panels")]
+    [Header("GameObjects")]
     public GameObject marketPopUp;
     public GameObject inventoryPanel;
     public GameObject[] PopupImg;
     public GameObject sickleWeapon;
     public GameObject timerPanel;
+    public GameObject seed;
+    public GameObject seedSpawnPoint;
+    public GameObject seedsBag;
+    public GameObject tileSeedSpawnPoint;
+    public GameObject plantHolder;
+    public GameObject cleaningTool;
+    public GameObject tomato;
     
 
     [Header("Buttons")]
@@ -39,6 +46,7 @@ public class UI_Manager : MonoBehaviour
     private FieldGrid _fieldGrid;
 
     InventoryNames[] inventoryNames;
+    public bool isPlanted;
     #region Fields
     internal int scoreIn = 100;
     #endregion
@@ -157,38 +165,10 @@ public class UI_Manager : MonoBehaviour
             PopupImg[_triggerCallBacks.currentStep].SetActive(false);
         }
         sickleWeapon.SetActive(false);
-        StopCurrentAction(); // Stop any active animations
+        GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }
 
-    public void StartActionAnimation(PlayerAction action)
-    {
-        switch (action)
-        {
-            case PlayerAction.Clean:
-                // _characterMovements.animator.SetLayerWeight(1, 1);
-                Debug.Log("Cleanig");
-                break;
-            case PlayerAction.Seed:
-                //_characterMovements.animator.SetLayerWeight(2, 1);
-                Debug.Log("Seeding");
-                break;
-            case PlayerAction.Water:
-               _characterMovements.animator.SetLayerWeight(1, 1);
-                break; 
-            case PlayerAction.Harvest:
-                _characterMovements.animator.SetLayerWeight(2, 1);
-                sickleWeapon.SetActive(true) ;
-                break;
-        }
-    }
-
-    public void StopCurrentAction()
-    {
-        _characterMovements.animator.SetLayerWeight(1, 0);
-        _characterMovements.animator.SetLayerWeight(2, 0);
-       // _characterMovements.animator.SetLayerWeight(3, 0);
-      //  _characterMovements.animator.SetLayerWeight(4, 0);
-    }
+ 
 
 
     #endregion
