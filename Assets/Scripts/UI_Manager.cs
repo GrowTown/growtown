@@ -22,6 +22,8 @@ public class UI_Manager : MonoBehaviour
     public GameObject plantHolder;
     public GameObject cleaningTool;
     public GameObject tomato;
+    public GameObject wateringTool;
+    public GameObject starterPackInfoPopUpPanel;
     
 
     [Header("Buttons")]
@@ -46,7 +48,10 @@ public class UI_Manager : MonoBehaviour
     private CharacterMovements _characterMovements;
     [SerializeField]
     private FieldGrid _fieldGrid;
+    [SerializeField]
+    private FieldManager _fieldManager;
 
+    internal int oldcurrentStep = -1;
     InventoryNames[] inventoryNames;
     public bool isPlanted;
     #region Fields
@@ -54,6 +59,11 @@ public class UI_Manager : MonoBehaviour
     #endregion
 
     #region Properties
+    public FieldManager FieldManager
+    {
+        get => _fieldManager;
+        set => _fieldManager = value;
+    }
     public ShopManager ShopManager
     {
         get => _shopManager;
@@ -96,6 +106,7 @@ public class UI_Manager : MonoBehaviour
 
     void Start()
     {
+        starterPackInfoPopUpPanel.SetActive(true);
         score.text = scoreIn.ToString();
         CallBackEvents();
     }
@@ -163,7 +174,8 @@ public class UI_Manager : MonoBehaviour
     }
 
     POPSelectionFunctionality currentSelectedPopUp;
-    public void ShowPopup(PlayerAction currentAction)
+    internal int oldcurrentAction= -1;
+    public void ShowPopup(PlayerAction currentAction,int fieldID)
     {
         HideFieldPopup();  // Ensure all other popups are hidden first
         int popupIndex = (int)currentAction;
@@ -174,21 +186,33 @@ public class UI_Manager : MonoBehaviour
             popup.SetActive(true);
             var selectionFunctionality = popup.GetComponent<POPSelectionFunctionality>();
             selectionFunctionality.onClick = null;
-            selectionFunctionality.onClick = (selected) =>
+            if (oldcurrentStep != -1&&UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(fieldID))
             {
-                selectionFunctionality.IsSelected = true;
                 GameManager.Instance.StartPlayerAction(currentAction);
-            };
+            }
+            else
+            {
+                selectionFunctionality.onClick = (selected) =>
+                {
+                    oldcurrentAction = popupIndex;
+                    selectionFunctionality.IsSelected = true;
+                    GameManager.Instance.StartPlayerAction(currentAction);
+                };
+
+            }
+
+
         }
     }
 
     internal void HideFieldPopup()
     {
-        if (_triggerCallBacks.currentStep <= PopupImg.Length - 1)
+        if (TriggerZoneCallBacks.currentStep <= PopupImg.Length - 1)
         {
-            PopupImg[_triggerCallBacks.currentStep].SetActive(false);
+            PopupImg[TriggerZoneCallBacks.currentStep].SetActive(false);
         }
         sickleWeapon.SetActive(false);
+        wateringTool.SetActive(false);
         GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }
 

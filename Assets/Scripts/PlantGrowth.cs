@@ -1,19 +1,18 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class PlantGrowth : MonoBehaviour
 {
 
-    [SerializeField] private SkinnedMeshRenderer plantMesh; // Assign your plant's Skinned Mesh Renderer here
-    private Timer _timer; // Reference to the timer on this object
+    [SerializeField] private SkinnedMeshRenderer plantMesh; 
+    private Timer _timer;
     [SerializeField] Transform[] tomatoSpawnPoints;
     private bool isWatered;
-    private void Start()
-    {
-       // _timer = UI_Manager.Instance.plantHolder.GetComponent<Timer>();
-    }
-    public void StartGrowth(bool isWatered)
+    float cuttingHight=1f;
+   public void StartGrowth(bool isWatered)
     {
         if (isWatered)
         {
@@ -26,46 +25,50 @@ public class PlantGrowth : MonoBehaviour
         }
     }
 
-    /* private IEnumerator GrowPlant()
-     {
-         // Ensure the timer is set up and running
-         _timer.Initialize("Plant Growth", DateTime.Now, TimeSpan.FromMinutes(1)); // Adjust growth time here
-         _timer.StartTimer(); // Starts the timer
-
-         float totalGrowthTime = (float)_timer.timeToFinish.TotalSeconds;
-         while (_timer.secondsLeft > 0)
-         {
-             // Calculate growth progress as a percentage (0 to 1)
-             float growthProgress = (float)(1.0f - (_timer.secondsLeft / totalGrowthTime));
-
-             // Set blend shape weights according to growth progress (0% to 100%)
-             plantMesh.SetBlendShapeWeight(0, growthProgress * 100f); // Stem
-
-
-             yield return null; // Wait until the next frame
-         }
-     }*/
+    void Start()
+    {
+        StartCoroutine(GrowPlant());
+    }
     private IEnumerator GrowPlant()
     {
+        yield return new WaitForSeconds(1);
 
-        _timer.Initialize("Plant Growth", DateTime.Now, TimeSpan.FromMinutes(1));
-        _timer.TimerFinishedEvent.AddListener(OnGrowthComplete);
+        _timer = this.gameObject.GetComponent<Timer>();
+        _timer.Initialize("Plant Growth", DateTime.Now, TimeSpan.FromMinutes(1)); 
         _timer.StartTimer();
+
         float totalGrowthTime = (float)_timer.timeToFinish.TotalSeconds;
         while (_timer.secondsLeft > 0)
         {
             float growthProgress = (float)(1.0f - (_timer.secondsLeft / totalGrowthTime));
-            plantMesh.SetBlendShapeWeight(0, growthProgress * 100f); // Adjust blend shape for stem growth
+            plantMesh.SetBlendShapeWeight(0, growthProgress * 100f); 
+            yield return null;
         }
-        yield return null; // Wait until the next frame
-    }
+        TimerToolTip.ShowTimerStatic(this.gameObject);
+        _timer.TimerFinishedEvent.AddListener(delegate {
+            OnGrowthComplete();
+            Destroy(_timer);
+        });
+    } 
+/*    GrowPlant()
+      {
+
+          _timer.Initialize("Plant Growth", DateTime.Now, TimeSpan.FromMinutes(1));
+          _timer.TimerFinishedEvent.AddListener(OnGrowthComplete);
+          _timer.StartTimer();
+          float totalGrowthTime = (float)_timer.timeToFinish.TotalSeconds;
+          while (_timer.secondsLeft > 0)
+          {
+              float growthProgress = (float)(1.0f - (_timer.secondsLeft / totalGrowthTime));
+              plantMesh.SetBlendShapeWeight(0, growthProgress * 100f); // Adjust blend shape for stem growth
+          }
+          yield return null; // Wait until the next frame
+      }*/
     private void OnGrowthComplete()
-    {
-        // Ensure final blend shapes are at 100%
+    {   
         plantMesh.SetBlendShapeWeight(0, 100f);
         Debug.Log("Plant growth complete!");
         SpawnTomatoes();
-        //Destroy(_timer);
     }
     private void SpawnTomatoes()
     {
@@ -80,12 +83,25 @@ public class PlantGrowth : MonoBehaviour
     {
         if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().CoveredTile != null)
         {
-            isWatered = true; // Mark tile as watered
-
+            isWatered = true;
             if (plantMesh != null)
             {
-                StartGrowth(isWatered); // Start growth when watered
+               // StartGrowth(isWatered);
                 Debug.Log("Plant started growing after watering.");
+            }
+        }
+    }
+
+    internal bool isCutting;
+    private void OnTriggerEnter(Collider other)
+  {
+        if (other.CompareTag("sickle"))
+        {
+            if (isCutting)
+            {
+
+                this.gameObject.transform.DOMoveY(cuttingHight, 0.1f);
+                Destroy(this.gameObject);
             }
         }
     }

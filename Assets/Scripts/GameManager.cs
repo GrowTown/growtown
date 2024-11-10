@@ -19,17 +19,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+  
 
     #region
 
@@ -49,12 +39,14 @@ public class GameManager : MonoBehaviour
                // Debug.Log("Seeding");
                 break;
             case PlayerAction.Water:
+                UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
                 UI_Manager.Instance.plantHolder.GetComponent<PlantGrowth>().OnWaterTile();
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(false);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
                 break;
             case PlayerAction.Harvest:
+                UI_Manager.Instance.plantHolder.GetComponent<PlantGrowth>().isCutting = true;
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
                 UI_Manager.Instance.sickleWeapon.SetActive(true);
                 break;
@@ -68,11 +60,10 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 0);
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 0);
         UI_Manager.Instance.cleaningTool.SetActive(false);
-
     }
-    public void ShowFieldPopup(PlayerAction currentAction)
+    public void ShowFieldPopup(PlayerAction currentAction,int fieldID)
     {
-        UI_Manager.Instance.ShowPopup(currentAction);
+        UI_Manager.Instance.ShowPopup(currentAction,fieldID);
     }
 
     public void HideFieldPopup()
@@ -97,7 +88,8 @@ public class GameManager : MonoBehaviour
         if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length - 1)
          {
             UI_Manager.Instance.TriggerZoneCallBacks.currentStep++;
-            ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
+            UI_Manager.Instance.oldcurrentStep = UI_Manager.Instance.TriggerZoneCallBacks.currentStep;
+            ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep], UI_Manager.Instance.TriggerZoneCallBacks.fieldID);
         }
     }
 

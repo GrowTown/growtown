@@ -162,6 +162,7 @@ GameObject:
   - component: {fileID: 3285302965667134194}
   - component: {fileID: 2777648656406795578}
   - component: {fileID: 1413323780619578646}
+  - component: {fileID: 3388202671530429256}
   m_Layer: 0
   m_Name: Tile_With Plant
   m_TagString: Field
@@ -264,6 +265,23 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &3388202671530429256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3649660050525614132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 230229c0a7380f04dbb90b2bfcc5a7ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPoints:
+  - {fileID: 7965391852748304927}
+  - {fileID: 1457041323425263785}
+  - {fileID: 7596936093911182070}
+  - {fileID: 8498328617529672712}
 --- !u!1 &4357317031822606374
 GameObject:
   m_ObjectHideFlags: 0

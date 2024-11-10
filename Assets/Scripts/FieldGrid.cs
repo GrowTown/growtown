@@ -42,6 +42,7 @@ public class FieldGrid : MonoBehaviour
     /// <param name="action"></param>
     public void StartCoverageTracking(PlayerAction action)
     {
+        if(UI_Manager.Instance.FieldGrid.IsCoverageComplete())
         coveredtiles.Clear();
         currentAction = action;
         isTracking = true;
@@ -127,14 +128,14 @@ public class FieldGrid : MonoBehaviour
         return new Vector2Int(col, row);  // Ensure row/col order matches your grid
     }
 
-    internal void CheckIfCoverageComplete()
+  /*  internal void CheckIfCoverageComplete()
     {
         if (coveredtiles.Count >= rows * columns)
         {
             StopCoverageTracking();
             GameManager.Instance.CompleteAction();
         }
-    }
+    }*/
 }
 
 

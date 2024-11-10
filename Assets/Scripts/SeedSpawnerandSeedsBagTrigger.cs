@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
 {
-    private bool isHandInBag = false; // To track hand in bag
-    internal bool isTileHasSeed = false; // To track hand in bag
+    private bool isHandInBag = false; 
+    internal bool isTileHasSeed = false; 
     GameObject spawnObject;
     internal GameObject CoveredTile;
-    // Method called when hand enters bag trigger
+
     public void OnHandInBag()
     {
         isHandInBag = true;
@@ -36,12 +36,9 @@ public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
             if (CoveredTile != null)
             {
                 isTileHasSeed=true;
-                var insta=Instantiate(UI_Manager.Instance.seed, CoveredTile.transform.GetChild(4).position, Quaternion.identity);
-                var insta1=Instantiate(UI_Manager.Instance.seed, CoveredTile.transform.GetChild(5).position, Quaternion.identity);
-                var insta2=Instantiate(UI_Manager.Instance.seed, CoveredTile.transform.GetChild(6).position, Quaternion.identity);
-                var insta3=Instantiate(UI_Manager.Instance.seed, CoveredTile.transform.GetChild(7).position, Quaternion.identity);
+                CoveredTile.GetComponent<TileInfo>().OnPlayerEnter();
                 Debug.Log("Seed spawned on tile");
-                SpawnPlantWithDelay(CoveredTile.transform);
+                SpawnPlantWithDelay(CoveredTile);
             }
             
 
@@ -52,17 +49,13 @@ public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
         }
     }
 
-    private void SpawnPlantWithDelay(Transform tileTransform)
+    private void SpawnPlantWithDelay(GameObject tilego)
     {
       
         if (UI_Manager.Instance.plantHolder != null)
         {
             UI_Manager.Instance.isPlanted=true;
-            // Instantiate plant at the position of the first seed
-            Instantiate(UI_Manager.Instance.plantHolder, tileTransform.GetChild(4).position, Quaternion.identity);
-            Instantiate(UI_Manager.Instance.plantHolder, tileTransform.GetChild(5).position, Quaternion.identity);
-            Instantiate(UI_Manager.Instance.plantHolder, tileTransform.GetChild(6).position, Quaternion.identity);
-            Instantiate(UI_Manager.Instance.plantHolder, tileTransform.GetChild(7).position, Quaternion.identity);
+            tilego.GetComponent<TileInfo>().SpawnPlant();
             Debug.Log("Plant spawned after delay");
         }
      

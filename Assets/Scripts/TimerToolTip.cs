@@ -12,9 +12,8 @@ public class TimerToolTip : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _nameText;
     [SerializeField]
-    private TextMeshProUGUI _timeLeftText;
-    [SerializeField] 
     private Slider _progressbar;
+    public  TextMeshProUGUI _timeLeftText;
     private bool countDown;
         
 
@@ -29,7 +28,7 @@ public class TimerToolTip : MonoBehaviour
      {
         _timer=go.GetComponent<Timer>();
 
-        if(_timer!=null)
+        if(_timer==null)
         {
             return;
         }

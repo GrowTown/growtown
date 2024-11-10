@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TriggerZoneCallBacks : MonoBehaviour
 {
 
-
+    public int fieldID;
     public ZoneType zoneType;
     public PlayerAction[] actionSequence;
     internal int currentStep = 0;
@@ -19,24 +18,19 @@ public class TriggerZoneCallBacks : MonoBehaviour
     {
         fieldGrid = FindObjectOfType<FieldGrid>();
     }
-
+    //int oldcurrentStep = -1;
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") )
-
+        if (other.CompareTag("Player"))
         {
             playerInZone = true;
             switch (zoneType)
             {
                 case ZoneType.Field:
-                    if(currentStep < actionSequence.Length)
-                    GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
-                    if (UI_Manager.Instance.isPlanted == true) 
-                    { 
-                       TimerToolTip.ShowTimerStatic(UI_Manager.Instance.plantHolder);
-                    }
+                      UI_Manager.Instance.FieldManager.EnterField(fieldID);
                     break;
                 case ZoneType.Market:
+                    UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
                     onPlayerEnter?.Invoke(this);
                     break;
             }
@@ -54,6 +48,16 @@ public class TriggerZoneCallBacks : MonoBehaviour
                 case ZoneType.Field:
                     GameManager.Instance.HideFieldPopup();
                     GameManager.Instance.StopCurrentAction();
+                    if (UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(fieldID))
+                    {
+                        UI_Manager.Instance.FieldManager.fieldSteps[fieldID] = UI_Manager.Instance.oldcurrentStep;
+                    }
+                    else
+                    {
+                        UI_Manager.Instance.FieldManager.fieldSteps.Add(fieldID, UI_Manager.Instance.oldcurrentStep);
+                    }
+                    
+                   // UI_Manager.Instance.oldcurrentStep = currentStep;
                     break;
                 case ZoneType.Market:
                     onPlayerExit?.Invoke(this);

@@ -15,7 +15,7 @@ public class Timer : MonoBehaviour
     private DateTime _startTime;
     private DateTime _finishTime;
     public TimeSpan timeToFinish {  get; private set; }
-    public UnityEvent TimerFinishedEvent;
+    [HideInInspector]public UnityEvent TimerFinishedEvent;
     private bool _isRunning;
 
     public double secondsLeft {  get; private set; }

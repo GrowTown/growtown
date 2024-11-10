@@ -35,6 +35,7 @@ public class PlayerInteraction : MonoBehaviour
             {
                 Debug.Log("All Collected");
                 UI_Manager.Instance.FieldGrid.StopCoverageTracking();
+
                 GameManager.Instance.CompleteAction();
             }
         }
