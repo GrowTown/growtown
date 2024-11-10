@@ -9,31 +9,20 @@ public class PlantGrowth : MonoBehaviour
     private Timer _timer; // Reference to the timer on this object
     [SerializeField] Transform[] tomatoSpawnPoints;
     private bool isWatered;
-    private bool isGrowing = false;
-
-    private void Awake()
-    {
-        
-    }
     private void Start()
     {
-         _timer = UI_Manager.Instance.plantHolder.GetComponent<Timer>();
+       // _timer = UI_Manager.Instance.plantHolder.GetComponent<Timer>();
     }
-
     public void StartGrowth(bool isWatered)
     {
-        if (isWatered && !isGrowing)
+        if (isWatered)
         {
-            _timer=gameObject.GetComponent<Timer>();
-            if (_timer != null)
+            _timer = this.gameObject.GetComponent<Timer>();
+            if (_timer != null && UI_Manager.Instance.plantHolder != null)
             {
-
-                _timer.Initialize("Plant Growth", DateTime.Now, TimeSpan.FromMinutes(1));
-                _timer.TimerFinishedEvent.AddListener(OnGrowthComplete);
                 StartCoroutine(GrowPlant());
-                isGrowing = true;
                 Debug.Log("Growth process started.");
-            } 
+            }
         }
     }
 
@@ -58,26 +47,25 @@ public class PlantGrowth : MonoBehaviour
      }*/
     private IEnumerator GrowPlant()
     {
+
+        _timer.Initialize("Plant Growth", DateTime.Now, TimeSpan.FromMinutes(1));
+        _timer.TimerFinishedEvent.AddListener(OnGrowthComplete);
         _timer.StartTimer();
         float totalGrowthTime = (float)_timer.timeToFinish.TotalSeconds;
-
         while (_timer.secondsLeft > 0)
         {
             float growthProgress = (float)(1.0f - (_timer.secondsLeft / totalGrowthTime));
             plantMesh.SetBlendShapeWeight(0, growthProgress * 100f); // Adjust blend shape for stem growth
-            yield return null; // Wait until the next frame
         }
+        yield return null; // Wait until the next frame
     }
     private void OnGrowthComplete()
     {
         // Ensure final blend shapes are at 100%
         plantMesh.SetBlendShapeWeight(0, 100f);
-
         Debug.Log("Plant growth complete!");
         SpawnTomatoes();
-        isGrowing = false;
-        // Clean up the timer if necessary
-        Destroy(_timer);
+        //Destroy(_timer);
     }
     private void SpawnTomatoes()
     {

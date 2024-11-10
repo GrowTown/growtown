@@ -21,3 +21,17 @@ public class Crop : InventoryItem
 
 }
 
+[CreateAssetMenu(fileName = "NewCrop", menuName = "Inventory/Tool")]
+public class Tools : InventoryItem
+{
+
+    [SerializeField] GameObject tool;
+}
+
+[CreateAssetMenu(fileName = "NewCrop", menuName = "Inventory/Animal")]
+public class Animals : InventoryItem
+{
+    [SerializeField] GameObject animal;
+}
+
+

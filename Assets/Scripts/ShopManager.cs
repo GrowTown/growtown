@@ -20,6 +20,8 @@ public class ShopManager : MonoBehaviour
     int ForCarrotsAdd=0 ;
     int ForStrawberriesAdd = 0;
     int ForWeaponAdd = 0;
+    int ForWeaponAdd1 = 0;
+    int ForWeaponAdd2 = 0;
     #region Functions
     public void ToBuyWheat()
     {
@@ -68,15 +70,50 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-
-    public void ToBuySickle()
+    internal bool isCleningToolBought;
+    internal bool isWateringToolBought;
+    internal bool isCuttingToolBought;
+    public void ToBuyCleaningTool()
     {
-        if (UI_Manager.Instance.scoreIn >= 10)
+        if (UI_Manager.Instance.scoreIn >= 5)
         {
-            UI_Manager.Instance.scoreIn -= 10;
+            UI_Manager.Instance.scoreIn -= 5;
             UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
-            ForWeaponAdd += 1;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(3).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForWeaponAdd.ToString();
+            isCleningToolBought = true;
+            //ForWeaponAdd += 1;
+            // UI_Manager.Instance.inventoryPanel.transform.GetChild(3).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForWeaponAdd.ToString();
+        }
+        else
+        {
+            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
+            //Debug.Log("You didn't have enough money");
+        }
+    }
+    public void ToBuyWateringTool()
+    {
+        if (UI_Manager.Instance.scoreIn >= 5)
+        {
+            UI_Manager.Instance.scoreIn -= 5;
+            UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+            isWateringToolBought = true;
+           // ForWeaponAdd1 += 1;
+            //UI_Manager.Instance.inventoryPanel.transform.GetChild(4).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForWeaponAdd.ToString();
+        }
+        else
+        {
+            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
+            //Debug.Log("You didn't have enough money");
+        }
+    }
+    public void ToBuyCuttingTool()
+    {
+        if (UI_Manager.Instance.scoreIn >= 5)
+        {
+            UI_Manager.Instance.scoreIn -= 5;
+            UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+            isCuttingToolBought = true;
+           // ForWeaponAdd2 += 1;
+           // UI_Manager.Instance.inventoryPanel.transform.GetChild(5).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForWeaponAdd.ToString();
         }
         else
         {

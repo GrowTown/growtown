@@ -9,7 +9,7 @@ public class FieldGrid : MonoBehaviour
     public int columns = 7;
     public float cellSpacing = 0.01f;
 
-    internal HashSet<Vector2Int> coveredTiles = new HashSet<Vector2Int>();
+    internal HashSet<Vector3> coveredTiles = new HashSet<Vector3>();
     internal List<GameObject> tiles = new List<GameObject>();
     internal List<GameObject> coveredtiles = new List<GameObject>();
     private PlayerAction currentAction;
@@ -74,8 +74,33 @@ public class FieldGrid : MonoBehaviour
 
         if (!coveredtiles.Contains(tileGo))
         {
-            coveredtiles.Add(tileGo);
-            tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9098039f, 0.6431373f, 0.6431373f, 1f));
+            
+            switch (currentAction)
+            {
+                case PlayerAction.Clean:
+                    coveredtiles.Add(tileGo);
+                    tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(1f, 0.9188f, 0.9188f, 1f));
+                    Debug.Log("Cleanig");
+                    break;
+                case PlayerAction.Seed:
+                    if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed)
+                    { 
+                        coveredtiles.Add(tileGo);
+                       tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9396f, 0.8492f, 0.8492f, 1f));
+                        UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
+                    }
+                    // Debug.Log("Seeding");
+                    break;
+                case PlayerAction.Water:
+                    coveredtiles.Add(tileGo);
+                    tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9098039f, 0.6431373f, 0.6431373f, 1f));
+                    break;
+                case PlayerAction.Harvest:
+                    coveredtiles.Add(tileGo);
+                    tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(1f, 1f, 1f, 1f));
+                    break;
+            }
+           
 
             Debug.Log("Tile added: " + tileGo);
         }

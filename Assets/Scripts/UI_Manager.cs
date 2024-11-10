@@ -28,6 +28,8 @@ public class UI_Manager : MonoBehaviour
     public Button wheatSeedBT;
     public Button carrotsSeedBT;
     public Button strawberriesSeedBT;
+    public Button cleaningWeaponBT;
+    public Button wateringWeaponBT;
     public Button sickleWeaponBT;
 
     [Header("Text")]
@@ -134,7 +136,29 @@ public class UI_Manager : MonoBehaviour
         carrotsSeedBT.onClick.AddListener(() => { ShopManager.ToBuyCarrots(); });
         wheatSeedBT.onClick.AddListener(() => { ShopManager.ToBuyWheat(); });
         strawberriesSeedBT.onClick.AddListener(() => { ShopManager.ToBuyStrawberries(); });
-        sickleWeaponBT.onClick.AddListener(() => { ShopManager.ToBuySickle(); });
+        cleaningWeaponBT.onClick.AddListener(() => 
+        {
+            if (!ShopManager.isCleningToolBought)
+            {
+                ShopManager.ToBuyCleaningTool();
+                cleaningWeaponBT.interactable = false;
+            }
+
+        });
+        wateringWeaponBT.onClick.AddListener(() => {
+            if (!ShopManager.isWateringToolBought)
+            {
+                ShopManager.ToBuyWateringTool();
+                wateringWeaponBT.interactable=false;
+            } 
+        });
+        sickleWeaponBT.onClick.AddListener(() => {
+            if (!ShopManager.isCuttingToolBought)
+            {
+                ShopManager.ToBuyCuttingTool();
+                sickleWeaponBT.interactable = false;
+            }
+        });
 
     }
 

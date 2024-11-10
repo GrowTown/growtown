@@ -16,7 +16,7 @@ public class TimerToolTip : MonoBehaviour
     [SerializeField] 
     private Slider _progressbar;
     private bool countDown;
-
+        
 
     private void Awake()
     {
@@ -26,7 +26,7 @@ public class TimerToolTip : MonoBehaviour
 
   
     void ShowTimer(GameObject go)
-    {
+     {
         _timer=go.GetComponent<Timer>();
 
         if(_timer!=null)

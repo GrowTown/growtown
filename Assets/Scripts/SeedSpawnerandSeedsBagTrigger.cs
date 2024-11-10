@@ -6,6 +6,7 @@ using UnityEngine;
 public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
 {
     private bool isHandInBag = false; // To track hand in bag
+    internal bool isTileHasSeed = false; // To track hand in bag
     GameObject spawnObject;
     internal GameObject CoveredTile;
     // Method called when hand enters bag trigger
@@ -34,12 +35,13 @@ public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
             // Instantiate seed at tile position
             if (CoveredTile != null)
             {
+                isTileHasSeed=true;
                 var insta=Instantiate(UI_Manager.Instance.seed, CoveredTile.transform.GetChild(4).position, Quaternion.identity);
                 var insta1=Instantiate(UI_Manager.Instance.seed, CoveredTile.transform.GetChild(5).position, Quaternion.identity);
                 var insta2=Instantiate(UI_Manager.Instance.seed, CoveredTile.transform.GetChild(6).position, Quaternion.identity);
                 var insta3=Instantiate(UI_Manager.Instance.seed, CoveredTile.transform.GetChild(7).position, Quaternion.identity);
                 Debug.Log("Seed spawned on tile");
-                StartCoroutine(SpawnPlantWithDelay(CoveredTile.transform));
+                SpawnPlantWithDelay(CoveredTile.transform);
             }
             
 
@@ -50,10 +52,9 @@ public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
         }
     }
 
-    private IEnumerator SpawnPlantWithDelay(Transform tileTransform)
+    private void SpawnPlantWithDelay(Transform tileTransform)
     {
-       yield return new WaitForSeconds(0.01f); // Wait for 0.01 seconds
-
+      
         if (UI_Manager.Instance.plantHolder != null)
         {
             UI_Manager.Instance.isPlanted=true;
@@ -64,7 +65,7 @@ public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
             Instantiate(UI_Manager.Instance.plantHolder, tileTransform.GetChild(7).position, Quaternion.identity);
             Debug.Log("Plant spawned after delay");
         }
-       // yield return null;
+     
     }
 
 }

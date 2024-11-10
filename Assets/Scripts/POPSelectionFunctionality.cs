@@ -12,7 +12,7 @@ public class POPSelectionFunctionality : MonoBehaviour, IPointerClickHandler
     GameObject _backGround;
     bool _isSelected;
     string _name;
-
+    bool _hasBeenClicked;
 
     // public InventoryNames InventoryNames;
     public bool IsSelected
@@ -35,6 +35,8 @@ public class POPSelectionFunctionality : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        onClick.Invoke(this);
+        if (_hasBeenClicked) return;
+        onClick?.Invoke(this);
+        _hasBeenClicked = true;
     }
 }
