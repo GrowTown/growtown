@@ -18,7 +18,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
     {
         fieldGrid = FindObjectOfType<FieldGrid>();
     }
-    //int oldcurrentStep = -1;
+   
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -28,10 +28,14 @@ public class TriggerZoneCallBacks : MonoBehaviour
             {
                 case ZoneType.Field:
                       UI_Manager.Instance.FieldManager.EnterField(fieldID);
+                      GameManager.Instance.CurrentFieldID = fieldID;
+                    
                     break;
                 case ZoneType.Market:
                     UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
                     onPlayerEnter?.Invoke(this);
+                  
+                    
                     break;
             }
         }

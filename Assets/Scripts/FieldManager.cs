@@ -15,13 +15,22 @@ public class FieldManager : MonoBehaviour
             if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length)
             {
                 Debug.Log("index :::  " + UI_Manager.Instance.TriggerZoneCallBacks.currentStep);
-                GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep],fieldID);
+                GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
+                if(GameManager.Instance.isThroughingseeds)
+                {
+                    SelectionFunctionality selectionFunctionality = UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>();
+
+                    // Parse the current count from text, decrement it, and update the text field
+                    int currentCount = int.Parse(selectionFunctionality.productCount.text);
+                    currentCount -= 1;
+                    selectionFunctionality.productCount.text = currentCount.ToString();
+                }
 
             };
         }
         else
         {
-            GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.oldcurrentStep], fieldID);
+            GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.oldcurrentStep]);
 
         }
         if (UI_Manager.Instance.isPlanted == true)

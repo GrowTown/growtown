@@ -12,7 +12,8 @@ public class PlantGrowth : MonoBehaviour
     [SerializeField] Transform[] tomatoSpawnPoints;
     private bool isWatered;
     float cuttingHight=1f;
-   public void StartGrowth(bool isWatered)
+    private WaveManager waveManager;
+    public void StartGrowth(bool isWatered)
     {
         if (isWatered)
         {
@@ -27,6 +28,7 @@ public class PlantGrowth : MonoBehaviour
 
     void Start()
     {
+        waveManager = FindObjectOfType<WaveManager>();
         StartCoroutine(GrowPlant());
     }
     private IEnumerator GrowPlant()
@@ -41,29 +43,27 @@ public class PlantGrowth : MonoBehaviour
         while (_timer.secondsLeft > 0)
         {
             float growthProgress = (float)(1.0f - (_timer.secondsLeft / totalGrowthTime));
-            plantMesh.SetBlendShapeWeight(0, growthProgress * 100f); 
+            if (growthProgress >= 0.5f && !UI_Manager.Instance.waveStarted)
+            {
+                waveManager.StartWave();
+                UI_Manager.Instance.waveStarted = true; // Set flag to true to prevent further calls
+            }
+            plantMesh.SetBlendShapeWeight(0, growthProgress * 100f);
             yield return null;
         }
-        TimerToolTip.ShowTimerStatic(this.gameObject);
+        
         _timer.TimerFinishedEvent.AddListener(delegate {
             OnGrowthComplete();
             Destroy(_timer);
         });
-    } 
-/*    GrowPlant()
-      {
+    }
 
-          _timer.Initialize("Plant Growth", DateTime.Now, TimeSpan.FromMinutes(1));
-          _timer.TimerFinishedEvent.AddListener(OnGrowthComplete);
-          _timer.StartTimer();
-          float totalGrowthTime = (float)_timer.timeToFinish.TotalSeconds;
-          while (_timer.secondsLeft > 0)
-          {
-              float growthProgress = (float)(1.0f - (_timer.secondsLeft / totalGrowthTime));
-              plantMesh.SetBlendShapeWeight(0, growthProgress * 100f); // Adjust blend shape for stem growth
-          }
-          yield return null; // Wait until the next frame
-      }*/
+    private void OnMouseDown()
+    {
+        TimerToolTip.ShowTimerStatic(this.gameObject);
+    }
+
+   
     private void OnGrowthComplete()
     {   
         plantMesh.SetBlendShapeWeight(0, 100f);
@@ -74,7 +74,9 @@ public class PlantGrowth : MonoBehaviour
     {
         foreach (Transform spawnPoint in tomatoSpawnPoints)
         {
-            Instantiate(UI_Manager.Instance.tomato, spawnPoint.position, Quaternion.identity);
+            var insta=Instantiate(UI_Manager.Instance.tomato, spawnPoint.position, Quaternion.identity);
+            insta.transform.SetParent(spawnPoint.transform);
+
         }
         Debug.Log("Tomatoes spawned at designated points.");
     }
@@ -92,17 +94,18 @@ public class PlantGrowth : MonoBehaviour
         }
     }
 
-    internal bool isCutting;
+   
     private void OnTriggerEnter(Collider other)
   {
-        if (other.CompareTag("sickle"))
+        if (other.CompareTag("Player"))
         {
-            if (isCutting)
+            if (GameManager.Instance.isCutting)
             {
-
-                this.gameObject.transform.DOMoveY(cuttingHight, 0.1f);
+                this.gameObject.transform.DOMoveY(cuttingHight, 0.5f);
+                GameManager.Instance.isHarvestCompleted = true;
                 Destroy(this.gameObject);
             }
+         
         }
     }
 

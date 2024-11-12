@@ -5,23 +5,14 @@ using UnityEngine;
 public class ShopManager : MonoBehaviour
 {
  
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     int ForWheatAdd=0 ;
     int ForCarrotsAdd=0 ;
     int ForStrawberriesAdd = 0;
-    int ForWeaponAdd = 0;
+
+   /* int ForWeaponAdd = 0;
     int ForWeaponAdd1 = 0;
-    int ForWeaponAdd2 = 0;
+    int ForWeaponAdd2 = 0;*/
+
     #region Functions
     public void ToBuyWheat()
     {

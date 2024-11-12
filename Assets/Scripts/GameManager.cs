@@ -5,6 +5,20 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    internal bool isThroughingseeds;
+    internal bool isCutting;
+    internal bool isHarvestCompleted;
+
+    int _currentFieldID;
+
+    #region Properties
+
+    public int CurrentFieldID
+    {
+        get=> _currentFieldID;
+        set => _currentFieldID = value;
+    }
+    #endregion
 
     private void Awake()
     {
@@ -19,9 +33,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-  
-
-    #region
+    #region Methods
 
     public void StartActionAnimation(PlayerAction action)
     {
@@ -33,20 +45,22 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Cleanig");
                 break;
             case PlayerAction.Seed:
+                isThroughingseeds = true;
                 UI_Manager.Instance.cleaningTool.SetActive(false);
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
                // Debug.Log("Seeding");
                 break;
             case PlayerAction.Water:
+                isThroughingseeds = false;
                 UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
-                UI_Manager.Instance.plantHolder.GetComponent<PlantGrowth>().OnWaterTile();
+               // UI_Manager.Instance.plantHolder.GetComponent<PlantGrowth>().OnWaterTile();
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(false);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
                 break;
             case PlayerAction.Harvest:
-                UI_Manager.Instance.plantHolder.GetComponent<PlantGrowth>().isCutting = true;
+                isCutting = true;
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
                 UI_Manager.Instance.sickleWeapon.SetActive(true);
                 break;
@@ -61,9 +75,9 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 0);
         UI_Manager.Instance.cleaningTool.SetActive(false);
     }
-    public void ShowFieldPopup(PlayerAction currentAction,int fieldID)
+    public void ShowFieldPopup(PlayerAction currentAction)
     {
-        UI_Manager.Instance.ShowPopup(currentAction,fieldID);
+        UI_Manager.Instance.ShowPopup(currentAction);
     }
 
     public void HideFieldPopup()
@@ -89,7 +103,7 @@ public class GameManager : MonoBehaviour
          {
             UI_Manager.Instance.TriggerZoneCallBacks.currentStep++;
             UI_Manager.Instance.oldcurrentStep = UI_Manager.Instance.TriggerZoneCallBacks.currentStep;
-            ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep], UI_Manager.Instance.TriggerZoneCallBacks.fieldID);
+            ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
         }
     }
 
@@ -157,6 +171,14 @@ public class GameManager : MonoBehaviour
                 Debug.Log("You Don't Have Cutting Tool");
             }
         }
+    }
+
+    private void ResetValues()
+    {
+        UI_Manager.Instance.oldcurrentStep = -1;
+        UI_Manager.Instance.FieldManager.fieldSteps.Remove(CurrentFieldID);
+        isCutting=false;
+        
     }
     #endregion
 }

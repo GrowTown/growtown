@@ -6,13 +6,13 @@ using UnityEngine.EventSystems;
 public class CharacterMovements : MonoBehaviour
 {
 
-    public float speed = 5f;            
-    public float turnSpeed = 10f;
+    public float speed = 4f;
+    public float turnSpeed = 7f;
     public Animator animator;
-  
-       
 
-    CharacterController _controller; 
+
+
+    CharacterController _controller;
     Vector3 _moveDirection;
 
     private void Start()
@@ -26,8 +26,8 @@ public class CharacterMovements : MonoBehaviour
 
     void CharMovements()
     {
-        float moveHorizontal = Input.GetAxis("Horizontal"); 
-        float moveVertical = Input.GetAxis("Vertical"); 
+        float moveHorizontal = Input.GetAxis("Horizontal");
+        float moveVertical = Input.GetAxis("Vertical");
         _moveDirection = new Vector3(moveHorizontal, 0.0f, moveVertical).normalized;
 
         // Move the character using CharacterController
@@ -52,6 +52,8 @@ public class CharacterMovements : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
         }
     }
+
+
 }
 
 

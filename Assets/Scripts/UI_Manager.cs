@@ -1,14 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System.Linq;
-using static UnityEditor.Progress;
 
 public class UI_Manager : MonoBehaviour
 {
-  
+
     [Header("GameObjects")]
     public GameObject marketPopUp;
     public GameObject inventoryPanel;
@@ -24,7 +20,8 @@ public class UI_Manager : MonoBehaviour
     public GameObject tomato;
     public GameObject wateringTool;
     public GameObject starterPackInfoPopUpPanel;
-    
+    public GameObject sellPopupPanel;
+
 
     [Header("Buttons")]
     public Button wheatSeedBT;
@@ -33,6 +30,8 @@ public class UI_Manager : MonoBehaviour
     public Button cleaningWeaponBT;
     public Button wateringWeaponBT;
     public Button sickleWeaponBT;
+    public Button buyInventoryBT;
+    public Button sellInventoryBT;
 
     [Header("Text")]
     public TextMeshProUGUI score;
@@ -54,6 +53,7 @@ public class UI_Manager : MonoBehaviour
     internal int oldcurrentStep = -1;
     InventoryNames[] inventoryNames;
     public bool isPlanted;
+    public bool waveStarted;
     #region Fields
     internal int scoreIn = 100;
     #endregion
@@ -76,7 +76,7 @@ public class UI_Manager : MonoBehaviour
         set => _triggerCallBacks = value;
     }
 
-   public  CharacterMovements CharacterMovements
+    public CharacterMovements CharacterMovements
     {
         get => _characterMovements;
         set => _characterMovements = value;
@@ -114,7 +114,7 @@ public class UI_Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+
         InventorySetUp();
     }
 
@@ -124,15 +124,15 @@ public class UI_Manager : MonoBehaviour
     void InventorySetUp()
     {
         for (int i = 0; i < inventoryPanel.transform.childCount; i++)
-        { 
-            var item=inventoryPanel.transform.GetChild(i).gameObject.GetComponent<SelectionFunctionality>();
+        {
+            var item = inventoryPanel.transform.GetChild(i).gameObject.GetComponent<SelectionFunctionality>();
             item.onClick += (i) =>
             {
                 if (currentSelected != null)
                 {
                     currentSelected.IsSelected = false;
                 }
-                    
+
                 item.IsSelected = true;
                 currentSelected = item;
             };
@@ -141,13 +141,43 @@ public class UI_Manager : MonoBehaviour
 
     void CallBackEvents()
     {
-        TriggerZoneCallBacks.onPlayerEnter+=(a)=>marketPopUp.SetActive(true);
-        TriggerZoneCallBacks.onPlayerExit+=(e)=>marketPopUp.SetActive(false);
-        
+        TriggerZoneCallBacks.onPlayerEnter += (a) =>
+        {
+            if (!GameManager.Instance.isHarvestCompleted)
+            {
+                marketPopUp.SetActive(true);
+            }
+            else
+            {
+                sellPopupPanel.SetActive(true);
+            }
+
+        };
+
+
+        TriggerZoneCallBacks.onPlayerExit += (e) => 
+        {
+            marketPopUp.SetActive(false);
+            sellPopupPanel.SetActive(false);
+        };
+
+        buyInventoryBT.onClick.AddListener(() =>
+        {
+            marketPopUp.SetActive(true);
+            sellPopupPanel.SetActive(false);
+        });
+        sellInventoryBT.onClick.AddListener(() => 
+        {
+            scoreIn += 12;
+            score.text = scoreIn.ToString();
+            sellPopupPanel.SetActive(false);
+            GameManager.Instance.isHarvestCompleted = false;
+        });
+
         carrotsSeedBT.onClick.AddListener(() => { ShopManager.ToBuyCarrots(); });
         wheatSeedBT.onClick.AddListener(() => { ShopManager.ToBuyWheat(); });
         strawberriesSeedBT.onClick.AddListener(() => { ShopManager.ToBuyStrawberries(); });
-        cleaningWeaponBT.onClick.AddListener(() => 
+        cleaningWeaponBT.onClick.AddListener(() =>
         {
             if (!ShopManager.isCleningToolBought)
             {
@@ -156,14 +186,16 @@ public class UI_Manager : MonoBehaviour
             }
 
         });
-        wateringWeaponBT.onClick.AddListener(() => {
+        wateringWeaponBT.onClick.AddListener(() =>
+        {
             if (!ShopManager.isWateringToolBought)
             {
                 ShopManager.ToBuyWateringTool();
-                wateringWeaponBT.interactable=false;
-            } 
+                wateringWeaponBT.interactable = false;
+            }
         });
-        sickleWeaponBT.onClick.AddListener(() => {
+        sickleWeaponBT.onClick.AddListener(() =>
+        {
             if (!ShopManager.isCuttingToolBought)
             {
                 ShopManager.ToBuyCuttingTool();
@@ -174,8 +206,8 @@ public class UI_Manager : MonoBehaviour
     }
 
     POPSelectionFunctionality currentSelectedPopUp;
-    internal int oldcurrentAction= -1;
-    public void ShowPopup(PlayerAction currentAction,int fieldID)
+    internal int oldcurrentAction = -1;
+    public void ShowPopup(PlayerAction currentAction)
     {
         HideFieldPopup();  // Ensure all other popups are hidden first
         int popupIndex = (int)currentAction;
@@ -186,7 +218,7 @@ public class UI_Manager : MonoBehaviour
             popup.SetActive(true);
             var selectionFunctionality = popup.GetComponent<POPSelectionFunctionality>();
             selectionFunctionality.onClick = null;
-            if (oldcurrentStep != -1&&UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(fieldID))
+            if (oldcurrentStep != -1 && UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(UI_Manager.Instance.TriggerZoneCallBacks.fieldID))
             {
                 GameManager.Instance.StartPlayerAction(currentAction);
             }
@@ -216,7 +248,7 @@ public class UI_Manager : MonoBehaviour
         GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }
 
- 
+
 
 
     #endregion

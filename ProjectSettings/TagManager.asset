@@ -8,11 +8,12 @@ TagManager:
   - Field
   - SeedBag
   - sickle
+  - hammer
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - obstructionLayer
   - Water
   - UI
   - 
