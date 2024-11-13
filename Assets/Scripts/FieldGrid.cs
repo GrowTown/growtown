@@ -87,7 +87,7 @@ public class FieldGrid : MonoBehaviour
                     if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed)
                     { 
                         coveredtiles.Add(tileGo);
-                       tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9396f, 0.8492f, 0.8492f, 1f));
+                       tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7095f, 0.7095f, 0.7095f, 1f));
                         UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
                     }
                     // Debug.Log("Seeding");

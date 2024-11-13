@@ -18,24 +18,30 @@ public class TriggerZoneCallBacks : MonoBehaviour
     {
         fieldGrid = FindObjectOfType<FieldGrid>();
     }
-   
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             playerInZone = true;
+            UI_Manager.Instance.isPlayerInField = true;
+            UI_Manager.Instance.WeaponAttackEvent.ToMakeHammerInactive();
             switch (zoneType)
             {
                 case ZoneType.Field:
-                      UI_Manager.Instance.FieldManager.EnterField(fieldID);
-                      GameManager.Instance.CurrentFieldID = fieldID;
-                    
+                    if (!UI_Manager.Instance.starterPackInfoPopUpPanel.activeSelf)
+                    {
+                        UI_Manager.Instance.FieldManager.EnterField(fieldID);
+                        GameManager.Instance.CurrentFieldID = fieldID;
+
+                    }
+
                     break;
                 case ZoneType.Market:
-                    UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
+                        UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
                     onPlayerEnter?.Invoke(this);
-                  
-                    
+
+
                     break;
             }
         }
@@ -46,11 +52,13 @@ public class TriggerZoneCallBacks : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInZone = false;
+            UI_Manager.Instance.isPlayerInField = false;
 
             switch (zoneType)
             {
                 case ZoneType.Field:
                     GameManager.Instance.HideFieldPopup();
+
                     GameManager.Instance.StopCurrentAction();
                     if (UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(fieldID))
                     {
@@ -60,10 +68,20 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     {
                         UI_Manager.Instance.FieldManager.fieldSteps.Add(fieldID, UI_Manager.Instance.oldcurrentStep);
                     }
-                    
-                   // UI_Manager.Instance.oldcurrentStep = currentStep;
+
+                    // UI_Manager.Instance.oldcurrentStep = currentStep;
                     break;
                 case ZoneType.Market:
+                    if (UI_Manager.Instance.ShopManager.isCuttingToolBought && UI_Manager.Instance.ShopManager.isWateringToolBought && UI_Manager.Instance.ShopManager.isCleningToolBought)
+                    {
+
+                        UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
+                    }
+                    else
+                    {
+                        UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(true);
+
+                    }
                     onPlayerExit?.Invoke(this);
                     break;
             }

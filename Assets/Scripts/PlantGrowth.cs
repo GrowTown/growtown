@@ -7,13 +7,13 @@ using static UnityEngine.Rendering.DebugUI;
 public class PlantGrowth : MonoBehaviour
 {
 
-    [SerializeField] private SkinnedMeshRenderer plantMesh; 
+    [SerializeField] internal SkinnedMeshRenderer plantMesh; 
     private Timer _timer;
     [SerializeField] Transform[] tomatoSpawnPoints;
-    private bool isWatered;
+   // private bool isWatered;
     float cuttingHight=1f;
     private WaveManager waveManager;
-    public void StartGrowth(bool isWatered)
+  /*  public void StartGrowth(bool isWatered)
     {
         if (isWatered)
         {
@@ -24,7 +24,7 @@ public class PlantGrowth : MonoBehaviour
                 Debug.Log("Growth process started.");
             }
         }
-    }
+    }*/
 
     void Start()
     {
@@ -48,6 +48,7 @@ public class PlantGrowth : MonoBehaviour
                 waveManager.StartWave();
                 UI_Manager.Instance.waveStarted = true; // Set flag to true to prevent further calls
             }
+          
             plantMesh.SetBlendShapeWeight(0, growthProgress * 100f);
             yield return null;
         }
@@ -76,14 +77,19 @@ public class PlantGrowth : MonoBehaviour
         {
             var insta=Instantiate(UI_Manager.Instance.tomato, spawnPoint.position, Quaternion.identity);
             insta.transform.SetParent(spawnPoint.transform);
+            UI_Manager.Instance.spawnTomatosForGrowth.Add(insta);
 
         }
         Debug.Log("Tomatoes spawned at designated points.");
+        if (UI_Manager.Instance.spawnTomatosForGrowth.Count > 120)
+        {
+            UI_Manager.Instance.isPlantGrowthCompleted = true;
+        }
     }
 
     public void OnWaterTile()
     {
-        if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().CoveredTile != null)
+       /* if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().CoveredTile != null)
         {
             isWatered = true;
             if (plantMesh != null)
@@ -91,15 +97,22 @@ public class PlantGrowth : MonoBehaviour
                // StartGrowth(isWatered);
                 Debug.Log("Plant started growing after watering.");
             }
-        }
+        }*/
     }
 
    
     private void OnTriggerEnter(Collider other)
   {
+
+      
         if (other.CompareTag("Player"))
         {
-            if (GameManager.Instance.isCutting)
+            if (!UI_Manager.Instance.sickleWeapon.activeSelf&& GameManager.Instance.isCutting)
+            {
+                UI_Manager.Instance.sickleWeapon.SetActive(true);
+            }
+
+            if (GameManager.Instance.isCutting && UI_Manager.Instance.sickleWeapon.activeSelf)
             {
                 this.gameObject.transform.DOMoveY(cuttingHight, 0.5f);
                 GameManager.Instance.isHarvestCompleted = true;

@@ -10,7 +10,7 @@ public class WaveManager : MonoBehaviour
     public int waveSize = 5;
     public float spawnInterval = 1f;
 
-    private int currentWave = 1;
+    //private int currentWave = 1;
 
     public void StartWave()
     {
@@ -32,7 +32,7 @@ public class WaveManager : MonoBehaviour
 
             // Choose a random field area for each enemy
             Transform targetFieldArea = fieldAreas[i];
-            enemy.Initialize(targetFieldArea);
+            enemy.Initialize(targetFieldArea,i);
 
             yield return new WaitForSeconds(spawnInterval);
         }

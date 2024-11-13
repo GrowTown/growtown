@@ -16,9 +16,9 @@ public class ShopManager : MonoBehaviour
     #region Functions
     public void ToBuyWheat()
     {
-        if(UI_Manager.Instance.scoreIn>=5)
+        if(UI_Manager.Instance.scoreIn>=10)
         {
-            UI_Manager.Instance.scoreIn -=5;
+            UI_Manager.Instance.scoreIn -=10;
             UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
             ForWheatAdd += 1;
             UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text=ForWheatAdd.ToString();

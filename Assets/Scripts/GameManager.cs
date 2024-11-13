@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -8,6 +6,7 @@ public class GameManager : MonoBehaviour
     internal bool isThroughingseeds;
     internal bool isCutting;
     internal bool isHarvestCompleted;
+    internal bool isOneWorkingActionCompleted = false;
 
     int _currentFieldID;
 
@@ -15,7 +14,7 @@ public class GameManager : MonoBehaviour
 
     public int CurrentFieldID
     {
-        get=> _currentFieldID;
+        get => _currentFieldID;
         set => _currentFieldID = value;
     }
     #endregion
@@ -41,44 +40,73 @@ public class GameManager : MonoBehaviour
         {
             case PlayerAction.Clean:
                 UI_Manager.Instance.cleaningTool.SetActive(true);
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 1);
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
                 Debug.Log("Cleanig");
                 break;
             case PlayerAction.Seed:
                 isThroughingseeds = true;
-                UI_Manager.Instance.cleaningTool.SetActive(false);
+
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
-               // Debug.Log("Seeding");
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
+                // Debug.Log("Seeding");
                 break;
             case PlayerAction.Water:
                 isThroughingseeds = false;
                 UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
-               // UI_Manager.Instance.plantHolder.GetComponent<PlantGrowth>().OnWaterTile();
-                UI_Manager.Instance.seedsBag.gameObject.SetActive(false);
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
+                // UI_Manager.Instance.plantHolder.GetComponent<PlantGrowth>().OnWaterTile();
+
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
                 break;
             case PlayerAction.Harvest:
                 isCutting = true;
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 1);
                 UI_Manager.Instance.sickleWeapon.SetActive(true);
+
                 break;
         }
     }
 
     public void StopCurrentAnimations()
     {
-        UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 0);
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 0);
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 0);
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 0);
+        UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 0);
         UI_Manager.Instance.cleaningTool.SetActive(false);
     }
     public void ShowFieldPopup(PlayerAction currentAction)
     {
         UI_Manager.Instance.ShowPopup(currentAction);
     }
+
+ /*   public void CheckAllPlantsAreGrown()
+    {
+        if (UI_Manager.Instance.spawnTomatosForGrowth.Count > 99)
+        {
+            foreach (var item in UI_Manager.Instance.spawnTomatosForGrowth)
+            {
+                var plantGrowth = item.GetComponent<PlantGrowth>();
+                if (plantGrowth != null)
+                {
+                    var skinnedMeshRenderer = plantGrowth.plantMesh;
+                    if (skinnedMeshRenderer != null)
+                    {
+                        float blendShapeWeight = skinnedMeshRenderer.GetBlendShapeWeight(0); // Assuming the growth blend shape is at index 0
+                        if (blendShapeWeight >= 100f)
+                        {
+                            // The blend shape weight has reached 100, indicating full growth
+                            Debug.Log("Plant fully grown!");
+                            // Perform any additional actions if needed for fully grown plants
+                        }
+                    }
+                }
+            }
+
+
+        }
+
+    }*/
 
     public void HideFieldPopup()
     {
@@ -100,7 +128,8 @@ public class GameManager : MonoBehaviour
     {
         HideFieldPopup();
         if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length - 1)
-         {
+        {
+            isOneWorkingActionCompleted = true;
             UI_Manager.Instance.TriggerZoneCallBacks.currentStep++;
             UI_Manager.Instance.oldcurrentStep = UI_Manager.Instance.TriggerZoneCallBacks.currentStep;
             ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
@@ -113,7 +142,7 @@ public class GameManager : MonoBehaviour
         int parsedValue;
         if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
         {
-            if (parsedValue >0)
+            if (parsedValue > 0)
             {
 
                 // Add your logic here
@@ -121,14 +150,14 @@ public class GameManager : MonoBehaviour
         }
         else if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(1).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
         {
-            if (parsedValue >0)
+            if (parsedValue > 0)
             {
                 // Add your logic here
             }
         }
         else if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(2).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
         {
-            if (parsedValue >0)
+            if (parsedValue > 0)
             {
                 // Add your logic here
             }
@@ -137,12 +166,12 @@ public class GameManager : MonoBehaviour
                 Debug.Log("You Don't Have Crops");
             }
         }
-      
+
         if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(3).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
         {
-            if (parsedValue >0)
+            if (parsedValue > 0)
             {
-               
+
             }
             else
             {
@@ -153,7 +182,7 @@ public class GameManager : MonoBehaviour
         {
             if (parsedValue > 0)
             {
-               
+
             }
             else
             {
@@ -162,9 +191,9 @@ public class GameManager : MonoBehaviour
         }
         if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(5).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
         {
-            if (parsedValue >0)
+            if (parsedValue > 0)
             {
-               
+
             }
             else
             {
@@ -177,8 +206,8 @@ public class GameManager : MonoBehaviour
     {
         UI_Manager.Instance.oldcurrentStep = -1;
         UI_Manager.Instance.FieldManager.fieldSteps.Remove(CurrentFieldID);
-        isCutting=false;
-        
+        isCutting = false;
+
     }
     #endregion
 }

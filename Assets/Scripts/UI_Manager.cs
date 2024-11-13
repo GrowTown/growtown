@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,15 +51,29 @@ public class UI_Manager : MonoBehaviour
     [SerializeField]
     private FieldManager _fieldManager;
 
+    [SerializeField]
+    private WeaponAttackEvent _weaponAttackEvent;
+
     internal int oldcurrentStep = -1;
     InventoryNames[] inventoryNames;
     public bool isPlanted;
     public bool waveStarted;
+    public bool isPlantGrowthCompleted;
+    public bool isPlayerInField=false;
+    public int currentIndex;
+
+    public List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
+
     #region Fields
     internal int scoreIn = 100;
     #endregion
 
     #region Properties
+    public WeaponAttackEvent WeaponAttackEvent
+    {
+        get => _weaponAttackEvent;
+        set => _weaponAttackEvent = value;
+    }
     public FieldManager FieldManager
     {
         get => _fieldManager;
@@ -138,7 +153,7 @@ public class UI_Manager : MonoBehaviour
             };
         }
     }
-
+    public bool seedBought;
     void CallBackEvents()
     {
         TriggerZoneCallBacks.onPlayerEnter += (a) =>
@@ -174,8 +189,11 @@ public class UI_Manager : MonoBehaviour
             GameManager.Instance.isHarvestCompleted = false;
         });
 
-        carrotsSeedBT.onClick.AddListener(() => { ShopManager.ToBuyCarrots(); });
-        wheatSeedBT.onClick.AddListener(() => { ShopManager.ToBuyWheat(); });
+        carrotsSeedBT.onClick.AddListener(() => { ShopManager.ToBuyCarrots();
+          });
+        wheatSeedBT.onClick.AddListener(() => { ShopManager.ToBuyWheat();
+            seedBought=true;
+        });
         strawberriesSeedBT.onClick.AddListener(() => { ShopManager.ToBuyStrawberries(); });
         cleaningWeaponBT.onClick.AddListener(() =>
         {
@@ -211,14 +229,14 @@ public class UI_Manager : MonoBehaviour
     {
         HideFieldPopup();  // Ensure all other popups are hidden first
         int popupIndex = (int)currentAction;
-
+        
         if (popupIndex >= 0 && popupIndex < PopupImg.Length)
         {
             var popup = PopupImg[popupIndex];
             popup.SetActive(true);
             var selectionFunctionality = popup.GetComponent<POPSelectionFunctionality>();
             selectionFunctionality.onClick = null;
-            if (oldcurrentStep != -1 && UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(UI_Manager.Instance.TriggerZoneCallBacks.fieldID))
+            if (oldcurrentStep != -1 && UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID)&&!GameManager.Instance.isOneWorkingActionCompleted)
             {
                 GameManager.Instance.StartPlayerAction(currentAction);
             }
@@ -226,9 +244,43 @@ public class UI_Manager : MonoBehaviour
             {
                 selectionFunctionality.onClick = (selected) =>
                 {
-                    oldcurrentAction = popupIndex;
-                    selectionFunctionality.IsSelected = true;
-                    GameManager.Instance.StartPlayerAction(currentAction);
+                    if (popupIndex == 3)
+                    {
+                        currentIndex = 3;
+                        if (isPlantGrowthCompleted)
+                        {
+                            if (!WeaponAttackEvent.isHammerActive)
+                            {
+                                if (currentSelectedPopUp != null)
+                                {
+                                    currentSelectedPopUp.IsSelected = false;
+                                }
+                                oldcurrentAction = popupIndex;
+                                selectionFunctionality.IsSelected = true;
+                                currentSelectedPopUp = selectionFunctionality;
+                                GameManager.Instance.StartPlayerAction(currentAction);
+                                GameManager.Instance.isOneWorkingActionCompleted = false;
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        if (!WeaponAttackEvent.isHammerActive)
+                        {
+                            if (currentSelectedPopUp != null)
+                            {
+                                currentSelectedPopUp.IsSelected = false;
+                            }
+                            oldcurrentAction = popupIndex;
+                            selectionFunctionality.IsSelected = true;
+                            currentSelectedPopUp = selectionFunctionality;
+                            GameManager.Instance.StartPlayerAction(currentAction);
+                            GameManager.Instance.isOneWorkingActionCompleted = false;
+                        }
+                    }
+                   
+                 
                 };
 
             }
@@ -245,6 +297,8 @@ public class UI_Manager : MonoBehaviour
         }
         sickleWeapon.SetActive(false);
         wateringTool.SetActive(false);
+        cleaningTool.SetActive(false);
+        seedsBag.gameObject.SetActive(false);
         GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }
 

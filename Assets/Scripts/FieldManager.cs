@@ -6,7 +6,13 @@ public class FieldManager : MonoBehaviour
 {
     // Dictionary to store the current animation step of each field by field ID
     internal Dictionary<int, int> fieldSteps = new Dictionary<int, int>();
+    int _currentFieldID;
 
+    public int CurrentFieldID
+    {
+        get=> _currentFieldID;
+        set => _currentFieldID = value;
+    }
     public void EnterField(int fieldID)
     {
           UI_Manager.Instance.oldcurrentStep = fieldSteps.ContainsKey(fieldID) ? fieldSteps[fieldID] : -1;
@@ -14,6 +20,7 @@ public class FieldManager : MonoBehaviour
         {
             if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length)
             {
+                CurrentFieldID = fieldID;
                 Debug.Log("index :::  " + UI_Manager.Instance.TriggerZoneCallBacks.currentStep);
                 GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
                 if(GameManager.Instance.isThroughingseeds)
@@ -25,7 +32,7 @@ public class FieldManager : MonoBehaviour
                     currentCount -= 1;
                     selectionFunctionality.productCount.text = currentCount.ToString();
                 }
-
+                UI_Manager.Instance.oldcurrentStep = UI_Manager.Instance.TriggerZoneCallBacks.currentStep;
             };
         }
         else

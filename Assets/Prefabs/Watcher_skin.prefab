@@ -229,9 +229,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5093663643352060302}
   - component: {fileID: 5066549197464158296}
-  - component: {fileID: 8876827035555537889}
   - component: {fileID: 8310363780151197537}
-  - component: {fileID: 642546899999742117}
+  - component: {fileID: 8976288339886005828}
   m_Layer: 0
   m_Name: Watcher_skin
   m_TagString: Untagged
@@ -277,28 +276,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!195 &8876827035555537889
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2875620930296247762}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 0.2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
 --- !u!114 &8310363780151197537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,11 +289,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 1
-  navAgent: {fileID: 8876827035555537889}
   speed: 3.5
   animator: {fileID: 5066549197464158296}
---- !u!136 &642546899999742117
-CapsuleCollider:
+--- !u!65 &8976288339886005828
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -330,14 +306,12 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.7824174
-  m_Height: 1.5648348
-  m_Direction: 1
-  m_Center: {x: -0.04724562, y: 0, z: 0}
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.2681148, z: 1}
+  m_Center: {x: 0, y: 0.13405743, z: 0}
 --- !u!1 &2964465080826531740
 GameObject:
   m_ObjectHideFlags: 0
