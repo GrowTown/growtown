@@ -119,16 +119,7 @@ public class Enemy : MonoBehaviour
     {
         isMoving = false;
         //animator.SetTrigger("Attack");
-        if (index ==2 )
-        {
-           
-            transform.rotation = target.rotation;
-        }
-        else if(index==3 ) 
-        {
-           
-            transform.rotation = target.rotation;
-        }
+       
         // Start oscillating movement along the x-axis after reaching the target
         Vector3 leftPosition = transform.position + new Vector3(-0.5f, 0, 0);
         Vector3 rightPosition = transform.position + new Vector3(0.5f, 0, 0);
@@ -159,6 +150,10 @@ public class Enemy : MonoBehaviour
         if (collision.gameObject.CompareTag("hammer"))
         {
             gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.Log("Collision detected with: " + collision.gameObject.name);
         }
     }
 }

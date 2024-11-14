@@ -32,7 +32,7 @@ public class FieldManager : MonoBehaviour
                     currentCount -= 1;
                     selectionFunctionality.productCount.text = currentCount.ToString();
                 }
-                UI_Manager.Instance.oldcurrentStep = UI_Manager.Instance.TriggerZoneCallBacks.currentStep;
+                
             };
         }
         else
@@ -50,11 +50,11 @@ public class FieldManager : MonoBehaviour
        // PlayAnimationAtStep(fieldID, UI_Manager.Instance.oldcurrentStep);
     }
 
-    public void ExitField(int fieldID)
+    /*public void ExitField(int fieldID)
     {
         GameManager.Instance.HideFieldPopup();
         GameManager.Instance.StopCurrentAction();
-    }
+    }*/
 /*
     public void UpdateFieldStep(int fieldID, int newStep)
     {

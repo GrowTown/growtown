@@ -50,7 +50,7 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
     private void Update()
     {
         // Check for left mouse button click when hammer is active
-        if (isHammerActive &&Input.GetMouseButtonDown(0))
+        if (isHammerActive &&Input.GetMouseButtonDown(1))
         {
             PlayHammerAttackAnimation();
         
@@ -68,15 +68,15 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
 
     private IEnumerator WaitForAnimationComplete()
     {
-        yield return new WaitForSeconds(0.5f); // Adjust based on animation length
+        yield return new WaitForSeconds(20f); // Adjust based on animation length
         if (UI_Manager.Instance.CharacterMovements.animator != null)
         {
             UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 0); // Reset layer weight after animation
         }
     }
 
-
-
+      
+ 
 }
 
 

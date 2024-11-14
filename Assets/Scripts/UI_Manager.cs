@@ -53,6 +53,8 @@ public class UI_Manager : MonoBehaviour
 
     [SerializeField]
     private WeaponAttackEvent _weaponAttackEvent;
+    [SerializeField]
+    private EnemyPool _enemyPool;
 
     internal int oldcurrentStep = -1;
     InventoryNames[] inventoryNames;
@@ -69,6 +71,12 @@ public class UI_Manager : MonoBehaviour
     #endregion
 
     #region Properties
+
+    public EnemyPool EnemyPool
+    {
+        get => _enemyPool;
+        set => _enemyPool = value;
+    }
     public WeaponAttackEvent WeaponAttackEvent
     {
         get => _weaponAttackEvent;
@@ -260,6 +268,7 @@ public class UI_Manager : MonoBehaviour
                                 currentSelectedPopUp = selectionFunctionality;
                                 GameManager.Instance.StartPlayerAction(currentAction);
                                 GameManager.Instance.isOneWorkingActionCompleted = false;
+                                UI_Manager.Instance.oldcurrentStep = popupIndex;
                             }
 
                         }
@@ -277,6 +286,7 @@ public class UI_Manager : MonoBehaviour
                             currentSelectedPopUp = selectionFunctionality;
                             GameManager.Instance.StartPlayerAction(currentAction);
                             GameManager.Instance.isOneWorkingActionCompleted = false;
+                            UI_Manager.Instance.oldcurrentStep = popupIndex;
                         }
                     }
                    

@@ -9,6 +9,7 @@ TagManager:
   - SeedBag
   - sickle
   - hammer
+  - enemy
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - FieldLayer
   - Player
   - Sickle
-  - 
+  - hammer
   - 
   - 
   - 

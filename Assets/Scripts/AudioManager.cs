@@ -4,11 +4,18 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public AudioSource audioSource;
+
+    [SerializeField]
+    private AudioSource _audioSource;
+
+    [SerializeField]
+    private AudioClip _audioClipBG;
+
     // Start is called before the first frame update
     void Start()
     {
-       // audioSource.Play();
+        _audioSource.clip = _audioClipBG;
+       _audioSource.Play();
     }
 
   
