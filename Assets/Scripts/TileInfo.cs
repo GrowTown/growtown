@@ -36,6 +36,7 @@ public class TileInfo : MonoBehaviour
             foreach (Transform spawnPoint in spawnPoints)
             {
                 var instance = Instantiate(UI_Manager.Instance.plantHolder, spawnPoint.transform.position, Quaternion.identity);
+                UI_Manager.Instance.spawnPlantsForGrowth.Add(instance);
            
                 //instance.transform.SetParent(UI_Manager.Instance.Canvas.transform);
 

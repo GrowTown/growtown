@@ -52,9 +52,9 @@ public class GameManager : MonoBehaviour
                 break;
             case PlayerAction.Water:
                 isThroughingseeds = false;
+                OnWaterTile();
                 UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
-                // UI_Manager.Instance.plantHolder.GetComponent<PlantGrowth>().OnWaterTile();
 
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
                 break;
@@ -200,6 +200,16 @@ public class GameManager : MonoBehaviour
                 Debug.Log("You Don't Have Cutting Tool");
             }
         }
+    }
+
+
+    public void OnWaterTile()
+    {
+        foreach (var item in UI_Manager.Instance.spawnPlantsForGrowth)
+        {
+            var instance = item.GetComponent<PlantGrowth>();
+            StartCoroutine(instance.GrowPlant());
+        }  
     }
 
     private void ResetValues()

@@ -145,7 +145,7 @@ public class Enemy : MonoBehaviour
         DOTween.Kill(transform); // Stop any ongoing movement
         gameObject.SetActive(false);
     }
-    private void OnCollisionEnter(Collision collision)
+   /* private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("hammer"))
         {
@@ -155,7 +155,7 @@ public class Enemy : MonoBehaviour
         {
             Debug.Log("Collision detected with: " + collision.gameObject.name);
         }
-    }
+    }*/
 }
 
 

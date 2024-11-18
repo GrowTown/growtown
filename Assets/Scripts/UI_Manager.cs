@@ -64,7 +64,8 @@ public class UI_Manager : MonoBehaviour
     public bool isPlayerInField=false;
     public int currentIndex;
 
-    public List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
+    internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
+    internal List<GameObject> spawnPlantsForGrowth = new List<GameObject>();
 
     #region Fields
     internal int scoreIn = 100;
@@ -298,7 +299,7 @@ public class UI_Manager : MonoBehaviour
 
         }
     }
-
+    
     internal void HideFieldPopup()
     {
         if (TriggerZoneCallBacks.currentStep <= PopupImg.Length - 1)
@@ -311,9 +312,6 @@ public class UI_Manager : MonoBehaviour
         seedsBag.gameObject.SetActive(false);
         GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }
-
-
-
 
     #endregion
 
