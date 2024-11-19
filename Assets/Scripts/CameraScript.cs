@@ -9,7 +9,16 @@ public class CameraScript : MonoBehaviour
     public Vector3 offset;
     public float smoothSpeed = 0.125f;
 
-  /*  private void LateUpdate()
+    public LayerMask obstructionLayer;
+    public float minDistance = 2f;
+
+    private Vector3 defaultOffset;
+    private void Start() 
+    {
+        // Save the default offset for restoration
+        defaultOffset = offset;
+    }
+    private void LateUpdate()
     {
         // Calculate the desired position with offset
         Vector3 desiredPosition = target.position + offset;
@@ -22,19 +31,10 @@ public class CameraScript : MonoBehaviour
 
         // Optionally, make the camera look at the character
         transform.LookAt(target);
-    }*/
-    // Speed of the camera's smooth follow
-    public LayerMask obstructionLayer;
-    public float minDistance = 2f;
-
-    private Vector3 defaultOffset;
-    private void Start() 
-    {
-        // Save the default offset for restoration
-        defaultOffset = offset;
     }
+    // Speed of the camera's smooth follow
 
-    private void LateUpdate()
+  /*  private void LateUpdate()
     {
         AdjustForObstruction();
     }
@@ -66,7 +66,7 @@ public class CameraScript : MonoBehaviour
 
         // Make the camera look at the target
         transform.LookAt(target);
-    }
+    }*/
 }
 
 

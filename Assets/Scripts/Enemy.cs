@@ -83,7 +83,7 @@ public class Enemy : MonoBehaviour
     public float speed = 3.5f;
     public Animator animator;
     int index = 0;
-    private bool isMoving = false;
+  
 
     /// <summary>
     /// Initialize the enemy with a target and start moving toward it
@@ -106,8 +106,6 @@ public class Enemy : MonoBehaviour
     {
         if (target != null)
         {
-            isMoving = true;
-
             // Move the enemy towards the target's position with DOTween
             transform.DOMove(target.position, Vector3.Distance(transform.position, target.position) / speed)
                      .SetEase(Ease.Linear)
@@ -117,7 +115,6 @@ public class Enemy : MonoBehaviour
 
     private void OnReachedTarget()
     {
-        isMoving = false;
         //animator.SetTrigger("Attack");
        
         // Start oscillating movement along the x-axis after reaching the target
@@ -141,7 +138,6 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
-        isMoving = false;
         DOTween.Kill(transform); // Stop any ongoing movement
         gameObject.SetActive(false);
     }

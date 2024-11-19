@@ -80,34 +80,6 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.ShowPopup(currentAction);
     }
 
- /*   public void CheckAllPlantsAreGrown()
-    {
-        if (UI_Manager.Instance.spawnTomatosForGrowth.Count > 99)
-        {
-            foreach (var item in UI_Manager.Instance.spawnTomatosForGrowth)
-            {
-                var plantGrowth = item.GetComponent<PlantGrowth>();
-                if (plantGrowth != null)
-                {
-                    var skinnedMeshRenderer = plantGrowth.plantMesh;
-                    if (skinnedMeshRenderer != null)
-                    {
-                        float blendShapeWeight = skinnedMeshRenderer.GetBlendShapeWeight(0); // Assuming the growth blend shape is at index 0
-                        if (blendShapeWeight >= 100f)
-                        {
-                            // The blend shape weight has reached 100, indicating full growth
-                            Debug.Log("Plant fully grown!");
-                            // Perform any additional actions if needed for fully grown plants
-                        }
-                    }
-                }
-            }
-
-
-        }
-
-    }*/
-
     public void HideFieldPopup()
     {
         UI_Manager.Instance.HideFieldPopup();
