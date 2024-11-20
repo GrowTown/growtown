@@ -23,6 +23,7 @@ public class CharacterMovements : MonoBehaviour
 
     void Update()
     {
+        Shader.SetGlobalVector("_Player",transform.position);
         CharMovements();
         AdjustHeightofPlayer();
     }
