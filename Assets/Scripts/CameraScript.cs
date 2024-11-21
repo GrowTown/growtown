@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraScript : MonoBehaviour
 {
 
-    public Transform target;
+  /*  public Transform target;
     public Vector3 offset;
     public float smoothSpeed = 0.125f;
 
@@ -31,43 +31,81 @@ public class CameraScript : MonoBehaviour
 
         // Optionally, make the camera look at the character
         transform.LookAt(target);
-    }
-    // Speed of the camera's smooth follow
-
-  /*  private void LateUpdate()
-    {
-        AdjustForObstruction();
-    }
-
-    private void AdjustForObstruction()
-    {
-        // Calculate the desired camera position based on the offset
-        Vector3 desiredPosition = target.position + offset;
-
-        // Perform a raycast from the player toward the camera to detect obstacles
-        Ray ray = new Ray(target.position, desiredPosition - target.position);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, offset.magnitude, obstructionLayer))
-        {
-            // If obstruction is detected, adjust camera distance to be closer to the player
-            float distanceToObstacle = Vector3.Distance(target.position, hit.point);
-            distanceToObstacle = Mathf.Clamp(distanceToObstacle, minDistance, offset.magnitude);
-
-            // Calculate a new position based on the adjusted distance
-            Vector3 adjustedPosition = target.position + (desiredPosition - target.position).normalized * distanceToObstacle;
-            transform.position = Vector3.Lerp(transform.position, adjustedPosition, smoothSpeed);
-        }
-        else
-        {
-            // If no obstruction, move camera back to the original offset distance smoothly
-            transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-        }
-
-        // Make the camera look at the target
-        transform.LookAt(target);
     }*/
+
+
+    [Header("Camera Follow")]
+    public Transform player; // The player to follow
+    public Vector3 offset = new Vector3(0, 3, -5); // Default camera offset
+    public float smoothSpeed = 0.125f; // Camera follow smoothing speed
+
+    [Header("Camera Rotation")]
+    public float mouseSensitivity = 100f; // Sensitivity for mouse movement
+ 
+    private float xRotation = 0f; // Vertical rotation (pitch)
+    private float yRotation = 0f; // Horizontal rotation (yaw)
+
+    private void Start()
+    {
+        // Lock the cursor to the game window
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void LateUpdate()
+    {
+        // Handle camera rotation
+        HandleCameraRotation();
+       // CameraFollowPlayer();
+
+    }
+
+    void CameraFollowPlayer()
+    {
+        // Calculate the desired position with offset
+        Vector3 desiredPosition = player.position+ offset;
+
+        // Smoothly interpolate the camera's position
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+
+        // Set the camera's position
+        transform.position = smoothedPosition;
+
+        // Make the camera look at the player
+        transform.LookAt(player);
+    }
+
+    private void HandleCameraRotation()
+    {
+        // Get mouse input
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+
+        // Update yaw and pitch
+        yRotation += mouseX;
+        xRotation -= mouseY;
+
+        // Clamp vertical rotation (pitch)
+        xRotation = Mathf.Clamp(xRotation, -40f, 80f); // Limit the camera's upward and downward movement
+
+        // Create rotation based on mouse movement
+        Quaternion rotation = Quaternion.Euler(xRotation, yRotation, 0f);
+
+        // Calculate the desired camera position based on the player's position and offset
+        Vector3 desiredPosition = player.position + rotation * offset;
+
+        // Smoothly interpolate the camera's position
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+
+        // Set the camera's position
+        transform.position = smoothedPosition;
+
+        // Make the camera look at the player
+        transform.LookAt(player.position + Vector3.up  ); // Adjust the look-at point for better framing
+    }
+
 }
+
+
 
 
 
