@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Inventory/Inventory Item")]
-public class InventoryItem : ScriptableObject
+[CreateAssetMenu(fileName = "NewShopItem", menuName = "Shop/Shop Item")]
+public class ShopItem : ScriptableObject
 {
     public string itemName;
     public Sprite icon;
@@ -11,27 +11,16 @@ public class InventoryItem : ScriptableObject
 }
 
 
-[CreateAssetMenu(fileName = "NewCrop", menuName = "Inventory/Crop")]
-public class Crop : InventoryItem
+[CreateAssetMenu(fileName = "NewCrop", menuName = "Shop/Crop")]
+public class Crop : ShopItem
 {
     [SerializeField]GameObject plant;
+    [SerializeField]GameObject tomato;
     [SerializeField]float _growthTime;  
-    [SerializeField] int _harvestYield;
+    [SerializeField]int _harvestYield;
     [SerializeField]int _salePrice;
 
 }
 
-[CreateAssetMenu(fileName = "NewCrop", menuName = "Inventory/Tool")]
-public class Tools : InventoryItem
-{
-
-    [SerializeField] GameObject tool;
-}
-
-[CreateAssetMenu(fileName = "NewCrop", menuName = "Inventory/Animal")]
-public class Animals : InventoryItem
-{
-    [SerializeField] GameObject animal;
-}
 
 

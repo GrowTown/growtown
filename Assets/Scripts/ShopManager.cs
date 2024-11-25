@@ -5,14 +5,6 @@ using UnityEngine;
 public class ShopManager : MonoBehaviour
 {
  
-    int ForWheatAdd=0 ;
-    int ForCarrotsAdd=0 ;
-    int ForStrawberriesAdd = 0;
-
-   /* int ForWeaponAdd = 0;
-    int ForWeaponAdd1 = 0;
-    int ForWeaponAdd2 = 0;*/
-
     #region Functions
     public void ToBuyWheat()
     {
@@ -20,8 +12,8 @@ public class ShopManager : MonoBehaviour
         {
             UI_Manager.Instance.scoreIn -=10;
             UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
-            ForWheatAdd += 1;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text=ForWheatAdd.ToString();
+            GameManager.Instance.CurrentWheatSeedCount+= 1;
+            UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentWheatSeedCount.ToString();
 
         }
         else
@@ -30,14 +22,14 @@ public class ShopManager : MonoBehaviour
             //Debug.Log("You didn't have enough money");
         }
     }
-    public void ToBuyCarrots()
+    public void ToBuyTomato()
     {
         if(UI_Manager.Instance.scoreIn>=8)
         {
             UI_Manager.Instance.scoreIn -=8;
             UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
-            ForCarrotsAdd += 1;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(1).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForCarrotsAdd.ToString();
+            GameManager.Instance.CurrentTomatoSeedCount += 1;
+            UI_Manager.Instance.inventoryPanel.transform.GetChild(1).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
         }
         else
         {
@@ -51,8 +43,8 @@ public class ShopManager : MonoBehaviour
         {
             UI_Manager.Instance.scoreIn -= 12;
             UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
-            ForStrawberriesAdd += 1;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(2).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForStrawberriesAdd.ToString();
+            GameManager.Instance.CurrentStrawberriesSeedCount += 1;
+            UI_Manager.Instance.inventoryPanel.transform.GetChild(2).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentStrawberriesSeedCount.ToString();
         }
         else
         {

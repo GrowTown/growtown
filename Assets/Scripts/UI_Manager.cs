@@ -66,6 +66,7 @@ public class UI_Manager : MonoBehaviour
 
     internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
     internal List<GameObject> spawnPlantsForGrowth = new List<GameObject>();
+    [SerializeField]internal List<ShopItem> shopItems=new List<ShopItem>();
 
     #region Fields
     internal int scoreIn = 100;
@@ -198,7 +199,7 @@ public class UI_Manager : MonoBehaviour
             GameManager.Instance.isHarvestCompleted = false;
         });
 
-        carrotsSeedBT.onClick.AddListener(() => { ShopManager.ToBuyCarrots();
+        carrotsSeedBT.onClick.AddListener(() => { ShopManager.ToBuyTomato();
           });
         wheatSeedBT.onClick.AddListener(() => { ShopManager.ToBuyWheat();
             seedBought=true;

@@ -10,12 +10,32 @@ public class GameManager : MonoBehaviour
 
     int _currentFieldID;
 
+    int _currentWheatSeedCount = 0;
+    int _currentTomatoSeedCount = 0;
+    int _currentStrawberriesSeedCount = 0;
+
     #region Properties
 
     public int CurrentFieldID
     {
         get => _currentFieldID;
         set => _currentFieldID = value;
+    }
+
+    public int CurrentStrawberriesSeedCount
+    {
+        get => _currentStrawberriesSeedCount;
+        set => _currentStrawberriesSeedCount = value;
+    }
+    public int CurrentWheatSeedCount
+    {
+        get => _currentWheatSeedCount;
+        set => _currentWheatSeedCount=value;
+    }
+    public int CurrentTomatoSeedCount
+    {
+        get => _currentTomatoSeedCount;
+        set => _currentTomatoSeedCount = value;
     }
     #endregion
 
@@ -139,7 +159,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(3).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
+        if (int.TryParse(UI_Manager.Instance. inventoryPanel.transform.GetChild(3).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
         {
             if (parsedValue > 0)
             {

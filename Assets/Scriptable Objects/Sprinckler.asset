@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ba4a2ee283ce1f41b4485b63cf7760c, type: 3}
-  m_Name: Sickle
+  m_Name: Sprinckler
   m_EditorClassIdentifier: 
-  itemName: Sickle
-  icon: {fileID: 21300000, guid: f6494ed40219667468e7f3ec0b883d47, type: 3}
+  itemName: WateringTool
+  icon: {fileID: 21300000, guid: 20510f6bcefb27c46889d28308b19530, type: 3}
   price: 5
-  tool: {fileID: 5399570672482387321, guid: 99e295564aede1941bd2863128dcca6d, type: 3}
+  tool: {fileID: 2684668041089645690, guid: 8f1fdbd72d21c1a46837776f5e3a2042, type: 3}
