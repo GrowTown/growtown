@@ -28,7 +28,7 @@ public class FieldGrid : MonoBehaviour
         {
             for (int col = 0; col < columns; col++)
             {
-                Vector3 cellPosition = new Vector3(col * cellSpacing, 0.02f, row * cellSpacing) - gridOffset;
+                Vector3 cellPosition = new Vector3(col * cellSpacing, 0f, row * cellSpacing) - gridOffset;
                 GameObject cell = Instantiate(cellPrefab, transform.position + cellPosition, Quaternion.identity);
                 cell.transform.SetParent(transform);
                 tiles.Add(cell);

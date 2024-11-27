@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -13,9 +15,23 @@ public class GameManager : MonoBehaviour
     int _currentWheatSeedCount = 0;
     int _currentTomatoSeedCount = 0;
     int _currentStrawberriesSeedCount = 0;
-
+    int _currentEnergyCount = 0;
+    int _currentWaterCount = 0;
+    Timer _timer;
+    bool _timerStartAfterPlants;
     #region Properties
-
+    public bool TimerStartAfterPlants
+    {
+        get => _timerStartAfterPlants;
+        set
+        {
+            if (value== true)
+            {
+                StartCoroutine(ToIncreaseWaterPointsAccordingtoTime());
+                _timerStartAfterPlants = value;
+            }
+        }
+    }
     public int CurrentFieldID
     {
         get => _currentFieldID;
@@ -30,13 +46,26 @@ public class GameManager : MonoBehaviour
     public int CurrentWheatSeedCount
     {
         get => _currentWheatSeedCount;
-        set => _currentWheatSeedCount=value;
+        set => _currentWheatSeedCount = value;
     }
     public int CurrentTomatoSeedCount
     {
         get => _currentTomatoSeedCount;
         set => _currentTomatoSeedCount = value;
     }
+
+    public int CurrentEnergyCount
+    {
+        get => _currentEnergyCount;
+        set => _currentEnergyCount = value;
+    }
+
+    public int CurrentWaterCount
+    {
+        get => _currentWaterCount;
+        set => _currentWaterCount = value;
+    }
+
     #endregion
 
     private void Awake()
@@ -53,36 +82,88 @@ public class GameManager : MonoBehaviour
     }
 
     #region Methods
-
-    public void StartActionAnimation(PlayerAction action)
+   /* public void StartActionAnimation(PlayerAction action)
     {
         switch (action)
         {
             case PlayerAction.Clean:
                 UI_Manager.Instance.cleaningTool.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
-                Debug.Log("Cleanig");
+                //Debug.Log("Cleanig");
                 break;
             case PlayerAction.Seed:
                 isThroughingseeds = true;
 
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
+                CurrentEnergyCount -= 5;
+                UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
                 // Debug.Log("Seeding");
                 break;
             case PlayerAction.Water:
+                CurrentEnergyCount -= 2;
+                UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
+                ToDecreaseTheWaterPoints();
                 isThroughingseeds = false;
                 OnWaterTile();
+                TimerStartAfterPlants = true;
                 UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
-
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
                 break;
             case PlayerAction.Harvest:
                 isCutting = true;
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 1);
                 UI_Manager.Instance.sickleWeapon.SetActive(true);
+                CurrentEnergyCount -= 3;
+                UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
 
+                break;
+        }
+    }*/
+    private bool isEnergyDeducted = false; 
+    public void StartActionAnimation(PlayerAction action)
+    {
+       
+        isEnergyDeducted = false;
+
+        switch (action)
+        {
+            case PlayerAction.Clean:
+                UI_Manager.Instance.cleaningTool.SetActive(true);
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
+                // Debug.Log("Cleaning");
+                break;
+            case PlayerAction.Seed:
+                isThroughingseeds = true;
+                UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
+                if (!isEnergyDeducted)
+                {
+                    DeductEnergyPoints(5); 
+                }
+                // Debug.Log("Seeding");
+                break;
+            case PlayerAction.Water:
+                if (!isEnergyDeducted)
+                {
+                    DeductEnergyPoints(2); 
+                }
+                isThroughingseeds = false;
+                OnWaterTile();
+                TimerStartAfterPlants = true;
+                UI_Manager.Instance.wateringTool.SetActive(true);
+                UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
+                break;
+            case PlayerAction.Harvest:
+                if (!isEnergyDeducted)
+                {
+                    DeductEnergyPoints(3); 
+                }
+                isCutting = true;
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 1);
+                UI_Manager.Instance.sickleWeapon.SetActive(true);
                 break;
         }
     }
@@ -128,72 +209,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void CheckHasCropOrNot()
-    {
-
-        int parsedValue;
-        if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
-        {
-            if (parsedValue > 0)
-            {
-
-                // Add your logic here
-            }
-        }
-        else if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(1).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
-        {
-            if (parsedValue > 0)
-            {
-                // Add your logic here
-            }
-        }
-        else if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(2).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
-        {
-            if (parsedValue > 0)
-            {
-                // Add your logic here
-            }
-            else
-            {
-                Debug.Log("You Don't Have Crops");
-            }
-        }
-
-        if (int.TryParse(UI_Manager.Instance. inventoryPanel.transform.GetChild(3).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
-        {
-            if (parsedValue > 0)
-            {
-
-            }
-            else
-            {
-                Debug.Log("You Don't Have Cleaning Tool");
-            }
-        }
-        if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(4).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
-        {
-            if (parsedValue > 0)
-            {
-
-            }
-            else
-            {
-                Debug.Log("You Don't Have Watering Tool");
-            }
-        }
-        if (int.TryParse(UI_Manager.Instance.inventoryPanel.transform.GetChild(5).gameObject.GetComponent<SelectionFunctionality>().productCount.text, out parsedValue))
-        {
-            if (parsedValue > 0)
-            {
-
-            }
-            else
-            {
-                Debug.Log("You Don't Have Cutting Tool");
-            }
-        }
-    }
-
 
     public void OnWaterTile()
     {
@@ -201,8 +216,111 @@ public class GameManager : MonoBehaviour
         {
             var instance = item.GetComponent<PlantGrowth>();
             StartCoroutine(instance.GrowPlant());
-        }  
+        }
+
     }
+
+    public void StartPackToBuy()
+    {
+        UI_Manager.Instance.ShopManager.ToBuyTomato();
+        UI_Manager.Instance.ShopManager.ToBuyCleaningTool();
+        UI_Manager.Instance.ShopManager.ToBuyWateringTool();
+        UI_Manager.Instance.ShopManager.ToBuyCuttingTool();
+        UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
+        UI_Manager.Instance.sickleWeaponBT.interactable = false;
+        UI_Manager.Instance.wateringWeaponBT.interactable = false;
+        UI_Manager.Instance.cleaningWeaponBT.interactable = false;
+    }
+    bool isWaterPointDecreased;
+
+    private void DeductEnergyPoints(int amount)
+    {
+        CurrentEnergyCount -= amount;
+        CurrentEnergyCount = Mathf.Clamp(CurrentEnergyCount, 0, int.MaxValue); // Ensure energy doesn't go below 0
+        UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString(); // Update UI
+        isEnergyDeducted = true; // Set the flag to prevent further deductions
+    }
+    public void ToDecreaseTheWaterPoints()
+    {
+        if (!isWaterPointDecreased)
+        {
+            CurrentWaterCount -= 10;
+            UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
+            isWaterPointDecreased = true;
+        }
+    }
+
+    public void ToBuyEnergyPoints()
+    {
+        if (UI_Manager.Instance.scoreIn >= 15)
+        {
+            if (CurrentEnergyCount < 50)
+            {
+                CurrentEnergyCount += 50;
+            }
+            else if (CurrentEnergyCount > 50)
+            {
+                CurrentEnergyCount = 100;
+
+            }
+            UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
+            UI_Manager.Instance.energyBuyBT.interactable = false;
+        }
+    }
+
+    public void ToBuyWaterPoints()
+    {
+        if (UI_Manager.Instance.scoreIn >= 20)
+        {
+            if (CurrentWaterCount < 100)
+            {
+                CurrentWaterCount = 100;
+                UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
+            }
+        }
+    }
+
+   
+    bool isTimerStarted;
+    public IEnumerator ToIncreaseWaterPointsAccordingtoTime()
+    {
+        if (CurrentWaterCount < 100)
+        {
+            if (_timer == null)
+            {
+                _timer = this.gameObject.AddComponent<Timer>();
+            }
+            if (!isTimerStarted)
+            {
+                _timer.Initialize("", DateTime.Now, TimeSpan.FromMinutes(1));
+                _timer.StartTimer();
+                isTimerStarted = true;
+
+            }
+
+            // Loop while the timer is running
+            while (_timer.secondsLeft > 0)
+            {
+                Debug.Log("Time Left :: " + _timer.secondsLeft);
+                yield return null; 
+            }
+
+            
+            if (CurrentWaterCount < 100)
+            {
+                CurrentWaterCount += 10;
+                CurrentWaterCount = Mathf.Clamp(CurrentWaterCount, 0, 100);
+                UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
+                isTimerStarted = false;
+                StartCoroutine(ToIncreaseWaterPointsAccordingtoTime());
+            }
+            else
+            {
+                Destroy(_timer);
+            }
+        }
+    }
+
 
     private void ResetValues()
     {

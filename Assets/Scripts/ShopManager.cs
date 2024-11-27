@@ -13,7 +13,7 @@ public class ShopManager : MonoBehaviour
             UI_Manager.Instance.scoreIn -=10;
             UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
             GameManager.Instance.CurrentWheatSeedCount+= 1;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentWheatSeedCount.ToString();
+           // UI_Manager.Instance.inventoryPanel.transform.GetChild().gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentWheatSeedCount.ToString();
 
         }
         else
@@ -29,7 +29,7 @@ public class ShopManager : MonoBehaviour
             UI_Manager.Instance.scoreIn -=8;
             UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
             GameManager.Instance.CurrentTomatoSeedCount += 1;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(1).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
+            UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
         }
         else
         {

@@ -12,27 +12,23 @@ public class PlantGrowth : MonoBehaviour
     // private bool isWatered;
     float cuttingHight = 1f;
     private WaveManager waveManager;
-    /*  public void StartGrowth(bool isWatered)
-      {
-          if (isWatered)
-          {
-              _timer = this.gameObject.GetComponent<Timer>();
-              if (_timer != null && UI_Manager.Instance.plantHolder != null)
-              {
-                  StartCoroutine(GrowPlant());
-                  Debug.Log("Growth process started.");
-              }
-          }
-      }*/
-
+  
     void Start()
     {
         waveManager = FindObjectOfType<WaveManager>();
-        //StartCoroutine(GrowPlant());
+       // StartCoroutine(GrowPlant());
     }
     internal IEnumerator GrowPlant()
     {
         yield return new WaitForSeconds(1);
+
+    /*    if (!isTileWatered)
+        {
+            
+            // If the tile is not watered, change the plant's color and stop growth
+            plantMesh.GetComponent<Renderer>().material.color = Color.red; // Dry plant color
+            yield break; // Exit the coroutine early
+        }*/
 
         _timer = this.gameObject.GetComponent<Timer>();
         _timer.Initialize("Plant Growth", DateTime.Now, TimeSpan.FromMinutes(1));
@@ -41,6 +37,7 @@ public class PlantGrowth : MonoBehaviour
         float totalGrowthTime = (float)_timer.timeToFinish.TotalSeconds;
         while (_timer.secondsLeft > 0)
         {
+            Debug.Log("PlantSec :: " + _timer.secondsLeft);
             float growthProgress = (float)(1.0f - (_timer.secondsLeft / totalGrowthTime));
             if (growthProgress >= 0.5f && !UI_Manager.Instance.waveStarted)
             {
