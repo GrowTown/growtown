@@ -261,7 +261,7 @@ public class UI_Manager : MonoBehaviour
     bool isWentInsideOnce;
     public void ShowPopup(PlayerAction currentAction)
     {
-        HideFieldPopup();  // Ensure all other popups are hidden first
+        HideFieldPopup();  
         int popupIndex = (int)currentAction;
         
         if (popupIndex >= 0 && popupIndex < PopupImg.Length)

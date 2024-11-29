@@ -127,6 +127,8 @@ public class PlantGrowth : MonoBehaviour
         Debug.Log("Plant growth complete!");
         SpawnTomatoes();
     }
+
+
     private void SpawnTomatoes()
     {
         foreach (Transform spawnPoint in tomatoSpawnPoints)
@@ -137,7 +139,9 @@ public class PlantGrowth : MonoBehaviour
 
         }
         Debug.Log("Tomatoes spawned at designated points.");
-        if (UI_Manager.Instance.spawnTomatosForGrowth.Count > 120)
+        var plantCount = UI_Manager.Instance.GrowthStartedPlants.Count;
+        GameManager.Instance.spawnedTomatoesCount= plantCount*5;
+        if (UI_Manager.Instance.spawnTomatosForGrowth.Count == GameManager.Instance.spawnedTomatoesCount)
         {
             UI_Manager.Instance.isPlantGrowthCompleted = true;
         }

@@ -21,7 +21,8 @@ public class GameManager : MonoBehaviour
     Timer _timer;
     bool _timerStartAfterPlants;
     internal bool isPlantStartGrowing;
-    internal bool isplantGrowthCompleted; 
+    internal bool isplantGrowthCompleted;
+    internal int spawnedTomatoesCount;
 
   
 
@@ -127,6 +128,7 @@ public class GameManager : MonoBehaviour
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
                 break;
             case PlayerAction.Harvest:
+                isPlantStartGrowing = false;
                 if (!isEnergyDeducted)
                 {
                     DeductEnergyPoints(3);

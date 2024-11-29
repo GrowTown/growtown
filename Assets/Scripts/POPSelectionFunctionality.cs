@@ -31,14 +31,14 @@ public class POPSelectionFunctionality : MonoBehaviour, IPointerClickHandler
     {
         if (UI_Manager.Instance.currentIndex == 3)
         {
-            if (!UI_Manager.Instance.WeaponAttackEvent.isHammerActive&& UI_Manager.Instance.isPlantGrowthCompleted)
+            if (!UI_Manager.Instance.WeaponAttackEvent.isHammerActive && UI_Manager.Instance.isPlantGrowthCompleted)
             {
                 Check();
             }
         }
         else
         {
-            Check();
+           Check();
         }
 
     }

@@ -40,10 +40,7 @@ public class FieldManager : MonoBehaviour
             GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.oldcurrentStep]);
 
         }
-        if (UI_Manager.Instance.isPlanted == true)
-        {
-            
-        }
+       
         // Retrieve or initialize the animation step for the entered field
 
         // Set the animation to the correct step
