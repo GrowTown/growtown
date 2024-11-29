@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,13 +20,19 @@ public class GameManager : MonoBehaviour
     int _currentWaterCount = 0;
     Timer _timer;
     bool _timerStartAfterPlants;
+    internal bool isPlantStartGrowing;
+    internal bool isplantGrowthCompleted; 
+
+  
+
+
     #region Properties
     public bool TimerStartAfterPlants
     {
         get => _timerStartAfterPlants;
         set
         {
-            if (value== true)
+            if (value == true)
             {
                 StartCoroutine(ToIncreaseWaterPointsAccordingtoTime());
                 _timerStartAfterPlants = value;
@@ -77,54 +84,16 @@ public class GameManager : MonoBehaviour
         else
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
     }
 
     #region Methods
-   /* public void StartActionAnimation(PlayerAction action)
-    {
-        switch (action)
-        {
-            case PlayerAction.Clean:
-                UI_Manager.Instance.cleaningTool.SetActive(true);
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
-                //Debug.Log("Cleanig");
-                break;
-            case PlayerAction.Seed:
-                isThroughingseeds = true;
 
-                UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
-                CurrentEnergyCount -= 5;
-                UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
-                // Debug.Log("Seeding");
-                break;
-            case PlayerAction.Water:
-                CurrentEnergyCount -= 2;
-                UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
-                ToDecreaseTheWaterPoints();
-                isThroughingseeds = false;
-                OnWaterTile();
-                TimerStartAfterPlants = true;
-                UI_Manager.Instance.wateringTool.SetActive(true);
-                UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
-                break;
-            case PlayerAction.Harvest:
-                isCutting = true;
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 1);
-                UI_Manager.Instance.sickleWeapon.SetActive(true);
-                CurrentEnergyCount -= 3;
-                UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
-
-                break;
-        }
-    }*/
-    private bool isEnergyDeducted = false; 
+    private bool isEnergyDeducted = false;
     public void StartActionAnimation(PlayerAction action)
     {
-       
+
         isEnergyDeducted = false;
 
         switch (action)
@@ -140,17 +109,18 @@ public class GameManager : MonoBehaviour
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
                 if (!isEnergyDeducted)
                 {
-                    DeductEnergyPoints(5); 
+                    DeductEnergyPoints(5);
                 }
                 // Debug.Log("Seeding");
                 break;
             case PlayerAction.Water:
                 if (!isEnergyDeducted)
                 {
-                    DeductEnergyPoints(2); 
+                    DeductEnergyPoints(2);
                 }
                 isThroughingseeds = false;
-                OnWaterTile();
+                ToDecreaseTheWaterPoints();
+                // OnWaterTile();
                 TimerStartAfterPlants = true;
                 UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
@@ -159,7 +129,7 @@ public class GameManager : MonoBehaviour
             case PlayerAction.Harvest:
                 if (!isEnergyDeducted)
                 {
-                    DeductEnergyPoints(3); 
+                    DeductEnergyPoints(3);
                 }
                 isCutting = true;
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 1);
@@ -198,26 +168,104 @@ public class GameManager : MonoBehaviour
     }
 
     public void CompleteAction()
-    {
+     {
         HideFieldPopup();
         if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length - 1)
         {
             isOneWorkingActionCompleted = true;
+            if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep == 1)
+                isPlantStartGrowing = true;
             UI_Manager.Instance.TriggerZoneCallBacks.currentStep++;
             UI_Manager.Instance.oldcurrentStep = UI_Manager.Instance.TriggerZoneCallBacks.currentStep;
             ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
         }
     }
 
-
-    public void OnWaterTile()
+    PlantGrowth Pg;
+   
+    public void BeforeWaterTile()
     {
-        foreach (var item in UI_Manager.Instance.spawnPlantsForGrowth)
+        foreach (var item in UI_Manager.Instance.spawnPlantsForInitialGrowth)
         {
             var instance = item.GetComponent<PlantGrowth>();
-            StartCoroutine(instance.GrowPlant());
+            instance.InitialCoroutine=StartCoroutine((instance.InitialGrowPlant()));
+        }
+    }
+
+    public void OnWaterTile(GameObject tilego)
+    {
+        if (!UI_Manager.Instance.GrowthStartedOnThisTile.Contains(tilego))
+        {
+
+            if (UI_Manager.Instance.spawnPlantsForGrowth.ContainsKey(tilego))
+            {
+                foreach (var item in UI_Manager.Instance.spawnPlantsForGrowth[tilego])
+                {
+                    var pg = item.GetComponent<PlantGrowth>();
+                    if (!pg.isNotWateredDuringWithering)
+                    {
+                        if (pg._initialGrowTimer != null)
+                        {
+                            pg._initialGrowTimer.StopTimer();
+                            StopCoroutine(pg.InitialCoroutine);
+                            Destroy(pg._initialGrowTimer); // Cleanup the old timer
+                        }
+                        pg.AfterWateredCoroutine = StartCoroutine(pg.AfterWateredTileGrowth(pg.CurrentTimer));
+                        if (!UI_Manager.Instance.GrowthStartedPlants.Contains(item))
+                        {
+                            UI_Manager.Instance.GrowthStartedPlants.Add(item);
+                        }
+                    }
+
+                   
+                }
+            }
+            UI_Manager.Instance.GrowthStartedOnThisTile.Add(tilego);
+        }
+        foreach (var item in UI_Manager.Instance.spawnedSeed)
+        {
+            Destroy(item);
         }
 
+    }
+    public void Withering()
+    {
+        foreach (var item in UI_Manager.Instance.spawnPlantsForInitialGrowth)
+        {
+            if (!UI_Manager.Instance.GrowthStartedPlants.Contains(item))
+            {
+                item.GetComponent<PlantGrowth>().plantMesh.material.color = Color.red;
+            }
+        }
+    }
+    public void CounttheHarvest()
+    {
+        int spawnPlantCount = UI_Manager.Instance.spawnPlantsForInitialGrowth.Count;
+        int grownPlantCount = UI_Manager.Instance.GrowthStartedPlants.Count;
+
+        if (grownPlantCount == 100)
+        {
+            UI_Manager.Instance.scoreIn += 12;
+        }
+        else if (grownPlantCount > 75) 
+        {
+            UI_Manager.Instance.scoreIn += 9;
+        }
+        else if (grownPlantCount > 50) 
+        {
+            UI_Manager.Instance.scoreIn += 6;
+        }
+        else if (grownPlantCount > 25) 
+        {
+            UI_Manager.Instance.scoreIn += 3;
+        }
+        else 
+        {
+            UI_Manager.Instance.scoreIn += 1; 
+        }
+
+   
+        UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
     }
 
     public void StartPackToBuy()
@@ -236,9 +284,9 @@ public class GameManager : MonoBehaviour
     private void DeductEnergyPoints(int amount)
     {
         CurrentEnergyCount -= amount;
-        CurrentEnergyCount = Mathf.Clamp(CurrentEnergyCount, 0, int.MaxValue); // Ensure energy doesn't go below 0
-        UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString(); // Update UI
-        isEnergyDeducted = true; // Set the flag to prevent further deductions
+        CurrentEnergyCount = Mathf.Clamp(CurrentEnergyCount, 0, int.MaxValue); 
+        UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString(); 
+        isEnergyDeducted = true;
     }
     public void ToDecreaseTheWaterPoints()
     {
@@ -280,7 +328,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-   
+
+
+
     bool isTimerStarted;
     public IEnumerator ToIncreaseWaterPointsAccordingtoTime()
     {
@@ -302,10 +352,10 @@ public class GameManager : MonoBehaviour
             while (_timer.secondsLeft > 0)
             {
                 Debug.Log("Time Left :: " + _timer.secondsLeft);
-                yield return null; 
+                yield return null;
             }
 
-            
+
             if (CurrentWaterCount < 100)
             {
                 CurrentWaterCount += 10;

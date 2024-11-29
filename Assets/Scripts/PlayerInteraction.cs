@@ -30,7 +30,11 @@ public class PlayerInteraction : MonoBehaviour
             //Vector2Int playerTile = UI_Manager.Instance.FieldGrid.GetPlayerTile();
             UI_Manager.Instance.FieldGrid.AddCoveredTile( hitTileGameObject); // Store the tile if uncovered
             UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed(hitTileGameObject);
-            // Check if grid coverage is complete to show completion popup
+            if (GameManager.Instance.isPlantStartGrowing)
+            {
+
+              GameManager.Instance.OnWaterTile(hitTileGameObject);
+            }
             if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
             {
                 Debug.Log("All Collected");
@@ -38,6 +42,7 @@ public class PlayerInteraction : MonoBehaviour
 
                 GameManager.Instance.CompleteAction();
             }
+      
         }
     }
 }

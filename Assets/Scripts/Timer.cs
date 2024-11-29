@@ -33,7 +33,11 @@ public class Timer : MonoBehaviour
         _isRunning=true;
     }
 
-
+    public void StopTimer()
+    {
+        _isRunning=false;
+        secondsLeft = 0;
+    }
 
     // Update is called once per frame
     void Update()

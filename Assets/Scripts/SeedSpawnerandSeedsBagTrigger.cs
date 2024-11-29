@@ -74,7 +74,7 @@ public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
         if (UI_Manager.Instance.plantHolder != null)
         {
             UI_Manager.Instance.isPlanted=true;
-            tilego.GetComponent<TileInfo>().SpawnPlant();
+            tilego.GetComponent<TileInfo>().SpawnPlant(tilego);
             Debug.Log("Plant spawned after delay");
         }
      

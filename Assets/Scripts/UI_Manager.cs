@@ -67,10 +67,16 @@ public class UI_Manager : MonoBehaviour
     public bool waveStarted;
     public bool isPlantGrowthCompleted;
     public bool isPlayerInField=false;
+    internal bool isTimerOn = false;
+    internal bool isinitialgrowStarted = false;
     public int currentIndex;
 
     internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
-    internal List<GameObject> spawnPlantsForGrowth = new List<GameObject>();
+    internal List<GameObject> spawnPlantsForInitialGrowth = new List<GameObject>();
+    internal List<GameObject> spawnedSeed= new List<GameObject>();
+    internal Dictionary<GameObject,List<GameObject>> spawnPlantsForGrowth = new Dictionary<GameObject,List< GameObject>>();
+    internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
+    internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
     [SerializeField]internal List<ShopItem> shopItems=new List<ShopItem>();
 
     #region Fields
@@ -206,8 +212,7 @@ public class UI_Manager : MonoBehaviour
         });
         sellInventoryBT.onClick.AddListener(() => 
         {
-            scoreIn += 12;
-            score.text = scoreIn.ToString();
+            GameManager.Instance.CounttheHarvest();
             sellPopupPanel.SetActive(false);
             GameManager.Instance.isHarvestCompleted = false;
         });
@@ -253,6 +258,7 @@ public class UI_Manager : MonoBehaviour
 
     POPSelectionFunctionality currentSelectedPopUp;
     internal int oldcurrentAction = -1;
+    bool isWentInsideOnce;
     public void ShowPopup(PlayerAction currentAction)
     {
         HideFieldPopup();  // Ensure all other popups are hidden first
@@ -264,6 +270,13 @@ public class UI_Manager : MonoBehaviour
             popup.SetActive(true);
             var selectionFunctionality = popup.GetComponent<POPSelectionFunctionality>();
             selectionFunctionality.onClick = null;
+
+            if (popupIndex == 2&&!isWentInsideOnce)
+            {
+                GameManager.Instance.BeforeWaterTile();
+                isWentInsideOnce = true;
+                
+            }
             if (oldcurrentStep != -1 && UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID)&&!GameManager.Instance.isOneWorkingActionCompleted)
             {
                 GameManager.Instance.StartPlayerAction(currentAction);
