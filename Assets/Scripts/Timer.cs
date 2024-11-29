@@ -7,9 +7,7 @@ using UnityEngine.Events;
 public class Timer : MonoBehaviour
 {
 
-    /*public int year;
-    public int hours;
-    public int minutes;*/
+ 
 
     public string Name {  get; private set; }
     private DateTime _startTime;
@@ -35,12 +33,11 @@ public class Timer : MonoBehaviour
         _isRunning=true;
     }
 
-  /*  public Timer(int year, int hours, int minutes)
+    public void StopTimer()
     {
-        this.year = year;
-        this.hours = hours;
-        this.minutes = minutes;
-    }*/
+        _isRunning=false;
+        secondsLeft = 0;
+    }
 
     // Update is called once per frame
     void Update()
@@ -50,6 +47,7 @@ public class Timer : MonoBehaviour
             if(secondsLeft > 0)
             {
                 secondsLeft-= Time.deltaTime;
+                
             }
             else
             {

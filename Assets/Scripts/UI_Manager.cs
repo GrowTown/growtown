@@ -25,7 +25,7 @@ public class UI_Manager : MonoBehaviour
 
 
     [Header("Buttons")]
-    public Button wheatSeedBT;
+    public Button tomatoSeedBT;
     public Button carrotsSeedBT;
     public Button strawberriesSeedBT;
     public Button cleaningWeaponBT;
@@ -33,10 +33,15 @@ public class UI_Manager : MonoBehaviour
     public Button sickleWeaponBT;
     public Button buyInventoryBT;
     public Button sellInventoryBT;
+    public Button starterPackBuyBT;
+    public Button energyBuyBT;
+    public Button waterBuyBT;
 
     [Header("Text")]
     public TextMeshProUGUI score;
     public TextMeshProUGUI notEnoughMoneyText;
+    public TextMeshProUGUI energyText;
+    public TextMeshProUGUI waterText;
 
     [Header("References")]
 
@@ -62,10 +67,16 @@ public class UI_Manager : MonoBehaviour
     public bool waveStarted;
     public bool isPlantGrowthCompleted;
     public bool isPlayerInField=false;
+    internal bool isTimerOn = false;
+    internal bool isinitialgrowStarted = false;
     public int currentIndex;
 
     internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
-    internal List<GameObject> spawnPlantsForGrowth = new List<GameObject>();
+    internal List<GameObject> spawnPlantsForInitialGrowth = new List<GameObject>();
+    internal List<GameObject> spawnedSeed= new List<GameObject>();
+    internal Dictionary<GameObject,List<GameObject>> spawnPlantsForGrowth = new Dictionary<GameObject,List< GameObject>>();
+    internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
+    internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
     [SerializeField]internal List<ShopItem> shopItems=new List<ShopItem>();
 
     #region Fields
@@ -133,6 +144,10 @@ public class UI_Manager : MonoBehaviour
     {
         starterPackInfoPopUpPanel.SetActive(true);
         score.text = scoreIn.ToString();
+        GameManager.Instance.CurrentEnergyCount = 50;
+        GameManager.Instance.CurrentWaterCount = 100;
+        energyText.text= GameManager.Instance.CurrentEnergyCount.ToString();
+        waterText.text=GameManager.Instance.CurrentWaterCount.ToString();
         CallBackEvents();
     }
 
@@ -141,6 +156,10 @@ public class UI_Manager : MonoBehaviour
     {
 
         InventorySetUp();
+        if(GameManager.Instance.CurrentEnergyCount < 100)
+        {
+            energyBuyBT.interactable=true;
+        }
     }
 
     #region Functions
@@ -193,15 +212,16 @@ public class UI_Manager : MonoBehaviour
         });
         sellInventoryBT.onClick.AddListener(() => 
         {
-            scoreIn += 12;
-            score.text = scoreIn.ToString();
+            GameManager.Instance.CounttheHarvest();
             sellPopupPanel.SetActive(false);
             GameManager.Instance.isHarvestCompleted = false;
         });
 
-        carrotsSeedBT.onClick.AddListener(() => { ShopManager.ToBuyTomato();
+        carrotsSeedBT.onClick.AddListener(() => {
+            ShopManager.ToBuyWheat();
           });
-        wheatSeedBT.onClick.AddListener(() => { ShopManager.ToBuyWheat();
+        tomatoSeedBT.onClick.AddListener(() => {
+            ShopManager.ToBuyTomato();
             seedBought=true;
         });
         strawberriesSeedBT.onClick.AddListener(() => { ShopManager.ToBuyStrawberries(); });
@@ -230,11 +250,15 @@ public class UI_Manager : MonoBehaviour
                 sickleWeaponBT.interactable = false;
             }
         });
+        starterPackBuyBT.onClick.AddListener(() => { GameManager.Instance.StartPackToBuy(); });
+        energyBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyEnergyPoints(); });
+        waterBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyWaterPoints(); });
 
     }
 
     POPSelectionFunctionality currentSelectedPopUp;
     internal int oldcurrentAction = -1;
+    bool isWentInsideOnce;
     public void ShowPopup(PlayerAction currentAction)
     {
         HideFieldPopup();  // Ensure all other popups are hidden first
@@ -246,6 +270,13 @@ public class UI_Manager : MonoBehaviour
             popup.SetActive(true);
             var selectionFunctionality = popup.GetComponent<POPSelectionFunctionality>();
             selectionFunctionality.onClick = null;
+
+            if (popupIndex == 2&&!isWentInsideOnce)
+            {
+                GameManager.Instance.BeforeWaterTile();
+                isWentInsideOnce = true;
+                
+            }
             if (oldcurrentStep != -1 && UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID)&&!GameManager.Instance.isOneWorkingActionCompleted)
             {
                 GameManager.Instance.StartPlayerAction(currentAction);
@@ -314,6 +345,7 @@ public class UI_Manager : MonoBehaviour
         GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }
 
+  
     #endregion
 
 }

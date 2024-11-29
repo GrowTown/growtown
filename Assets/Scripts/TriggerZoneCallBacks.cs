@@ -38,7 +38,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
 
                     break;
                 case ZoneType.Market:
-                        UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
+                        
                     onPlayerEnter?.Invoke(this);
 
 

@@ -6,7 +6,8 @@ public class TileInfo : MonoBehaviour
 {
     public Transform[] spawnPoints; 
     private bool seedsSpawned = false; 
-    private bool plantSpawned = false; 
+    private bool plantSpawned = false;
+    internal bool plantgrowth = false;
 
 
     public void OnPlayerEnter()
@@ -25,28 +26,50 @@ public class TileInfo : MonoBehaviour
         // Spawn a seed at each spawn point
         foreach (Transform spawnPoint in spawnPoints)
         {
-            Instantiate(UI_Manager.Instance.seed, spawnPoint.position, Quaternion.identity);
+            var instace=Instantiate(UI_Manager.Instance.seed, spawnPoint.position, Quaternion.identity);
+            UI_Manager.Instance.spawnedSeed.Add(instace);
         }
     }
 
-    internal void SpawnPlant()
+    /* internal void SpawnPlant(GameObject tilego)
+     {
+         if(!plantSpawned)
+         {
+             foreach (Transform spawnPoint in spawnPoints)
+             {
+                 var instance = Instantiate(UI_Manager.Instance.plantHolder, spawnPoint.position, Quaternion.identity);
+                 UI_Manager.Instance.spawnPlantsForGrowth.Add(tilego,instance);
+             }
+             plantSpawned = true;
+         }
+
+     }*/
+
+    internal void SpawnPlant(GameObject tilego)
     {
-        if(!plantSpawned)
+        if (!plantSpawned)
         {
+            
+            if (!UI_Manager.Instance.spawnPlantsForGrowth.ContainsKey(tilego))
+            {
+                UI_Manager.Instance.spawnPlantsForGrowth[tilego] = new List<GameObject>();
+            }
+
+        
             foreach (Transform spawnPoint in spawnPoints)
             {
-                var instance = Instantiate(UI_Manager.Instance.plantHolder, spawnPoint.transform.position, Quaternion.identity);
-                UI_Manager.Instance.spawnPlantsForGrowth.Add(instance);
-           
-                //instance.transform.SetParent(UI_Manager.Instance.Canvas.transform);
+                var instance = Instantiate(UI_Manager.Instance.plantHolder, spawnPoint.position, Quaternion.identity);
+                UI_Manager.Instance.spawnPlantsForGrowth[tilego].Add(instance); 
+                UI_Manager.Instance.spawnPlantsForInitialGrowth.Add(instance); 
 
             }
+
             plantSpawned = true;
         }
-        
     }
 
-    
+  
+
 }
 
 

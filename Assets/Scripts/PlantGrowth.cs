@@ -7,63 +7,119 @@ public class PlantGrowth : MonoBehaviour
 {
 
     [SerializeField] internal SkinnedMeshRenderer plantMesh;
-    private Timer _timer;
+    internal Timer _initialGrowTimer;
+    private Timer _afterwateredGrowTimer;
     [SerializeField] Transform[] tomatoSpawnPoints;
-    // private bool isWatered;
     float cuttingHight = 1f;
     private WaveManager waveManager;
-    /*  public void StartGrowth(bool isWatered)
-      {
-          if (isWatered)
-          {
-              _timer = this.gameObject.GetComponent<Timer>();
-              if (_timer != null && UI_Manager.Instance.plantHolder != null)
-              {
-                  StartCoroutine(GrowPlant());
-                  Debug.Log("Growth process started.");
-              }
-          }
-      }*/
+    internal bool IsTileWatered;
+    public int initialgrowthTime=2;
+    public int AfterWateredgrowthTime=2;
+    float _currentGrowth;
+    double _currentTimer;
+    internal Coroutine InitialCoroutine;
+    internal Coroutine AfterWateredCoroutine;
+
+
+    public float CurrentGrowth
+    {
+        get => _currentGrowth;
+        set => _currentGrowth = value;
+    }
+
+    public double CurrentTimer
+    {
+        get => _currentTimer;
+        set => _currentTimer = value;
+    }
 
     void Start()
     {
         waveManager = FindObjectOfType<WaveManager>();
-        //StartCoroutine(GrowPlant());
+     
     }
-    internal IEnumerator GrowPlant()
+
+    internal bool isWateredDuringWithering = false;
+    internal bool isNotWateredDuringWithering = false;
+    internal IEnumerator InitialGrowPlant()
     {
-        yield return new WaitForSeconds(1);
 
-        _timer = this.gameObject.GetComponent<Timer>();
-        _timer.Initialize("Plant Growth", DateTime.Now, TimeSpan.FromMinutes(1));
-        _timer.StartTimer();
+        _initialGrowTimer = this.gameObject.AddComponent<Timer>();
+        _initialGrowTimer.Initialize("Plant Growth - Initial", DateTime.Now, TimeSpan.FromMinutes(initialgrowthTime)); // Initial growth
+        _initialGrowTimer.StartTimer();
+        UI_Manager.Instance.isTimerOn = true;
 
-        float totalGrowthTime = (float)_timer.timeToFinish.TotalSeconds;
-        while (_timer.secondsLeft > 0)
+        float totalGrowthTime = (float)_initialGrowTimer.timeToFinish.TotalSeconds;
+       
+        while (_initialGrowTimer.secondsLeft > 0)
         {
-            float growthProgress = (float)(1.0f - (_timer.secondsLeft / totalGrowthTime));
-            if (growthProgress >= 0.5f && !UI_Manager.Instance.waveStarted)
+            Debug.Log("initialTimer :: "+ _initialGrowTimer.secondsLeft);
+            CurrentTimer = totalGrowthTime-_initialGrowTimer.secondsLeft;
+            float growthProgress = (float)(1.0f - (_initialGrowTimer.secondsLeft / totalGrowthTime));
+
+            // Update blend shape only up to 50%
+            if (!IsTileWatered)
             {
-                waveManager.StartWave();
-                UI_Manager.Instance.waveStarted = true; // Set flag to true to prevent further calls
+                plantMesh.SetBlendShapeWeight(0, growthProgress* 100f);
+                CurrentGrowth = growthProgress;
+
+                if (growthProgress>=0.5f&&!isWateredDuringWithering)
+                {
+                    GameManager.Instance.Withering();
+                    isNotWateredDuringWithering = true;
+                    _initialGrowTimer.StopTimer();
+                    Destroy(_initialGrowTimer);
+                 yield break;
+                }
             }
 
-            plantMesh.SetBlendShapeWeight(0, growthProgress * 100f);
             yield return null;
         }
 
-        _timer.TimerFinishedEvent.AddListener(delegate
+    }
+    public IEnumerator AfterWateredTileGrowth(double currentTimer)
+    {
+       
+        _afterwateredGrowTimer = this.gameObject.AddComponent<Timer>();
+        var updatedTime = Mathf.Max(0, (int)(AfterWateredgrowthTime * 60 - currentTimer)); // Convert to seconds
+        _afterwateredGrowTimer.Initialize("Plant Growth - After Watering", DateTime.Now, TimeSpan.FromSeconds(updatedTime));
+        _afterwateredGrowTimer.StartTimer();
+
+        float totalGrowthTime = (float)(_afterwateredGrowTimer.timeToFinish.TotalSeconds);
+
+        while (_afterwateredGrowTimer.secondsLeft > 0)
+        {
+           
+            float growthProgress = Mathf.Lerp(CurrentGrowth, 1.0f, (float)(1.0f - (_afterwateredGrowTimer.secondsLeft / totalGrowthTime)));
+            Debug.Log("AfterWatered :: " + _afterwateredGrowTimer.secondsLeft);
+
+            if (!isNotWateredDuringWithering)
+            {
+                plantMesh.SetBlendShapeWeight(0, growthProgress * 100f);
+                isWateredDuringWithering = true;
+            }
+
+            yield return null;
+        }
+
+
+        _afterwateredGrowTimer.TimerFinishedEvent.AddListener(delegate
         {
             OnGrowthComplete();
-            Destroy(_timer);
+            if (!GameManager.Instance.isplantGrowthCompleted)
+            {
+                GameManager.Instance.CompleteAction();
+                GameManager.Instance.isplantGrowthCompleted = true;
+
+            }
+            Destroy(_afterwateredGrowTimer);
         });
     }
 
-    private void OnMouseDown()
+   /* private void OnMouseDown()
     {
         TimerToolTip.ShowTimerStatic(this.gameObject);
-    }
-
+    }*/
 
     private void OnGrowthComplete()
     {
@@ -86,20 +142,6 @@ public class PlantGrowth : MonoBehaviour
             UI_Manager.Instance.isPlantGrowthCompleted = true;
         }
     }
-
-    public void OnWaterTile()
-    {
-        /* if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().CoveredTile != null)
-         {
-             isWatered = true;
-             if (plantMesh != null)
-             {
-                // StartGrowth(isWatered);
-                 Debug.Log("Plant started growing after watering.");
-             }
-         }*/
-    }
-
 
     private void OnTriggerEnter(Collider other)
     {

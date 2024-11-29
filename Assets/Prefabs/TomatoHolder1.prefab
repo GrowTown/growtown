@@ -432,7 +432,6 @@ GameObject:
   m_Component:
   - component: {fileID: 488707298189121428}
   - component: {fileID: 264204328520834349}
-  - component: {fileID: -8592442826701504033}
   - component: {fileID: 7189689854157555782}
   m_Layer: 0
   m_Name: TomatoHolder1
@@ -481,21 +480,8 @@ MonoBehaviour:
   - {fileID: 2861254937915597891}
   - {fileID: 5829360147328725288}
   - {fileID: 6815761780017649428}
---- !u!114 &-8592442826701504033
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5148165166098257824}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3194a115c52e61348972768122615a50, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TimerFinishedEvent:
-    m_PersistentCalls:
-      m_Calls: []
+  initialgrowthTime: 2
+  AfterWateredgrowthTime: 2
 --- !u!136 &7189689854157555782
 CapsuleCollider:
   m_ObjectHideFlags: 0
