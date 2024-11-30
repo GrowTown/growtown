@@ -1237,7 +1237,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 36886072}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -27.62, y: 0.45, z: -14.85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1245,7 +1245,7 @@ Transform:
   - {fileID: 707340435}
   - {fileID: 242395591}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &37101686
 GameObject:
   m_ObjectHideFlags: 0
@@ -6861,6 +6861,7 @@ GameObject:
   m_Component:
   - component: {fileID: 58781839}
   - component: {fileID: 58781840}
+  - component: {fileID: 58781841}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -6902,6 +6903,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &58781841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 58781838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &59728659
 GameObject:
   m_ObjectHideFlags: 0
@@ -16681,7 +16695,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 58.1, y: -99.5}
+  m_AnchoredPosition: {x: 58.100098, y: -99.5}
   m_SizeDelta: {x: 100, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &264815452
@@ -20199,6 +20213,7 @@ GameObject:
   m_Component:
   - component: {fileID: 357019609}
   - component: {fileID: 357019610}
+  - component: {fileID: 357019611}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -20240,6 +20255,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &357019611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357019608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &358208178
 GameObject:
   m_ObjectHideFlags: 0
@@ -21586,6 +21614,7 @@ GameObject:
   m_Component:
   - component: {fileID: 391655924}
   - component: {fileID: 391655925}
+  - component: {fileID: 391655926}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -21627,6 +21656,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &391655926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 391655923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &391883654
 GameObject:
   m_ObjectHideFlags: 0
@@ -23286,6 +23328,7 @@ GameObject:
   m_Component:
   - component: {fileID: 419749507}
   - component: {fileID: 419749508}
+  - component: {fileID: 419749509}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -23327,6 +23370,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &419749509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 419749506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &421128110
 GameObject:
   m_ObjectHideFlags: 0
@@ -24696,7 +24752,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 443715681}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.67559016, z: 0, w: 0.7372774}
   m_LocalPosition: {x: -22.85, y: 0.574, z: -39.83}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -24704,7 +24760,7 @@ Transform:
   - {fileID: 1930884600}
   - {fileID: 1910140625}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 85, z: 0}
 --- !u!1 &444422949
 GameObject:
   m_ObjectHideFlags: 0
@@ -30950,7 +31006,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 581153213}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.5, z: 0, w: 0.8660254}
   m_LocalPosition: {x: -25.13, y: 0.45, z: -28.96}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -30958,7 +31014,7 @@ Transform:
   - {fileID: 725140863}
   - {fileID: 121790596}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 60, z: 0}
 --- !u!1 &581480284
 GameObject:
   m_ObjectHideFlags: 0
@@ -32660,6 +32716,7 @@ GameObject:
   m_Component:
   - component: {fileID: 620011763}
   - component: {fileID: 620011764}
+  - component: {fileID: 620011765}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -32701,6 +32758,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &620011765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 620011762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &620939394
 GameObject:
   m_ObjectHideFlags: 0
@@ -33116,10 +33186,10 @@ RectTransform:
   - {fileID: 434923730}
   m_Father: {fileID: 3486819206681927181}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 32.5, y: -155}
-  m_SizeDelta: {x: 65, y: 60}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &623467527
 MonoBehaviour:
@@ -36115,6 +36185,7 @@ GameObject:
   m_Component:
   - component: {fileID: 707340435}
   - component: {fileID: 707340436}
+  - component: {fileID: 707340437}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -36156,6 +36227,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &707340437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707340434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &709244235
 GameObject:
   m_ObjectHideFlags: 0
@@ -41768,6 +41852,7 @@ GameObject:
   m_Component:
   - component: {fileID: 725140863}
   - component: {fileID: 725140864}
+  - component: {fileID: 725140865}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -41809,6 +41894,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &725140865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 725140862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &725876393
 GameObject:
   m_ObjectHideFlags: 0
@@ -42634,7 +42732,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 741281867}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.99904823, z: 0, w: 0.0436195}
   m_LocalPosition: {x: -24.22, y: 0.45, z: -17.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -42642,7 +42740,7 @@ Transform:
   - {fileID: 58781839}
   - {fileID: 1930575159}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 175, z: 0}
 --- !u!1 &741305891
 GameObject:
   m_ObjectHideFlags: 0
@@ -50874,7 +50972,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919088573}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.60876137, z: 0, w: 0.7933534}
   m_LocalPosition: {x: -42.84, y: 0.45, z: -18.96}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -50882,7 +50980,7 @@ Transform:
   - {fileID: 1956715136}
   - {fileID: 1237723138}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 75, z: 0}
 --- !u!1 &921181308
 GameObject:
   m_ObjectHideFlags: 0
@@ -52143,6 +52241,7 @@ GameObject:
   m_Component:
   - component: {fileID: 954758816}
   - component: {fileID: 954758817}
+  - component: {fileID: 954758818}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -52184,6 +52283,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &954758818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 954758815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &957387662
 GameObject:
   m_ObjectHideFlags: 0
@@ -57487,7 +57599,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1095803084}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.30070576, z: 0, w: 0.953717}
   m_LocalPosition: {x: -30.11, y: 0.45, z: -23.07}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -57495,7 +57607,7 @@ Transform:
   - {fileID: 1682942933}
   - {fileID: 847141390}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 35, z: 0}
 --- !u!1 &1097808001
 GameObject:
   m_ObjectHideFlags: 0
@@ -57537,6 +57649,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1099326904}
   - component: {fileID: 1099326905}
+  - component: {fileID: 1099326906}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -57578,6 +57691,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &1099326906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1099326903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &1101378652
 GameObject:
   m_ObjectHideFlags: 0
@@ -59724,7 +59850,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 57.7, y: -132.5}
+  m_AnchoredPosition: {x: 57.69995, y: -132.5}
   m_SizeDelta: {x: 100, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1151071490
@@ -60308,7 +60434,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1168134188}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.76604444, z: 0, w: 0.64278764}
   m_LocalPosition: {x: 15.36, y: 0.45, z: -12.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -60316,7 +60442,7 @@ Transform:
   - {fileID: 2132215111}
   - {fileID: 219316788}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 100, z: 0}
 --- !u!1 &1171965916
 GameObject:
   m_ObjectHideFlags: 0
@@ -60745,6 +60871,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1187830377}
   - component: {fileID: 1187830378}
+  - component: {fileID: 1187830379}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -60786,6 +60913,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &1187830379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1187830376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &1188099088
 GameObject:
   m_ObjectHideFlags: 0
@@ -61431,7 +61571,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1200787522}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.17364816, z: 0, w: 0.9848078}
   m_LocalPosition: {x: -0.137, y: 0.45, z: -26.628334}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -61440,7 +61580,7 @@ Transform:
   - {fileID: 887226023}
   - {fileID: 1745005531}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 20, z: 0}
 --- !u!1 &1201258319
 GameObject:
   m_ObjectHideFlags: 0
@@ -65753,7 +65893,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1279605707}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.9848078, z: -0, w: -0.17364809}
   m_LocalPosition: {x: 23.32, y: 0.45, z: -23.32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -65761,7 +65901,7 @@ Transform:
   - {fileID: 419749507}
   - {fileID: 1230480973}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 200, z: 0}
 --- !u!1 &1279808939
 GameObject:
   m_ObjectHideFlags: 0
@@ -68029,6 +68169,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1318085509}
   - component: {fileID: 1318085510}
+  - component: {fileID: 1318085511}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -68070,6 +68211,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &1318085511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318085508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &1321207041
 GameObject:
   m_ObjectHideFlags: 0
@@ -69409,7 +69563,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1344462314}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.9848078, z: 0, w: 0.17364825}
   m_LocalPosition: {x: -7.58, y: 0.45, z: -19.76}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -69417,7 +69571,7 @@ Transform:
   - {fileID: 620011763}
   - {fileID: 397528656}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 160, z: 0}
 --- !u!1 &1347159958
 GameObject:
   m_ObjectHideFlags: 0
@@ -70406,6 +70560,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1369026887}
   - component: {fileID: 1369026888}
+  - component: {fileID: 1369026889}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -70447,6 +70602,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &1369026889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369026886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &1370468573
 GameObject:
   m_ObjectHideFlags: 0
@@ -78473,7 +78641,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1457483904}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.9396927, z: -0, w: -0.3420201}
   m_LocalPosition: {x: -14.34, y: 0.45, z: -26.628334}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -78482,7 +78650,7 @@ Transform:
   - {fileID: 1684264390}
   - {fileID: 441901380}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 220, z: 0}
 --- !u!1 &1458131302
 GameObject:
   m_ObjectHideFlags: 0
@@ -82684,7 +82852,7 @@ MonoBehaviour:
   m_YAxis:
     Value: 0.5
     m_SpeedMode: 0
-    m_MaxSpeed: 4
+    m_MaxSpeed: 2
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: Mouse Y
@@ -82708,7 +82876,7 @@ MonoBehaviour:
   m_XAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 450
+    m_MaxSpeed: 100
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: Mouse X
@@ -82740,7 +82908,7 @@ MonoBehaviour:
     m_Radius: 8
   - m_Height: 3
     m_Radius: 5
-  - m_Height: 1
+  - m_Height: 2
     m_Radius: 8
   m_LegacyHeadingBias: 3.4028235e+38
   m_Rigs:
@@ -83173,7 +83341,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1562561984}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.38268343, z: 0, w: 0.92387956}
   m_LocalPosition: {x: -36, y: 0.45, z: -21.83}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -83181,7 +83349,7 @@ Transform:
   - {fileID: 1187830377}
   - {fileID: 1253073068}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
 --- !u!1 &1562635777
 GameObject:
   m_ObjectHideFlags: 0
@@ -87353,10 +87521,10 @@ RectTransform:
   - {fileID: 222440483}
   m_Father: {fileID: 3486819206681927181}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 32.5, y: -215}
-  m_SizeDelta: {x: 65, y: 60}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1669625259
 MonoBehaviour:
@@ -87908,7 +88076,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1681093864}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.60876137, z: 0, w: 0.7933534}
   m_LocalPosition: {x: -20.12, y: 0.45, z: -7.09}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -87916,7 +88084,7 @@ Transform:
   - {fileID: 357019609}
   - {fileID: 1883572632}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -75, z: 0}
 --- !u!1 &1682512757
 GameObject:
   m_ObjectHideFlags: 0
@@ -87941,7 +88109,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1682512757}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -7.77, y: 0.45, z: -33.66}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -87949,7 +88117,7 @@ Transform:
   - {fileID: 1369026887}
   - {fileID: 1864955645}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1682942932
 GameObject:
   m_ObjectHideFlags: 0
@@ -87960,6 +88128,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1682942933}
   - component: {fileID: 1682942934}
+  - component: {fileID: 1682942935}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -88001,6 +88170,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &1682942935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682942932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &1684264389
 GameObject:
   m_ObjectHideFlags: 0
@@ -88011,6 +88193,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1684264390}
   - component: {fileID: 1684264391}
+  - component: {fileID: 1684264392}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -88052,6 +88235,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &1684264392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1684264389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &1687486905
 GameObject:
   m_ObjectHideFlags: 0
@@ -92011,7 +92207,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1773136790}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -12.97, y: 0.45, z: -12.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -92019,7 +92215,7 @@ Transform:
   - {fileID: 1318085509}
   - {fileID: 521089817}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1778082116
 GameObject:
   m_ObjectHideFlags: 0
@@ -92829,6 +93025,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1808845481}
   - component: {fileID: 1808845482}
+  - component: {fileID: 1808845483}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -92870,6 +93067,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &1808845483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1808845480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &1809332458
 GameObject:
   m_ObjectHideFlags: 0
@@ -98865,6 +99075,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1930884600}
   - component: {fileID: 1930884601}
+  - component: {fileID: 1930884602}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -98906,6 +99117,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &1930884602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1930884599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &1934475613
 GameObject:
   m_ObjectHideFlags: 0
@@ -99959,6 +100183,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1956715136}
   - component: {fileID: 1956715137}
+  - component: {fileID: 1956715138}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -100000,6 +100225,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &1956715138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1956715135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &1963326634
 GameObject:
   m_ObjectHideFlags: 0
@@ -100913,7 +101151,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1986087710}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.42261827, z: 0, w: 0.9063079}
   m_LocalPosition: {x: -36, y: 0.45, z: -32.69}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -100921,7 +101159,7 @@ Transform:
   - {fileID: 391655924}
   - {fileID: 1896440530}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 50, z: 0}
 --- !u!1 &1986600821
 GameObject:
   m_ObjectHideFlags: 0
@@ -101855,7 +102093,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2012723410}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 15.36, y: 0.45, z: 5.86}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -101863,7 +102101,7 @@ Transform:
   - {fileID: 1808845481}
   - {fileID: 1478770177}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &2012955718
 GameObject:
   m_ObjectHideFlags: 0
@@ -103923,7 +104161,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2054378786}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 15.36, y: 0.45, z: -26.628334}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -103931,7 +104169,7 @@ Transform:
   - {fileID: 954758816}
   - {fileID: 1404276339}
   m_Father: {fileID: 1934475614}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &2057188211
 GameObject:
   m_ObjectHideFlags: 0
@@ -104836,6 +105074,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2083032107}
   - component: {fileID: 2083032108}
+  - component: {fileID: 2083032109}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -104877,6 +105116,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &2083032109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2083032106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &2083442863
 GameObject:
   m_ObjectHideFlags: 0
@@ -107459,6 +107711,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2132215111}
   - component: {fileID: 2132215112}
+  - component: {fileID: 2132215113}
   m_Layer: 3
   m_Name: Butterfly
   m_TagString: Untagged
@@ -107500,6 +107753,19 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &2132215113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132215110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190550d20d4c854fa2177d5d14971db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  butterflyAnimation: {fileID: 58781840}
 --- !u!1 &2134472469
 GameObject:
   m_ObjectHideFlags: 0
@@ -109422,10 +109688,10 @@ RectTransform:
   - {fileID: 7354600243434860472}
   m_Father: {fileID: 3486819206681927181}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 32.5, y: -95}
-  m_SizeDelta: {x: 65, y: 60}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &783511566309553417
 RectTransform:
@@ -116336,10 +116602,10 @@ RectTransform:
   - {fileID: 6780570486969853872}
   m_Father: {fileID: 3486819206681927181}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 32.5, y: -35}
-  m_SizeDelta: {x: 65, y: 60}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5626390384079589381
 CanvasRenderer:
