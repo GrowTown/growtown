@@ -8,6 +8,7 @@ public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
     private bool isHandInBag = false; 
     internal bool isTileHasSeed = false; 
     GameObject spawnObject;
+  
    // internal GameObject CoveredTile;
     internal List<GameObject> CoveredTileForSpawn=new List<GameObject>();
 

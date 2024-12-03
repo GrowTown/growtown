@@ -5,28 +5,57 @@ using UnityEngine.EventSystems;
 
 public class CharacterMovements : MonoBehaviour
 {
+    public Transform cam;
+    public Animator animator;
+    private CharacterController _controller;
+    private Vector3 _moveDirection;
 
+    //Walk,Run variables
     public float walkSpeed = 2f;
     public float runSpeed = 4f;
     public float turnSpeed = 7f;
     public float turnSpeedVelocity = 0.1f;
     public float _charGroundPos = 3f;
-    public Transform cam;
+    public float SpeedChangeRate = 10.0f;
+    private float _speed;
+    private float _animationBlend;
 
-    public Animator animator;
 
-    private CharacterController _controller;
-    private Vector3 _moveDirection;
+    // Variables for jump logic
+    [SerializeField] private float jumpHeight = 2.0f;
+    [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float jumpCooldown = 0.5f; 
+
+    private float _verticalVelocity; 
+    private bool _canJump = true;
+
+    // Ground Check variables
+     [Header("Player Grounded")]
+    [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
+    public bool Grounded = true;
+
+    [Tooltip("Useful for rough ground")]
+    public float GroundedOffset = -0.14f;
+
+    [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
+    public float GroundedRadius = 0.28f;
+
+    [Tooltip("What layers the character uses as ground")]
+    public LayerMask GroundLayers;
+    private int _animIDGrounded;
 
     private void Start()
     {
         _controller = GetComponent<CharacterController>();
+        _animIDGrounded=Animator.StringToHash("Grounded");
     }
 
     void Update()
     {
         Shader.SetGlobalVector("_Player", transform.position);
         CharMovements();
+        HandleJump();
+        if(!isJumping)
         AdjustHeightofPlayer();
     }
 
@@ -82,6 +111,21 @@ public class CharacterMovements : MonoBehaviour
             }
 
         }*/
+
+    private void GroundedCheck()
+    {
+        // set sphere position, with offset
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
+            transform.position.z);
+        Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
+            QueryTriggerInteraction.Ignore);
+
+        // update animator if using character
+        if (animator)
+        {
+            animator.SetBool(_animIDGrounded, Grounded);
+        }
+    }
     private void CharMovements()
     {
         // Get movement input
@@ -90,50 +134,85 @@ public class CharacterMovements : MonoBehaviour
 
         // Use the camera's forward and right to calculate movement relative to its orientation
         Vector3 cameraForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized; // Flatten the forward vector
-        Vector3 cameraRight = Vector3.Scale(cam.right, new Vector3(1, 0, 1)).normalized;    // Flatten the right vector
+        Vector3 cameraRight = Vector3.Scale(cam.right, new Vector3(1, 0, 1)).normalized;     // Flatten the right vector
 
         // Calculate movement direction relative to the camera
-        _moveDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
+        Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
 
-        // Check if the Shift key is pressed for running
+        // Determine if running
         bool isRunning = Input.GetKey(KeyCode.LeftShift);
 
-        // Set speed based on running or walking
-        float currentSpeed = isRunning ? runSpeed : walkSpeed;
+        // Calculate target speed
+        float targetSpeed = inputDirection == Vector3.zero ? 0f : (isRunning ? runSpeed : walkSpeed);
 
-        // Move the character using CharacterController
-        _controller.Move(_moveDirection * currentSpeed * Time.deltaTime);
-
-        // Set the correct animation based on movement and speed
-        if (_moveDirection.magnitude > 0f)
+        // Smooth acceleration and deceleration
+        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+        if (currentHorizontalSpeed < targetSpeed - 0.1f || currentHorizontalSpeed > targetSpeed + 0.1f)
         {
-            if (isRunning)
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed, Time.deltaTime * SpeedChangeRate);
+            _speed = Mathf.Round(_speed * 1000f) / 1000f;
+        }
+        else
+        {
+            _speed = targetSpeed;
+        }
+
+        // Set blend tree speed
+        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+        if (_animationBlend < 0.01f) _animationBlend = 0f;
+
+        // Apply movement
+        Vector3 moveDirection = inputDirection * _speed;
+        _controller.Move(moveDirection * Time.deltaTime);
+
+        // Rotate the character if there's movement input
+        if (inputDirection.magnitude > 0f)
+        {
+            Quaternion toRotation = Quaternion.LookRotation(inputDirection, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
+        }
+
+        // Update animator parameters
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", _animationBlend); // Use "Speed" for blend tree transitions
+            animator.SetFloat("MotionSpeed", inputDirection.magnitude); // Normalize motion input
+        }
+
+    }
+
+    bool isJumping;
+    private void HandleJump()
+    {
+        // Check if the player is grounded
+        if (Grounded)
+        {
+            _verticalVelocity = 0f; 
+
+            // Trigger jump if the spacebar is pressed and cooldown allows it
+            if (Input.GetKeyDown(KeyCode.Space) && _canJump)
             {
-                animator.SetBool("IsWalking", false);
-                animator.SetBool("IsRunning", true);
-            }
-            else
-            {
-                animator.SetBool("IsRunning", false);
-                animator.SetBool("IsWalking", true);
+                isJumping= true;
+                _verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity); 
+                animator.SetTrigger("IsJumping"); 
+                StartCoroutine(JumpCooldown()); 
             }
         }
         else
         {
-            animator.SetBool("IsRunning", false);
-            animator.SetBool("IsWalking", false);
-        }
-
-        // Rotate the character towards the movement direction
-        if (_moveDirection.magnitude > 0f)
-        {
-            Quaternion toRotation = Quaternion.LookRotation(_moveDirection, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
+            // Apply gravity when not grounded
+            _verticalVelocity += gravity * Time.deltaTime;
         }
     }
 
-
-
+    private IEnumerator JumpCooldown()
+    {
+        _canJump = false;
+        yield return new WaitForSeconds(jumpCooldown);
+        animator.SetBool("IsJumping",false);
+        _canJump = true;
+        isJumping=false;
+    }
 
 
     /*private void OnApplicationFocus(bool focus)

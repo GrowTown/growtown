@@ -144,8 +144,8 @@ public class UI_Manager : MonoBehaviour
     {
         starterPackInfoPopUpPanel.SetActive(true);
         score.text = scoreIn.ToString();
-        GameManager.Instance.CurrentEnergyCount = 50;
-        GameManager.Instance.CurrentWaterCount = 100;
+        GameManager.Instance.CurrentEnergyCount = 500;
+        GameManager.Instance.CurrentWaterCount = 500;
         energyText.text= GameManager.Instance.CurrentEnergyCount.ToString();
         waterText.text=GameManager.Instance.CurrentWaterCount.ToString();
         CallBackEvents();

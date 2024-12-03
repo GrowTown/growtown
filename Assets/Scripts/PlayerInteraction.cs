@@ -30,9 +30,10 @@ public class PlayerInteraction : MonoBehaviour
             //Vector2Int playerTile = UI_Manager.Instance.FieldGrid.GetPlayerTile();
             UI_Manager.Instance.FieldGrid.AddCoveredTile( hitTileGameObject); // Store the tile if uncovered
             UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed(hitTileGameObject);
+            if(GameManager.Instance.isCutting)
+            GameManager.Instance.HarvestDeductEnergy(hitTileGameObject);
             if (GameManager.Instance.isPlantStartGrowing)
             {
-
               GameManager.Instance.OnWaterTile(hitTileGameObject);
             }
             if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())

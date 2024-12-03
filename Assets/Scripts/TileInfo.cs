@@ -8,6 +8,7 @@ public class TileInfo : MonoBehaviour
     private bool seedsSpawned = false; 
     private bool plantSpawned = false;
     internal bool plantgrowth = false;
+    internal bool isCuttingStarted = false;
 
 
     public void OnPlayerEnter()
@@ -16,7 +17,9 @@ public class TileInfo : MonoBehaviour
         {
             SpawnSeeds();
             seedsSpawned = true;
-           
+            GameManager.Instance.DeductEnergyPoints(5);
+
+
         }
         
     }
