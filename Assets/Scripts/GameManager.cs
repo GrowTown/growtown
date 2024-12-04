@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
@@ -18,13 +19,13 @@ public class GameManager : MonoBehaviour
     int _currentStrawberriesSeedCount = 0;
     int _currentEnergyCount = 0;
     int _currentWaterCount = 0;
-    Timer _timer;
     bool _timerStartAfterPlants;
     internal bool isPlantStartGrowing;
     internal bool isplantGrowthCompleted;
     internal int spawnedTomatoesCount;
 
   
+    Timer _timer;
 
 
     #region Properties
@@ -99,11 +100,11 @@ public class GameManager : MonoBehaviour
 
     #region Methods
 
-    private bool isEnergyDeducted = false;
+ 
     public void StartActionAnimation(PlayerAction action)
     {
 
-        isEnergyDeducted = false;
+
 
         switch (action)
         {
@@ -185,7 +186,7 @@ public class GameManager : MonoBehaviour
         foreach (var item in UI_Manager.Instance.spawnPlantsForInitialGrowth)
         {
             var instance = item.GetComponent<PlantGrowth>();
-            instance.InitialCoroutine=StartCoroutine((instance.InitialGrowPlant()));
+            instance.InitialCoroutine = StartCoroutine((instance.InitialGrowPlant()));
         }
     }
 
@@ -238,10 +239,10 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    public void CounttheHarvest()
+    public void CounttheHarvest(int growPC)
     {
-        int spawnPlantCount = UI_Manager.Instance.spawnPlantsForInitialGrowth.Count;
-        int grownPlantCount = UI_Manager.Instance.GrowthStartedPlants.Count;
+        
+        int grownPlantCount =growPC;
 
         if (grownPlantCount == 100)
         {
@@ -267,7 +268,8 @@ public class GameManager : MonoBehaviour
    
         UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
     }
-
+    int HarvestCount;
+    bool IsHarvestCount;
     public void HarvestDeductEnergy(GameObject tilego)
     {
         var tileInfo= tilego.GetComponent<TileInfo>();
@@ -276,6 +278,24 @@ public class GameManager : MonoBehaviour
             DeductEnergyPoints(3);
             tileInfo.isCuttingStarted = true;
         }
+        if (UI_Manager.Instance.FieldGrid.IsCoverageComplete()&& !IsHarvestCount)
+        {
+           
+            if (!UI_Manager.Instance.ListOfHarvestCount.ContainsKey(HarvestCount))
+            {
+                UI_Manager.Instance.ListOfHarvestCount[HarvestCount] = new List<int>();
+            }
+
+            
+            for (int i = 0; i < UI_Manager.Instance.GrowthStartedPlants.Count; i++)
+            {
+                UI_Manager.Instance.ListOfHarvestCount[HarvestCount].Add(i);
+            }
+
+            HarvestCount++;
+            IsHarvestCount = true;
+        }
+
     }
     public void StartPackToBuy()
     {
@@ -295,9 +315,9 @@ public class GameManager : MonoBehaviour
         CurrentEnergyCount -= amount;
         CurrentEnergyCount = Mathf.Clamp(CurrentEnergyCount, 0, int.MaxValue); 
         
-        isEnergyDeducted = true;
+       // isEnergyDeducted = true;
     }
-    public void ToDecreaseTheWaterPoints()
+    public void ToDecreaseTheWaterPoints() 
     {
         CurrentWaterCount -= 10;
         /*  if (!isWaterPointDecreased)
@@ -339,7 +359,7 @@ public class GameManager : MonoBehaviour
     }
 
     bool isTimerStarted;
-    public IEnumerator ToIncreaseWaterPointsAccordingtoTime()
+    public IEnumerator ToIncreaseWaterPointsAccordingtoTime() 
     {
         if (CurrentWaterCount < 100)
         {
@@ -349,7 +369,7 @@ public class GameManager : MonoBehaviour
             }
             if (!isTimerStarted)
             {
-                _timer.Initialize("", DateTime.Now, TimeSpan.FromMinutes(1));
+                _timer.Initialize("Water", DateTime.Now, TimeSpan.FromMinutes(1));
                 _timer.StartTimer();
                 isTimerStarted = true;
 
@@ -378,12 +398,33 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-    private void ResetValues()
+    internal bool isResetetValues;
+    public void ResetValues()
     {
+        foreach (var item in UI_Manager.Instance.FieldGrid.coveredtiles) 
+        {
+            var tile=item.GetComponent<TileInfo>();
+            tile.seedsSpawned = false;
+            tile.plantSpawned = false;
+            tile.plantgrowth = false;
+            tile.isCuttingStarted = false;
+        }
+        IsHarvestCount = false;
+        UI_Manager.Instance.isWentInsideOnce = false;
+        //UI_Manager.Instance.FieldGrid.coveredtiles.Clear();
+        UI_Manager.Instance.spawnPlantsForInitialGrowth.Clear();
+        UI_Manager.Instance.FieldManager.fieldSteps.Clear();
+        UI_Manager.Instance.GrowthStartedOnThisTile.Clear(); 
+        UI_Manager.Instance.spawnPlantsForGrowth.Clear();    
         UI_Manager.Instance.oldcurrentStep = -1;
+        UI_Manager.Instance.TriggerZoneCallBacks.currentStep = 0;
         UI_Manager.Instance.FieldManager.fieldSteps.Remove(CurrentFieldID);
         isCutting = false;
+        //isResetetValues = true;
+        foreach (var item in UI_Manager.Instance.PopupImg)
+        {
+            item.GetComponent<POPSelectionFunctionality>()._hasBeenClicked = false;
+        }
 
     }
     #endregion

@@ -9,7 +9,7 @@ public class FieldGrid : MonoBehaviour
     public int columns = 7;
     public float cellSpacing = 0.01f;
 
-    internal HashSet<Vector3> coveredTiles = new HashSet<Vector3>();
+    //internal HashSet<Vector3> coveredTiles = new HashSet<Vector3>();
     internal List<GameObject> tiles = new List<GameObject>();
     internal List<GameObject> coveredtiles = new List<GameObject>();
     private PlayerAction currentAction;

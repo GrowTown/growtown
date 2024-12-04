@@ -10,7 +10,7 @@ public class PlantGrowth : MonoBehaviour
     internal Timer _initialGrowTimer;
     private Timer _afterwateredGrowTimer;
     [SerializeField] Transform[] tomatoSpawnPoints;
-    float cuttingHight = 1f;
+    float cuttingHight = 0.2f;
     private WaveManager waveManager;
     internal bool IsTileWatered;
     public int initialgrowthTime=2;
@@ -48,7 +48,6 @@ public class PlantGrowth : MonoBehaviour
         _initialGrowTimer.Initialize("Plant Growth - Initial", DateTime.Now, TimeSpan.FromMinutes(initialgrowthTime)); // Initial growth
         _initialGrowTimer.StartTimer();
         UI_Manager.Instance.isTimerOn = true;
-
         float totalGrowthTime = (float)_initialGrowTimer.timeToFinish.TotalSeconds;
        
         while (_initialGrowTimer.secondsLeft > 0)
@@ -56,13 +55,11 @@ public class PlantGrowth : MonoBehaviour
             Debug.Log("initialTimer :: "+ _initialGrowTimer.secondsLeft);
             CurrentTimer = totalGrowthTime-_initialGrowTimer.secondsLeft;
             float growthProgress = (float)(1.0f - (_initialGrowTimer.secondsLeft / totalGrowthTime));
-
             // Update blend shape only up to 50%
             if (!IsTileWatered)
             {
                 plantMesh.SetBlendShapeWeight(0, growthProgress* 100f);
                 CurrentGrowth = growthProgress;
-
                 if (growthProgress>=0.5f&&!isWateredDuringWithering)
                 {
                     GameManager.Instance.Withering();
@@ -72,7 +69,6 @@ public class PlantGrowth : MonoBehaviour
                  yield break;
                 }
             }
-
             yield return null;
         }
 
@@ -84,9 +80,7 @@ public class PlantGrowth : MonoBehaviour
         var updatedTime = Mathf.Max(0, (int)(AfterWateredgrowthTime * 60 - currentTimer)); // Convert to seconds
         _afterwateredGrowTimer.Initialize("Plant Growth - After Watering", DateTime.Now, TimeSpan.FromSeconds(updatedTime));
         _afterwateredGrowTimer.StartTimer();
-
         float totalGrowthTime = (float)(_afterwateredGrowTimer.timeToFinish.TotalSeconds);
-
         while (_afterwateredGrowTimer.secondsLeft > 0)
         {
            
@@ -101,16 +95,14 @@ public class PlantGrowth : MonoBehaviour
 
             yield return null;
         }
-
-
         _afterwateredGrowTimer.TimerFinishedEvent.AddListener(delegate
         {
             OnGrowthComplete();
             if (!GameManager.Instance.isplantGrowthCompleted)
             {
+                UI_Manager.Instance.FieldGrid.coveredtiles.Clear();
                 GameManager.Instance.CompleteAction();
                 GameManager.Instance.isplantGrowthCompleted = true;
-
             }
             Destroy(_afterwateredGrowTimer);
         });
@@ -150,7 +142,6 @@ public class PlantGrowth : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
 
-
         if (other.CompareTag("Player"))
         {
             if (!UI_Manager.Instance.sickleWeapon.activeSelf && GameManager.Instance.isCutting)
@@ -160,12 +151,17 @@ public class PlantGrowth : MonoBehaviour
 
             if (GameManager.Instance.isCutting && UI_Manager.Instance.sickleWeapon.activeSelf)
             {
-                this.gameObject.transform.DOMoveY(cuttingHight, 0.5f);
+                this.gameObject.transform.DOMoveY(cuttingHight, 0.1f);
                 GameManager.Instance.isHarvestCompleted = true;
-                Destroy(this.gameObject);
-            }
 
+                if (UI_Manager.Instance.GrownPlantsToCut.Contains(this.gameObject))
+                {
+                    UI_Manager.Instance.GrownPlantsToCut.Remove(this.gameObject);
+                    Destroy(this.gameObject); 
+                }
+            }
         }
+
     }
 
 }

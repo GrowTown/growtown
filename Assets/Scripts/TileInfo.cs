@@ -5,8 +5,8 @@ using UnityEngine;
 public class TileInfo : MonoBehaviour
 {
     public Transform[] spawnPoints; 
-    private bool seedsSpawned = false; 
-    private bool plantSpawned = false;
+    internal bool seedsSpawned = false; 
+    internal bool plantSpawned = false;
     internal bool plantgrowth = false;
     internal bool isCuttingStarted = false;
 
@@ -63,7 +63,8 @@ public class TileInfo : MonoBehaviour
             {
                 var instance = Instantiate(UI_Manager.Instance.plantHolder, spawnPoint.position, Quaternion.identity);
                 UI_Manager.Instance.spawnPlantsForGrowth[tilego].Add(instance); 
-                UI_Manager.Instance.spawnPlantsForInitialGrowth.Add(instance); 
+                UI_Manager.Instance.spawnPlantsForInitialGrowth.Add(instance);
+                UI_Manager.Instance.GrownPlantsToCut.Add(instance);
 
             }
 

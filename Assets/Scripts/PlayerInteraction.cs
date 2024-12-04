@@ -18,7 +18,18 @@ public class PlayerInteraction : MonoBehaviour
             OnPlayerInteraction(hit);
         }
     }
+     
+    void ChangetheValues()
+    {
+        UI_Manager.Instance.FieldGrid.StopCoverageTracking();
+        Debug.Log("All Collected");
 
+        GameManager.Instance.CompleteAction();
+        if (GameManager.Instance.isCutting)
+        {
+            GameManager.Instance.ResetValues();
+        }
+    }
     void OnPlayerInteraction(RaycastHit hit)
     {
         Collider other = hit.collider;
@@ -38,10 +49,18 @@ public class PlayerInteraction : MonoBehaviour
             }
             if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
             {
-                Debug.Log("All Collected");
-                UI_Manager.Instance.FieldGrid.StopCoverageTracking();
-
-                GameManager.Instance.CompleteAction();
+                if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep == 3)
+                {
+                    if (UI_Manager.Instance.GrownPlantsToCut.Count == 0)
+                    {
+                        ChangetheValues();
+                    }
+                }
+                else
+                {
+                    ChangetheValues();
+                }
+                
             }
       
         }

@@ -12,7 +12,7 @@ public class POPSelectionFunctionality : MonoBehaviour, IPointerClickHandler
     [SerializeField] private GameObject _backGround;
     private bool _isSelected;
     private string _name;
-    bool _hasBeenClicked;
+    internal bool _hasBeenClicked;
 
     /// <summary>
     /// Property to manage the background's active state
@@ -29,6 +29,7 @@ public class POPSelectionFunctionality : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+       
         if (UI_Manager.Instance.currentIndex == 3)
         {
             if (!UI_Manager.Instance.WeaponAttackEvent.isHammerActive && UI_Manager.Instance.isPlantGrowthCompleted)

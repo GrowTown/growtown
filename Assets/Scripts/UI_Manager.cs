@@ -75,8 +75,10 @@ public class UI_Manager : MonoBehaviour
     internal List<GameObject> spawnPlantsForInitialGrowth = new List<GameObject>();
     internal List<GameObject> spawnedSeed= new List<GameObject>();
     internal Dictionary<GameObject,List<GameObject>> spawnPlantsForGrowth = new Dictionary<GameObject,List< GameObject>>();
+    internal Dictionary<int,List<int>> ListOfHarvestCount = new Dictionary<int,List< int>>();
     internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
     internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
+    internal List<GameObject> GrownPlantsToCut = new List<GameObject>();
     [SerializeField]internal List<ShopItem> shopItems=new List<ShopItem>();
 
     #region Fields
@@ -212,7 +214,11 @@ public class UI_Manager : MonoBehaviour
         });
         sellInventoryBT.onClick.AddListener(() => 
         {
-            GameManager.Instance.CounttheHarvest();
+            foreach(var item in UI_Manager.Instance.ListOfHarvestCount)
+            {
+                GameManager.Instance.CounttheHarvest(item.Value.Count);
+            }
+            
             sellPopupPanel.SetActive(false);
             GameManager.Instance.isHarvestCompleted = false;
         });
@@ -258,7 +264,7 @@ public class UI_Manager : MonoBehaviour
 
     POPSelectionFunctionality currentSelectedPopUp;
     internal int oldcurrentAction = -1;
-    bool isWentInsideOnce;
+    internal bool isWentInsideOnce;
     public void ShowPopup(PlayerAction currentAction)
     {
         HideFieldPopup();  
@@ -269,8 +275,8 @@ public class UI_Manager : MonoBehaviour
             var popup = PopupImg[popupIndex];
             popup.SetActive(true);
             var selectionFunctionality = popup.GetComponent<POPSelectionFunctionality>();
+            currentIndex = popupIndex;
             selectionFunctionality.onClick = null;
-
             if (popupIndex == 2&&!isWentInsideOnce)
             {
                 GameManager.Instance.BeforeWaterTile();
@@ -287,7 +293,6 @@ public class UI_Manager : MonoBehaviour
                 {
                     if (popupIndex == 3)
                     {
-                        currentIndex = 3;
                         if (isPlantGrowthCompleted)
                         {
                             if (!WeaponAttackEvent.isHammerActive)
@@ -327,8 +332,6 @@ public class UI_Manager : MonoBehaviour
                 };
 
             }
-
-
         }
     }
     
