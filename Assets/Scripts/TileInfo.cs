@@ -15,7 +15,8 @@ public class TileInfo : MonoBehaviour
     {
         if (!seedsSpawned)
         {
-            SpawnSeeds();
+            if (!GameManager.Instance.HasEnoughPoints(5, 0)) return;
+           SpawnSeeds();
             seedsSpawned = true;
             GameManager.Instance.DeductEnergyPoints(5);
 

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +13,7 @@ public class FieldGrid : MonoBehaviour
     internal List<GameObject> coveredtiles = new List<GameObject>();
     private PlayerAction currentAction;
     internal bool isTracking = false;
+    internal bool checkedOnce;
 
     private void Start()
     {
@@ -42,8 +42,8 @@ public class FieldGrid : MonoBehaviour
     /// <param name="action"></param>
     public void StartCoverageTracking(PlayerAction action)
     {
-        if(UI_Manager.Instance.FieldGrid.IsCoverageComplete())
-        coveredtiles.Clear();
+        if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
+            coveredtiles.Clear();
         currentAction = action;
         isTracking = true;
         GameManager.Instance.StartActionAnimation(action);  // Start animation for the action
@@ -58,6 +58,7 @@ public class FieldGrid : MonoBehaviour
         GameManager.Instance.StopCurrentAnimations(); // Stop the action animation
     }
 
+   
     /// <summary>
     /// Adding the player covered tiles
     /// </summary>
@@ -65,6 +66,11 @@ public class FieldGrid : MonoBehaviour
     /// <param name="tileGo"></param>
     public void AddCoveredTile(/*Vector2Int tilePosition,*/GameObject tileGo)
     {
+        if (!checkedOnce)
+        {
+            checkedOnce = true;
+          if (!GameManager.Instance.HasEnoughPoints(5, 10)) return;
+        }
         /*  if (!coveredTiles.Contains(tilePosition))
           {
               coveredTiles.Add(tilePosition);
@@ -75,7 +81,7 @@ public class FieldGrid : MonoBehaviour
 
         if (!coveredtiles.Contains(tileGo))
         {
-            
+
             switch (currentAction)
             {
                 case PlayerAction.Clean:
@@ -85,9 +91,9 @@ public class FieldGrid : MonoBehaviour
                     break;
                 case PlayerAction.Seed:
                     if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed)
-                    { 
+                    {
                         coveredtiles.Add(tileGo);
-                       tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7095f, 0.7095f, 0.7095f, 1f));
+                        tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7095f, 0.7095f, 0.7095f, 1f));
                         UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
                     }
                     // Debug.Log("Seeding");
@@ -101,7 +107,7 @@ public class FieldGrid : MonoBehaviour
                     tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(1f, 1f, 1f, 1f));
                     break;
             }
-           
+
 
             Debug.Log("Tile added: " + tileGo);
         }

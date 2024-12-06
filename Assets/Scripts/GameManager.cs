@@ -105,7 +105,6 @@ public class GameManager : MonoBehaviour
     {
 
 
-
         switch (action)
         {
             case PlayerAction.Clean:
@@ -114,13 +113,16 @@ public class GameManager : MonoBehaviour
                 // Debug.Log("Cleaning");
                 break;
             case PlayerAction.Seed:
+
+                if (!HasEnoughPoints(5, 0)) return;
                 isThroughingseeds = true;
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
                 // Debug.Log("Seeding");
                 break;
             case PlayerAction.Water:
-      
+                UI_Manager.Instance.FieldGrid.checkedOnce = false;
+            if (!HasEnoughPoints(2, 10)) return;
                 isThroughingseeds = false;
                 TimerStartAfterPlants = true;
                 UI_Manager.Instance.wateringTool.SetActive(true);
@@ -128,6 +130,8 @@ public class GameManager : MonoBehaviour
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
                 break;
             case PlayerAction.Harvest:
+                UI_Manager.Instance.FieldGrid.checkedOnce = false;
+                if (!HasEnoughPoints(3, 0)) return;
                 isPlantStartGrowing = false;
                 isCutting = true;
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 1);
@@ -192,6 +196,7 @@ public class GameManager : MonoBehaviour
 
     public void OnWaterTile(GameObject tilego)
     {
+        if (!HasEnoughPoints(2, 10)) return;
         if (!UI_Manager.Instance.GrowthStartedOnThisTile.Contains(tilego))
         {
 
@@ -272,21 +277,20 @@ public class GameManager : MonoBehaviour
     bool IsHarvestCount;
     public void HarvestDeductEnergy(GameObject tilego)
     {
-        var tileInfo= tilego.GetComponent<TileInfo>();
+        if (!HasEnoughPoints(3, 0)) return;
+       var tileInfo= tilego.GetComponent<TileInfo>();
         if (!tileInfo.isCuttingStarted)
         {
             DeductEnergyPoints(3);
             tileInfo.isCuttingStarted = true;
         }
         if (UI_Manager.Instance.FieldGrid.IsCoverageComplete()&& !IsHarvestCount)
-        {
-           
+        { 
             if (!UI_Manager.Instance.ListOfHarvestCount.ContainsKey(HarvestCount))
             {
                 UI_Manager.Instance.ListOfHarvestCount[HarvestCount] = new List<int>();
             }
-
-            
+ 
             for (int i = 0; i < UI_Manager.Instance.GrowthStartedPlants.Count; i++)
             {
                 UI_Manager.Instance.ListOfHarvestCount[HarvestCount].Add(i);
@@ -330,21 +334,25 @@ public class GameManager : MonoBehaviour
 
     public void ToBuyEnergyPoints()
     {
-        if (UI_Manager.Instance.scoreIn >= 15)
-        {
-            if (CurrentEnergyCount < 50)
-            {
-                CurrentEnergyCount += 50;
-            }
-            else if (CurrentEnergyCount > 50)
-            {
-                CurrentEnergyCount = 100;
+        int energyToAdd = 250; 
+        int energyMax = 500;  
 
+        if (UI_Manager.Instance.scoreIn >= 15) 
+        {
+            if (CurrentEnergyCount < energyMax)
+            {
+                int availableSpace = energyMax - CurrentEnergyCount;
+                CurrentEnergyCount += Mathf.Min(energyToAdd, availableSpace);
+                UI_Manager.Instance.scoreIn -= 15;
+                UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
             }
-            UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
-            UI_Manager.Instance.energyBuyBT.interactable = false;
+        }
+        else
+        {
+            Debug.Log("Not enough score to buy energy points.");
         }
     }
+
 
     public void ToBuyWaterPoints()
     {
@@ -354,6 +362,10 @@ public class GameManager : MonoBehaviour
             {
                 CurrentWaterCount = 100;
                 UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
+            }
+            else
+            {             
+                    Debug.Log("Not enough score to buy energy points.");
             }
         }
     }
@@ -427,5 +439,28 @@ public class GameManager : MonoBehaviour
         }
 
     }
+
+    public bool HasEnoughPoints(int energyRequired, int waterRequired)
+    {
+        if (CurrentEnergyCount < energyRequired)
+        {
+            UI_Manager.Instance.ShowPopUpNotEnoughPoints("Not enough energy points to perform this action!");
+            HideFieldPopup();
+            StopCurrentAction();
+            return false;
+        }
+
+        if (CurrentWaterCount < waterRequired)
+        {
+            UI_Manager.Instance.ShowPopUpNotEnoughPoints("Not enough water points to perform this action!");
+            HideFieldPopup();
+            StopCurrentAction();
+            return false;
+        }
+
+        return true;
+    }
+
+
     #endregion
 }

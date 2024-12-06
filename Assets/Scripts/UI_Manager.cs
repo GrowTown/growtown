@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UI_Manager : MonoBehaviour
@@ -22,6 +23,7 @@ public class UI_Manager : MonoBehaviour
     public GameObject wateringTool;
     public GameObject starterPackInfoPopUpPanel;
     public GameObject sellPopupPanel;
+    public GameObject warningPopupPanel;
 
 
     [Header("Buttons")]
@@ -42,6 +44,7 @@ public class UI_Manager : MonoBehaviour
     public TextMeshProUGUI notEnoughMoneyText;
     public TextMeshProUGUI energyText;
     public TextMeshProUGUI waterText;
+    public TextMeshProUGUI warningText;
 
     [Header("References")]
 
@@ -158,10 +161,12 @@ public class UI_Manager : MonoBehaviour
     {
 
         InventorySetUp();
-        if(GameManager.Instance.CurrentEnergyCount < 100)
+        if(GameManager.Instance.CurrentEnergyCount < 500)
         {
             energyBuyBT.interactable=true;
         }
+
+        HideShowPopUpNotEnoughPoints();
     }
 
     #region Functions
@@ -348,7 +353,21 @@ public class UI_Manager : MonoBehaviour
         GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }
 
-  
+    public void ShowPopUpNotEnoughPoints(string text)
+    {
+        warningPopupPanel.SetActive(true);
+        warningText.text = text;
+    }
+    void HideShowPopUpNotEnoughPoints()
+    {
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+        {
+            if (warningPopupPanel.activeSelf)
+            {
+                warningPopupPanel.SetActive(false);
+            }
+        }
+    }
     #endregion
 
 }
