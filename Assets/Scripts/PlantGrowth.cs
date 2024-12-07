@@ -75,7 +75,7 @@ public class PlantGrowth : MonoBehaviour
     }
     public IEnumerator AfterWateredTileGrowth(double currentTimer)
     {
-       
+
         _afterwateredGrowTimer = this.gameObject.AddComponent<Timer>();
         var updatedTime = Mathf.Max(0, (int)(AfterWateredgrowthTime * 60 - currentTimer)); // Convert to seconds
         _afterwateredGrowTimer.Initialize("Plant Growth - After Watering", DateTime.Now, TimeSpan.FromSeconds(updatedTime));
@@ -83,7 +83,7 @@ public class PlantGrowth : MonoBehaviour
         float totalGrowthTime = (float)(_afterwateredGrowTimer.timeToFinish.TotalSeconds);
         while (_afterwateredGrowTimer.secondsLeft > 0)
         {
-           
+
             float growthProgress = Mathf.Lerp(CurrentGrowth, 1.0f, (float)(1.0f - (_afterwateredGrowTimer.secondsLeft / totalGrowthTime)));
             Debug.Log("AfterWatered :: " + _afterwateredGrowTimer.secondsLeft);
 
@@ -95,6 +95,7 @@ public class PlantGrowth : MonoBehaviour
 
             yield return null;
         }
+
         _afterwateredGrowTimer.TimerFinishedEvent.AddListener(delegate
         {
             OnGrowthComplete();
@@ -104,14 +105,19 @@ public class PlantGrowth : MonoBehaviour
                 GameManager.Instance.CompleteAction();
                 GameManager.Instance.isplantGrowthCompleted = true;
             }
+          
+            StopCoroutine(AfterWateredCoroutine);
             Destroy(_afterwateredGrowTimer);
         });
     }
 
-   /* private void OnMouseDown()
-    {
-        TimerToolTip.ShowTimerStatic(this.gameObject);
-    }*/
+
+
+
+    /* private void OnMouseDown()
+     {
+         TimerToolTip.ShowTimerStatic(this.gameObject);
+     }*/
 
     private void OnGrowthComplete()
     {

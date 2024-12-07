@@ -69,20 +69,20 @@ public class UI_Manager : MonoBehaviour
     public bool isPlanted;
     public bool waveStarted;
     public bool isPlantGrowthCompleted;
-    public bool isPlayerInField=false;
+    public bool isPlayerInField = false;
     internal bool isTimerOn = false;
     internal bool isinitialgrowStarted = false;
     public int currentIndex;
 
     internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
     internal List<GameObject> spawnPlantsForInitialGrowth = new List<GameObject>();
-    internal List<GameObject> spawnedSeed= new List<GameObject>();
-    internal Dictionary<GameObject,List<GameObject>> spawnPlantsForGrowth = new Dictionary<GameObject,List< GameObject>>();
-    internal Dictionary<int,List<int>> ListOfHarvestCount = new Dictionary<int,List< int>>();
+    internal List<GameObject> spawnedSeed = new List<GameObject>();
+    internal Dictionary<GameObject, List<GameObject>> spawnPlantsForGrowth = new Dictionary<GameObject, List<GameObject>>();
+    internal Dictionary<int, List<int>> ListOfHarvestCount = new Dictionary<int, List<int>>();
     internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
     internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
     internal List<GameObject> GrownPlantsToCut = new List<GameObject>();
-    [SerializeField]internal List<ShopItem> shopItems=new List<ShopItem>();
+    [SerializeField] internal List<ShopItem> shopItems = new List<ShopItem>();
 
     #region Fields
     internal int scoreIn = 100;
@@ -151,8 +151,8 @@ public class UI_Manager : MonoBehaviour
         score.text = scoreIn.ToString();
         GameManager.Instance.CurrentEnergyCount = 500;
         GameManager.Instance.CurrentWaterCount = 500;
-        energyText.text= GameManager.Instance.CurrentEnergyCount.ToString();
-        waterText.text=GameManager.Instance.CurrentWaterCount.ToString();
+        energyText.text = GameManager.Instance.CurrentEnergyCount.ToString();
+        waterText.text = GameManager.Instance.CurrentWaterCount.ToString();
         CallBackEvents();
     }
 
@@ -161,9 +161,17 @@ public class UI_Manager : MonoBehaviour
     {
 
         InventorySetUp();
-        if(GameManager.Instance.CurrentEnergyCount < 500)
+        if (GameManager.Instance.CurrentEnergyCount <= 500)
         {
-            energyBuyBT.interactable=true;
+            energyBuyBT.interactable = true;
+        }
+
+        if (currentPopupIndex >= 0)
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                HandleSelection(currentPlayerAction, currentPopupIndex, currentSelectionFunctionality);
+            }
         }
 
         HideShowPopUpNotEnoughPoints();
@@ -206,7 +214,7 @@ public class UI_Manager : MonoBehaviour
         };
 
 
-        TriggerZoneCallBacks.onPlayerExit += (e) => 
+        TriggerZoneCallBacks.onPlayerExit += (e) =>
         {
             marketPopUp.SetActive(false);
             sellPopupPanel.SetActive(false);
@@ -217,23 +225,25 @@ public class UI_Manager : MonoBehaviour
             marketPopUp.SetActive(true);
             sellPopupPanel.SetActive(false);
         });
-        sellInventoryBT.onClick.AddListener(() => 
+        sellInventoryBT.onClick.AddListener(() =>
         {
-            foreach(var item in UI_Manager.Instance.ListOfHarvestCount)
+            foreach (var item in UI_Manager.Instance.ListOfHarvestCount)
             {
                 GameManager.Instance.CounttheHarvest(item.Value.Count);
             }
-            
+
             sellPopupPanel.SetActive(false);
             GameManager.Instance.isHarvestCompleted = false;
         });
 
-        carrotsSeedBT.onClick.AddListener(() => {
+        carrotsSeedBT.onClick.AddListener(() =>
+        {
             ShopManager.ToBuyWheat();
-          });
-        tomatoSeedBT.onClick.AddListener(() => {
+        });
+        tomatoSeedBT.onClick.AddListener(() =>
+        {
             ShopManager.ToBuyTomato();
-            seedBought=true;
+            seedBought = true;
         });
         strawberriesSeedBT.onClick.AddListener(() => { ShopManager.ToBuyStrawberries(); });
         cleaningWeaponBT.onClick.AddListener(() =>
@@ -270,76 +280,86 @@ public class UI_Manager : MonoBehaviour
     POPSelectionFunctionality currentSelectedPopUp;
     internal int oldcurrentAction = -1;
     internal bool isWentInsideOnce;
+    private int currentPopupIndex = -1;
+    private PlayerAction currentPlayerAction;
+    private POPSelectionFunctionality currentSelectionFunctionality;
     public void ShowPopup(PlayerAction currentAction)
     {
-        HideFieldPopup();  
+        HideFieldPopup();
         int popupIndex = (int)currentAction;
-        
+
         if (popupIndex >= 0 && popupIndex < PopupImg.Length)
         {
             var popup = PopupImg[popupIndex];
             popup.SetActive(true);
             var selectionFunctionality = popup.GetComponent<POPSelectionFunctionality>();
             currentIndex = popupIndex;
+            currentPopupIndex = popupIndex;
+            currentPlayerAction = currentAction;
+            currentSelectionFunctionality = selectionFunctionality;
             selectionFunctionality.onClick = null;
-            if (popupIndex == 2&&!isWentInsideOnce)
+            if (popupIndex == 2 && !isWentInsideOnce)
             {
                 GameManager.Instance.BeforeWaterTile();
                 isWentInsideOnce = true;
-                
+
             }
-            if (oldcurrentStep != -1 && UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID)&&!GameManager.Instance.isOneWorkingActionCompleted)
+            if (oldcurrentStep != -1 && UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID) && !GameManager.Instance.isOneWorkingActionCompleted)
             {
                 GameManager.Instance.StartPlayerAction(currentAction);
             }
             else
             {
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    HandleSelection(currentAction, popupIndex, selectionFunctionality);
+                }
+
                 selectionFunctionality.onClick = (selected) =>
                 {
-                    if (popupIndex == 3)
-                    {
-                        if (isPlantGrowthCompleted)
-                        {
-                            if (!WeaponAttackEvent.isHammerActive)
-                            {
-                                if (currentSelectedPopUp != null)
-                                {
-                                    currentSelectedPopUp.IsSelected = false;
-                                }
-                                oldcurrentAction = popupIndex;
-                                selectionFunctionality.IsSelected = true;
-                                currentSelectedPopUp = selectionFunctionality;
-                                GameManager.Instance.StartPlayerAction(currentAction);
-                                GameManager.Instance.isOneWorkingActionCompleted = false;
-                                UI_Manager.Instance.oldcurrentStep = popupIndex;
-                            }
-
-                        }
-                    }
-                    else
-                    {
-                        if (!WeaponAttackEvent.isHammerActive)
-                        {
-                            if (currentSelectedPopUp != null)
-                            {
-                                currentSelectedPopUp.IsSelected = false;
-                            }
-                            oldcurrentAction = popupIndex;
-                            selectionFunctionality.IsSelected = true;
-                            currentSelectedPopUp = selectionFunctionality;
-                            GameManager.Instance.StartPlayerAction(currentAction);
-                            GameManager.Instance.isOneWorkingActionCompleted = false;
-                            UI_Manager.Instance.oldcurrentStep = popupIndex;
-                        }
-                    }
-                   
-                 
+                    HandleSelection(currentAction, popupIndex, selectionFunctionality);
                 };
-
             }
         }
     }
-    
+
+
+    private void HandleSelection(PlayerAction currentAction, int popupIndex, POPSelectionFunctionality selectionFunctionality)
+    {
+        if (popupIndex == 3)
+        {
+            if (isPlantGrowthCompleted && !WeaponAttackEvent.isHammerActive)
+            {
+                SelectPopup(currentAction, popupIndex, selectionFunctionality);
+            }
+        }
+        else
+        {
+            if (!WeaponAttackEvent.isHammerActive)
+            {
+                SelectPopup(currentAction, popupIndex, selectionFunctionality);
+            }
+        }
+    }
+
+    private void SelectPopup(PlayerAction currentAction, int popupIndex, POPSelectionFunctionality selectionFunctionality)
+    {
+        if (currentSelectedPopUp != null)
+        {
+            currentSelectedPopUp.IsSelected = false;
+        }
+
+        oldcurrentAction = popupIndex;
+        selectionFunctionality.IsSelected = true;
+        currentSelectedPopUp = selectionFunctionality;
+
+        GameManager.Instance.StartPlayerAction(currentAction);
+        GameManager.Instance.isOneWorkingActionCompleted = false;
+        UI_Manager.Instance.oldcurrentStep = popupIndex;
+    }
+
+
+
     internal void HideFieldPopup()
     {
         if (TriggerZoneCallBacks.currentStep <= PopupImg.Length - 1)

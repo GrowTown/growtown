@@ -437,6 +437,7 @@ public class GameManager : MonoBehaviour
         {
             item.GetComponent<POPSelectionFunctionality>()._hasBeenClicked = false;
         }
+        isplantGrowthCompleted = false;
 
     }
 
@@ -453,7 +454,7 @@ public class GameManager : MonoBehaviour
         if (CurrentWaterCount < waterRequired)
         {
             UI_Manager.Instance.ShowPopUpNotEnoughPoints("Not enough water points to perform this action!");
-            HideFieldPopup();
+            HideFieldPopup(); 
             StopCurrentAction();
             return false;
         }
