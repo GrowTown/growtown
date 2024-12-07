@@ -53,27 +53,44 @@ public class TileInfo : MonoBehaviour
     {
         if (!plantSpawned)
         {
-            
             if (!UI_Manager.Instance.spawnPlantsForGrowth.ContainsKey(tilego))
             {
                 UI_Manager.Instance.spawnPlantsForGrowth[tilego] = new List<GameObject>();
             }
 
-        
+            // Define unique rotations for the plants
+            Quaternion[] rotations = new Quaternion[]
+            {
+            Quaternion.Euler(0, 0, 0),    // Default rotation
+            Quaternion.Euler(0, 45, 0),  // Rotated 90 degrees on the Y axis
+            Quaternion.Euler(0, 90, 0), // Rotated 180 degrees on the Y axis
+            Quaternion.Euler(0, 270, 0)  // Rotated 270 degrees on the Y axis
+            };
+
+            int index = 0;
             foreach (Transform spawnPoint in spawnPoints)
             {
-                var instance = Instantiate(UI_Manager.Instance.plantHolder, spawnPoint.position, Quaternion.identity);
-                UI_Manager.Instance.spawnPlantsForGrowth[tilego].Add(instance); 
+                // Use the index to assign a rotation
+                var rotation = rotations[index % rotations.Length];
+
+                // Instantiate the plant with the specific rotation
+                var instance = Instantiate(UI_Manager.Instance.plantHolder, spawnPoint.position, rotation);
+
+                // Add the instance to the respective lists
+                UI_Manager.Instance.spawnPlantsForGrowth[tilego].Add(instance);
                 UI_Manager.Instance.spawnPlantsForInitialGrowth.Add(instance);
                 UI_Manager.Instance.GrownPlantsToCut.Add(instance);
 
+                // Increment the index for the next rotation
+                index++;
             }
 
             plantSpawned = true;
         }
     }
 
-  
+
+
 
 }
 

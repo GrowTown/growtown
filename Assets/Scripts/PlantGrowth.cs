@@ -65,6 +65,12 @@ public class PlantGrowth : MonoBehaviour
                     GameManager.Instance.Withering();
                     isNotWateredDuringWithering = true;
                     _initialGrowTimer.StopTimer();
+                    if (!GameManager.Instance.isplantGrowthCompleted)
+                    {
+                        UI_Manager.Instance.FieldGrid.coveredtiles.Clear();
+                        GameManager.Instance.CompleteAction();
+                        GameManager.Instance.isplantGrowthCompleted = true;
+                    }
                     Destroy(_initialGrowTimer);
                  yield break;
                 }
@@ -99,13 +105,7 @@ public class PlantGrowth : MonoBehaviour
         _afterwateredGrowTimer.TimerFinishedEvent.AddListener(delegate
         {
             OnGrowthComplete();
-            if (!GameManager.Instance.isplantGrowthCompleted)
-            {
-                UI_Manager.Instance.FieldGrid.coveredtiles.Clear();
-                GameManager.Instance.CompleteAction();
-                GameManager.Instance.isplantGrowthCompleted = true;
-            }
-          
+       
             StopCoroutine(AfterWateredCoroutine);
             Destroy(_afterwateredGrowTimer);
         });

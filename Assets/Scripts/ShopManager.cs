@@ -30,6 +30,8 @@ public class ShopManager : MonoBehaviour
             UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
             GameManager.Instance.CurrentTomatoSeedCount += 1;
             UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
+            GameManager.Instance.HasNotEnoughSeeds = false;
+            GameManager.Instance.cropseedingStarted = false;
         }
         else
         {

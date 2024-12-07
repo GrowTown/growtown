@@ -2,13 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     internal bool isThroughingseeds;
-    internal bool isCutting=false;
+    internal bool isCutting = false;
     internal bool isHarvestCompleted;
     internal bool isOneWorkingActionCompleted = false;
 
@@ -24,7 +23,7 @@ public class GameManager : MonoBehaviour
     internal bool isplantGrowthCompleted;
     internal int spawnedTomatoesCount;
 
-  
+
     Timer _timer;
 
 
@@ -78,7 +77,7 @@ public class GameManager : MonoBehaviour
         get => _currentWaterCount;
         set
         {
-            UI_Manager.Instance.waterText.text =value.ToString();
+            UI_Manager.Instance.waterText.text = value.ToString();
             _currentWaterCount = value;
         }
     }
@@ -100,7 +99,7 @@ public class GameManager : MonoBehaviour
 
     #region Methods
 
- 
+
     public void StartActionAnimation(PlayerAction action)
     {
 
@@ -115,6 +114,8 @@ public class GameManager : MonoBehaviour
             case PlayerAction.Seed:
 
                 if (!HasEnoughPoints(5, 0)) return;
+                ForCropSeedDEduction();
+
                 isThroughingseeds = true;
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
@@ -122,7 +123,7 @@ public class GameManager : MonoBehaviour
                 break;
             case PlayerAction.Water:
                 UI_Manager.Instance.FieldGrid.checkedOnce = false;
-            if (!HasEnoughPoints(2, 10)) return;
+                if (!HasEnoughPoints(2, 10)) return;
                 isThroughingseeds = false;
                 TimerStartAfterPlants = true;
                 UI_Manager.Instance.wateringTool.SetActive(true);
@@ -170,7 +171,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void CompleteAction()
-     {
+    {
         HideFieldPopup();
         if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length - 1)
         {
@@ -184,7 +185,37 @@ public class GameManager : MonoBehaviour
     }
 
     PlantGrowth Pg;
-   
+
+    internal bool cropseedingStarted;
+    internal bool HasNotEnoughSeeds;
+
+    void ForCropSeedDEduction()
+    {
+        if (CurrentTomatoSeedCount >= 1)
+        {
+            if (!cropseedingStarted)
+            {
+                GameManager.Instance.CurrentTomatoSeedCount -= 1;
+                UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
+                cropseedingStarted = true;
+            }
+        }
+        else
+        {
+            if (!HasNotEnoughSeeds)
+            {
+                UI_Manager.Instance.warningPopupPanelSeed.SetActive(true);
+                UI_Manager.Instance.warningTextForSeed.text = "Not Enough Seeds";
+                PanelManager.RegisterPanel(UI_Manager.Instance.warningPopupPanelSeed);
+                HideFieldPopup();
+                StopCurrentAction();
+                HasNotEnoughSeeds = true;
+                return;
+            }
+            
+        }
+
+    }
     public void BeforeWaterTile()
     {
         foreach (var item in UI_Manager.Instance.spawnPlantsForInitialGrowth)
@@ -215,7 +246,7 @@ public class GameManager : MonoBehaviour
                             StopCoroutine(pg.InitialCoroutine);
                             Destroy(pg._initialGrowTimer); // Cleanup the old timer
                         }
-                        
+
                         pg.AfterWateredCoroutine = StartCoroutine(pg.AfterWateredTileGrowth(pg.CurrentTimer));
                         if (!UI_Manager.Instance.GrowthStartedPlants.Contains(item))
                         {
@@ -223,7 +254,7 @@ public class GameManager : MonoBehaviour
                         }
                     }
 
-                   
+
                 }
             }
             UI_Manager.Instance.GrowthStartedOnThisTile.Add(tilego);
@@ -246,31 +277,31 @@ public class GameManager : MonoBehaviour
     }
     public void CounttheHarvest(int growPC)
     {
-        
-        int grownPlantCount =growPC;
+
+        int grownPlantCount = growPC;
 
         if (grownPlantCount == 100)
         {
             UI_Manager.Instance.scoreIn += 12;
         }
-        else if (grownPlantCount > 75) 
+        else if (grownPlantCount > 75)
         {
             UI_Manager.Instance.scoreIn += 9;
         }
-        else if (grownPlantCount > 50) 
+        else if (grownPlantCount > 50)
         {
             UI_Manager.Instance.scoreIn += 6;
         }
-        else if (grownPlantCount > 25) 
+        else if (grownPlantCount > 25)
         {
             UI_Manager.Instance.scoreIn += 3;
         }
-        else 
+        else
         {
-            UI_Manager.Instance.scoreIn += 1; 
+            UI_Manager.Instance.scoreIn += 1;
         }
 
-   
+
         UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
     }
     int HarvestCount;
@@ -278,19 +309,19 @@ public class GameManager : MonoBehaviour
     public void HarvestDeductEnergy(GameObject tilego)
     {
         if (!HasEnoughPoints(3, 0)) return;
-       var tileInfo= tilego.GetComponent<TileInfo>();
+        var tileInfo = tilego.GetComponent<TileInfo>();
         if (!tileInfo.isCuttingStarted)
         {
             DeductEnergyPoints(3);
             tileInfo.isCuttingStarted = true;
         }
-        if (UI_Manager.Instance.FieldGrid.IsCoverageComplete()&& !IsHarvestCount)
-        { 
+        if (UI_Manager.Instance.FieldGrid.IsCoverageComplete() && !IsHarvestCount)
+        {
             if (!UI_Manager.Instance.ListOfHarvestCount.ContainsKey(HarvestCount))
             {
                 UI_Manager.Instance.ListOfHarvestCount[HarvestCount] = new List<int>();
             }
- 
+
             for (int i = 0; i < UI_Manager.Instance.GrowthStartedPlants.Count; i++)
             {
                 UI_Manager.Instance.ListOfHarvestCount[HarvestCount].Add(i);
@@ -317,11 +348,11 @@ public class GameManager : MonoBehaviour
     internal void DeductEnergyPoints(int amount)
     {
         CurrentEnergyCount -= amount;
-        CurrentEnergyCount = Mathf.Clamp(CurrentEnergyCount, 0, int.MaxValue); 
-        
-       // isEnergyDeducted = true;
+        CurrentEnergyCount = Mathf.Clamp(CurrentEnergyCount, 0, int.MaxValue);
+
+        // isEnergyDeducted = true;
     }
-    public void ToDecreaseTheWaterPoints() 
+    public void ToDecreaseTheWaterPoints()
     {
         CurrentWaterCount -= 10;
         /*  if (!isWaterPointDecreased)
@@ -334,16 +365,17 @@ public class GameManager : MonoBehaviour
 
     public void ToBuyEnergyPoints()
     {
-        int energyToAdd = 250; 
-        int energyMax = 500;  
+        int energyToAdd = 250;
+        int energyMax = 500;
 
-        if (UI_Manager.Instance.scoreIn >= 15) 
+        if (UI_Manager.Instance.scoreIn >= 15)
         {
             if (CurrentEnergyCount < energyMax)
             {
                 int availableSpace = energyMax - CurrentEnergyCount;
                 CurrentEnergyCount += Mathf.Min(energyToAdd, availableSpace);
                 UI_Manager.Instance.scoreIn -= 15;
+                UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
                 UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
             }
         }
@@ -360,18 +392,20 @@ public class GameManager : MonoBehaviour
         {
             if (CurrentWaterCount < 100)
             {
+
                 CurrentWaterCount = 100;
                 UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
             }
-            else
-            {             
-                    Debug.Log("Not enough score to buy energy points.");
-            }
+
+        }
+        else
+        {
+            Debug.Log("Not enough score to buy water points.");
         }
     }
 
     bool isTimerStarted;
-    public IEnumerator ToIncreaseWaterPointsAccordingtoTime() 
+    public IEnumerator ToIncreaseWaterPointsAccordingtoTime()
     {
         if (CurrentWaterCount < 100)
         {
@@ -413,9 +447,10 @@ public class GameManager : MonoBehaviour
     internal bool isResetetValues;
     public void ResetValues()
     {
-        foreach (var item in UI_Manager.Instance.FieldGrid.coveredtiles) 
+        cropseedingStarted = false;
+        foreach (var item in UI_Manager.Instance.FieldGrid.coveredtiles)
         {
-            var tile=item.GetComponent<TileInfo>();
+            var tile = item.GetComponent<TileInfo>();
             tile.seedsSpawned = false;
             tile.plantSpawned = false;
             tile.plantgrowth = false;
@@ -426,8 +461,8 @@ public class GameManager : MonoBehaviour
         //UI_Manager.Instance.FieldGrid.coveredtiles.Clear();
         UI_Manager.Instance.spawnPlantsForInitialGrowth.Clear();
         UI_Manager.Instance.FieldManager.fieldSteps.Clear();
-        UI_Manager.Instance.GrowthStartedOnThisTile.Clear(); 
-        UI_Manager.Instance.spawnPlantsForGrowth.Clear();    
+        UI_Manager.Instance.GrowthStartedOnThisTile.Clear();
+        UI_Manager.Instance.spawnPlantsForGrowth.Clear();
         UI_Manager.Instance.oldcurrentStep = -1;
         UI_Manager.Instance.TriggerZoneCallBacks.currentStep = 0;
         UI_Manager.Instance.FieldManager.fieldSteps.Remove(CurrentFieldID);
@@ -454,7 +489,7 @@ public class GameManager : MonoBehaviour
         if (CurrentWaterCount < waterRequired)
         {
             UI_Manager.Instance.ShowPopUpNotEnoughPoints("Not enough water points to perform this action!");
-            HideFieldPopup(); 
+            HideFieldPopup();
             StopCurrentAction();
             return false;
         }

@@ -23,7 +23,8 @@ public class UI_Manager : MonoBehaviour
     public GameObject wateringTool;
     public GameObject starterPackInfoPopUpPanel;
     public GameObject sellPopupPanel;
-    public GameObject warningPopupPanel;
+    public GameObject warningPopupPanelEnergy;
+    public GameObject warningPopupPanelSeed;
 
 
     [Header("Buttons")]
@@ -44,7 +45,8 @@ public class UI_Manager : MonoBehaviour
     public TextMeshProUGUI notEnoughMoneyText;
     public TextMeshProUGUI energyText;
     public TextMeshProUGUI waterText;
-    public TextMeshProUGUI warningText;
+    public TextMeshProUGUI warningTextEnergy;
+    public TextMeshProUGUI warningTextForSeed;
 
     [Header("References")]
 
@@ -161,9 +163,13 @@ public class UI_Manager : MonoBehaviour
     {
 
         InventorySetUp();
-        if (GameManager.Instance.CurrentEnergyCount <= 500)
+        if (GameManager.Instance.CurrentEnergyCount == 500)
         {
             energyBuyBT.interactable = true;
+        }
+        if (GameManager.Instance.CurrentWaterCount == 100)
+        {
+            waterBuyBT.interactable = true;
         }
 
         if (currentPopupIndex >= 0)
@@ -323,7 +329,6 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
-
     private void HandleSelection(PlayerAction currentAction, int popupIndex, POPSelectionFunctionality selectionFunctionality)
     {
         if (popupIndex == 3)
@@ -358,8 +363,6 @@ public class UI_Manager : MonoBehaviour
         UI_Manager.Instance.oldcurrentStep = popupIndex;
     }
 
-
-
     internal void HideFieldPopup()
     {
         if (TriggerZoneCallBacks.currentStep <= PopupImg.Length - 1)
@@ -375,17 +378,16 @@ public class UI_Manager : MonoBehaviour
 
     public void ShowPopUpNotEnoughPoints(string text)
     {
-        warningPopupPanel.SetActive(true);
-        warningText.text = text;
+        warningPopupPanelEnergy.SetActive(true);
+        warningTextEnergy.text = text;
+        PanelManager.RegisterPanel(warningPopupPanelEnergy);
     }
     void HideShowPopUpNotEnoughPoints()
     {
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
-            if (warningPopupPanel.activeSelf)
-            {
-                warningPopupPanel.SetActive(false);
-            }
+            
+            PanelManager.HideAllPanels();
         }
     }
     #endregion
