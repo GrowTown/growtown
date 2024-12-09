@@ -114,6 +114,7 @@ public class GameManager : MonoBehaviour
             case PlayerAction.Seed:
 
                 if (!HasEnoughPoints(5, 0)) return;
+                if(!HasNotEnoughSeed(1 )) return;
                 ForCropSeedDEduction();
 
                 isThroughingseeds = true;
@@ -200,20 +201,7 @@ public class GameManager : MonoBehaviour
                 cropseedingStarted = true;
             }
         }
-        else
-        {
-            if (!HasNotEnoughSeeds)
-            {
-                UI_Manager.Instance.warningPopupPanelSeed.SetActive(true);
-                UI_Manager.Instance.warningTextForSeed.text = "Not Enough Seeds";
-                PanelManager.RegisterPanel(UI_Manager.Instance.warningPopupPanelSeed);
-                HideFieldPopup();
-                StopCurrentAction();
-                HasNotEnoughSeeds = true;
-                return;
-            }
-            
-        }
+
 
     }
     public void BeforeWaterTile()
@@ -476,6 +464,25 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public bool HasNotEnoughSeed(int seedRequired)
+    {
+
+        if (CurrentTomatoSeedCount < seedRequired)
+        {
+            if (!HasNotEnoughSeeds)
+            {
+                UI_Manager.Instance.warningPopupPanelSeed.SetActive(true);
+                UI_Manager.Instance.warningTextForSeed.text = "Not Enough Seeds";
+                PanelManager.RegisterPanel(UI_Manager.Instance.warningPopupPanelSeed);
+                HideFieldPopup();
+                StopCurrentAction();
+                HasNotEnoughSeeds = true;
+                return false;
+            }
+        }
+
+        return true;
+    }
     public bool HasEnoughPoints(int energyRequired, int waterRequired)
     {
         if (CurrentEnergyCount < energyRequired)
@@ -485,7 +492,6 @@ public class GameManager : MonoBehaviour
             StopCurrentAction();
             return false;
         }
-
         if (CurrentWaterCount < waterRequired)
         {
             UI_Manager.Instance.ShowPopUpNotEnoughPoints("Not enough water points to perform this action!");
@@ -493,7 +499,6 @@ public class GameManager : MonoBehaviour
             StopCurrentAction();
             return false;
         }
-
         return true;
     }
 

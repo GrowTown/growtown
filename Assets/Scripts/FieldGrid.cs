@@ -70,6 +70,7 @@ public class FieldGrid : MonoBehaviour
         {
             checkedOnce = true;
           if (!GameManager.Instance.HasEnoughPoints(5, 10)) return;
+            //if (!GameManager.Instance.HasNotEnoughSeed(1)) return;
         }
         /*  if (!coveredTiles.Contains(tilePosition))
           {
@@ -108,7 +109,7 @@ public class FieldGrid : MonoBehaviour
                     break;
             }
 
-
+             
             Debug.Log("Tile added: " + tileGo);
         }
     }
