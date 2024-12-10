@@ -87,7 +87,7 @@ public class UI_Manager : MonoBehaviour
     [SerializeField] internal List<ShopItem> shopItems = new List<ShopItem>();
 
     #region Fields
-    internal int scoreIn = 100;
+    internal int scoreIn = 500;
     #endregion
 
     #region Properties

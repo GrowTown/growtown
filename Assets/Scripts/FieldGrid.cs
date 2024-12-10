@@ -70,7 +70,11 @@ public class FieldGrid : MonoBehaviour
         {
             checkedOnce = true;
           if (!GameManager.Instance.HasEnoughPoints(5, 10)) return;
-            //if (!GameManager.Instance.HasNotEnoughSeed(1)) return;
+      
+        }
+        if(UI_Manager.Instance.TriggerZoneCallBacks.currentStep == 1)
+        {
+            if (!GameManager.Instance.HasNotEnoughSeed(1) && GameManager.Instance.isThroughingseeds) return;
         }
         /*  if (!coveredTiles.Contains(tilePosition))
           {

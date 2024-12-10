@@ -22,22 +22,38 @@ public class ShopManager : MonoBehaviour
             //Debug.Log("You didn't have enough money");
         }
     }
+    bool forStarterPack;
     public void ToBuyTomato()
     {
-        if(UI_Manager.Instance.scoreIn>=8)
+        if (!forStarterPack)
         {
-            UI_Manager.Instance.scoreIn -=8;
+            UI_Manager.Instance.scoreIn -= 125;
             UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
-            GameManager.Instance.CurrentTomatoSeedCount += 1;
+            GameManager.Instance.CurrentTomatoSeedCount += 25;
             UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
             GameManager.Instance.HasNotEnoughSeeds = false;
             GameManager.Instance.cropseedingStarted = false;
+            forStarterPack=true;
         }
         else
         {
-            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
-           // Debug.Log("You didn't have enough money");
+            if (UI_Manager.Instance.scoreIn >= 5)
+            {
+                UI_Manager.Instance.scoreIn -= 5;
+                UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+                GameManager.Instance.CurrentTomatoSeedCount += 1;
+                UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
+                GameManager.Instance.HasNotEnoughSeeds = false;
+                GameManager.Instance.cropseedingStarted = false;
+            }
+            else
+            {
+                UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
+                // Debug.Log("You didn't have enough money");
+            }
         }
+
+        
     }
     public void ToBuyStrawberries()
     {

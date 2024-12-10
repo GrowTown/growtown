@@ -10,19 +10,19 @@ public class GameManager : MonoBehaviour
     internal bool isCutting = false;
     internal bool isHarvestCompleted;
     internal bool isOneWorkingActionCompleted = false;
+    internal bool isPlantStartGrowing;
+    internal bool checkingForSeedingStarted;
+    internal bool isplantGrowthCompleted;
+    internal int spawnedTomatoesCount;
 
     int _currentFieldID;
-
     int _currentWheatSeedCount = 0;
     int _currentTomatoSeedCount = 0;
     int _currentStrawberriesSeedCount = 0;
     int _currentEnergyCount = 0;
     int _currentWaterCount = 0;
     bool _timerStartAfterPlants;
-    internal bool isPlantStartGrowing;
-    internal bool isplantGrowthCompleted;
-    internal int spawnedTomatoesCount;
-
+    
 
     Timer _timer;
 
@@ -102,11 +102,10 @@ public class GameManager : MonoBehaviour
 
     public void StartActionAnimation(PlayerAction action)
     {
-
-
         switch (action)
         {
             case PlayerAction.Clean:
+
                 UI_Manager.Instance.cleaningTool.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
                 // Debug.Log("Cleaning");
@@ -114,24 +113,23 @@ public class GameManager : MonoBehaviour
             case PlayerAction.Seed:
 
                 if (!HasEnoughPoints(5, 0)) return;
-                if(!HasNotEnoughSeed(1 )) return;
-                ForCropSeedDEduction();
-
                 isThroughingseeds = true;
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
                 // Debug.Log("Seeding");
                 break;
             case PlayerAction.Water:
+
+                isThroughingseeds = false;
                 UI_Manager.Instance.FieldGrid.checkedOnce = false;
                 if (!HasEnoughPoints(2, 10)) return;
-                isThroughingseeds = false;
                 TimerStartAfterPlants = true;
                 UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
                 break;
             case PlayerAction.Harvest:
+
                 UI_Manager.Instance.FieldGrid.checkedOnce = false;
                 if (!HasEnoughPoints(3, 0)) return;
                 isPlantStartGrowing = false;
@@ -178,7 +176,9 @@ public class GameManager : MonoBehaviour
         {
             isOneWorkingActionCompleted = true;
             if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep == 1)
-                isPlantStartGrowing = true;
+            {
+                isPlantStartGrowing = true;  
+            }
             UI_Manager.Instance.TriggerZoneCallBacks.currentStep++;
             UI_Manager.Instance.oldcurrentStep = UI_Manager.Instance.TriggerZoneCallBacks.currentStep;
             ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
@@ -190,19 +190,13 @@ public class GameManager : MonoBehaviour
     internal bool cropseedingStarted;
     internal bool HasNotEnoughSeeds;
 
-    void ForCropSeedDEduction()
+    internal void ForCropSeedDEduction()
     {
         if (CurrentTomatoSeedCount >= 1)
         {
-            if (!cropseedingStarted)
-            {
-                GameManager.Instance.CurrentTomatoSeedCount -= 1;
-                UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
-                cropseedingStarted = true;
-            }
+            GameManager.Instance.CurrentTomatoSeedCount -= 1;
+            UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
         }
-
-
     }
     public void BeforeWaterTile()
     {
@@ -265,30 +259,32 @@ public class GameManager : MonoBehaviour
     }
     public void CounttheHarvest(int growPC)
     {
-
         int grownPlantCount = growPC;
 
         if (grownPlantCount == 100)
         {
-            UI_Manager.Instance.scoreIn += 12;
+            UI_Manager.Instance.scoreIn += 250; 
         }
         else if (grownPlantCount > 75)
         {
-            UI_Manager.Instance.scoreIn += 9;
+            UI_Manager.Instance.scoreIn += 200; 
         }
         else if (grownPlantCount > 50)
         {
-            UI_Manager.Instance.scoreIn += 6;
+            UI_Manager.Instance.scoreIn += 150; 
         }
         else if (grownPlantCount > 25)
         {
-            UI_Manager.Instance.scoreIn += 3;
+            UI_Manager.Instance.scoreIn += 100; 
+        }
+        else if (grownPlantCount >= 15)
+        {
+            UI_Manager.Instance.scoreIn += 50; 
         }
         else
         {
-            UI_Manager.Instance.scoreIn += 1;
+            UI_Manager.Instance.scoreIn += 0; 
         }
-
 
         UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
     }
@@ -466,17 +462,17 @@ public class GameManager : MonoBehaviour
 
     public bool HasNotEnoughSeed(int seedRequired)
     {
-
         if (CurrentTomatoSeedCount < seedRequired)
         {
-            if (!HasNotEnoughSeeds)
+            if (TimerStartAfterPlants)
             {
                 UI_Manager.Instance.warningPopupPanelSeed.SetActive(true);
                 UI_Manager.Instance.warningTextForSeed.text = "Not Enough Seeds";
                 PanelManager.RegisterPanel(UI_Manager.Instance.warningPopupPanelSeed);
                 HideFieldPopup();
                 StopCurrentAction();
-                HasNotEnoughSeeds = true;
+                TimerStartAfterPlants = false;
+               // HasNotEnoughSeeds = true;
                 return false;
             }
         }
