@@ -374,10 +374,10 @@ public class GameManager : MonoBehaviour
     {
         if (UI_Manager.Instance.scoreIn >= 20)
         {
-            if (CurrentWaterCount < 100)
+            if (CurrentWaterCount < 500)
             {
 
-                CurrentWaterCount = 100;
+                CurrentWaterCount = 500;
                 UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
             }
 
