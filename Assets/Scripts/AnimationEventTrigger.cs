@@ -13,9 +13,16 @@ public class AnimationEventTrigger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-    }
 
+    }
+    public void TriggerForCleaningEffectStart()
+    {
+      //  UI_Manager.Instance.cleanigEffect.SetActive(true);
+    }
+    public void TriggerForCleanigEffectStop()
+    {
+        //UI_Manager.Instance.cleanigEffect.SetActive(false);
+    }
     public void TriggerAnimationEvent()
     {
         UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed();
@@ -27,14 +34,14 @@ public class AnimationEventTrigger : MonoBehaviour
 
     public void TriggerToStartWater()
     {
-        UI_Manager.Instance.waterPartileGO.SetActive(true);
+        UI_Manager.Instance.waterEffect.SetActive(true);
         //UI_Manager.Instance.wateringTool.GetComponent<PourDetector>().StartPour();
     }
 
     public void TriggerWaterStop()
     {
 
-        UI_Manager.Instance.waterPartileGO.SetActive(false);
+        UI_Manager.Instance.waterEffect.SetActive(false);
         //UI_Manager.Instance.wateringTool.GetComponent<PourDetector>().EndPour();
     }
 

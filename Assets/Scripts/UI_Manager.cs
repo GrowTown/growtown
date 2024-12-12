@@ -25,7 +25,10 @@ public class UI_Manager : MonoBehaviour
     public GameObject sellPopupPanel;
     public GameObject warningPopupPanelEnergy;
     public GameObject warningPopupPanelSeed;
-    public GameObject waterPartileGO;
+
+    [Header("Effects")]
+    public GameObject waterEffect;
+    public GameObject cleanigEffect;
 
 
     [Header("Buttons")]
@@ -373,6 +376,7 @@ public class UI_Manager : MonoBehaviour
         sickleWeapon.SetActive(false);
         wateringTool.SetActive(false);
         cleaningTool.SetActive(false);
+        UI_Manager.Instance.cleanigEffect.SetActive(false);
         seedsBag.gameObject.SetActive(false);
         GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }

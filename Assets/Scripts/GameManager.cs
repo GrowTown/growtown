@@ -97,15 +97,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    #region Methods
+    bool iscleanigStarted;
 
+    #region Methods
 
     public void StartActionAnimation(PlayerAction action)
     {
         switch (action)
         {
             case PlayerAction.Clean:
-
+                if(!iscleanigStarted) UI_Manager.Instance.cleanigEffect.SetActive(true);
                 UI_Manager.Instance.cleaningTool.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
                 // Debug.Log("Cleaning");
