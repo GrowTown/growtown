@@ -25,6 +25,7 @@ public class UI_Manager : MonoBehaviour
     public GameObject sellPopupPanel;
     public GameObject warningPopupPanelEnergy;
     public GameObject warningPopupPanelSeed;
+    public GameObject waterPartileGO;
 
 
     [Header("Buttons")]
@@ -60,11 +61,11 @@ public class UI_Manager : MonoBehaviour
     private FieldGrid _fieldGrid;
     [SerializeField]
     private FieldManager _fieldManager;
-
     [SerializeField]
     private WeaponAttackEvent _weaponAttackEvent;
     [SerializeField]
     private EnemyPool _enemyPool;
+
 
     internal int oldcurrentStep = -1;
     InventoryNames[] inventoryNames;
@@ -91,7 +92,7 @@ public class UI_Manager : MonoBehaviour
     #endregion
 
     #region Properties
-
+   
     public EnemyPool EnemyPool
     {
         get => _enemyPool;

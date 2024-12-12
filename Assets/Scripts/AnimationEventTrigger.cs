@@ -19,10 +19,23 @@ public class AnimationEventTrigger : MonoBehaviour
     public void TriggerAnimationEvent()
     {
         UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed();
-    } 
+    }
     public void TriggerAnimationEvent1()
     {
         UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnHandInBag();
+    }
+
+    public void TriggerToStartWater()
+    {
+        UI_Manager.Instance.waterPartileGO.SetActive(true);
+        //UI_Manager.Instance.wateringTool.GetComponent<PourDetector>().StartPour();
+    }
+
+    public void TriggerWaterStop()
+    {
+
+        UI_Manager.Instance.waterPartileGO.SetActive(false);
+        //UI_Manager.Instance.wateringTool.GetComponent<PourDetector>().EndPour();
     }
 
 }

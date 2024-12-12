@@ -127,6 +127,7 @@ public class GameManager : MonoBehaviour
                 UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
+            
                 break;
             case PlayerAction.Harvest:
 

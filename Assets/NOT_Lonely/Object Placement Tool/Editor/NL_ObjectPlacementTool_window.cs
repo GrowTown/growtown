@@ -1258,10 +1258,10 @@ public class NL_ObjectPlacementTool_window : EditorWindow
 
                             Directory.CreateDirectory(EditorPrefs.GetString("RelativePath") + "Cache/");
 
-                            Stream stream = File.Open(EditorPrefs.GetString("RelativePath") + "Cache/NL_PhysicsPlacerObjectsCache.data", FileMode.Create);
+                            /*tream stream = File.Open(EditorPrefs.GetString("RelativePath") + "Cache/NL_PhysicsPlacerObjectsCache.data", FileMode.Create);
                             BinaryFormatter bformater = new BinaryFormatter();
                             bformater.Serialize(stream, droppedObjectsPaths);
-                            stream.Close();
+                            stream.Close();*/
 
                             EditorPrefs.SetBool("PhysicsEditMode", true);
                             EditorApplication.ExecuteMenuItem("Edit/Play");
