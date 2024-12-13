@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
     int _currentEnergyCount = 0;
     int _currentWaterCount = 0;
     bool _timerStartAfterPlants;
+    public bool checkPlayerInZone;
     
 
     Timer _timer;
@@ -183,7 +185,20 @@ public class GameManager : MonoBehaviour
             }
             UI_Manager.Instance.TriggerZoneCallBacks.currentStep++;
             UI_Manager.Instance.oldcurrentStep = UI_Manager.Instance.TriggerZoneCallBacks.currentStep;
-            ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
+            if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep == 3)
+            {
+                if (UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID))
+                {
+                    UI_Manager.Instance.FieldManager.fieldSteps[UI_Manager.Instance.FieldManager.CurrentFieldID] = UI_Manager.Instance.oldcurrentStep;
+                }
+               
+                if (checkPlayerInZone)
+               ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
+            }
+            else
+            {
+                ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
+            }
         }
     }
 
@@ -329,6 +344,7 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.wateringWeaponBT.interactable = false;
         UI_Manager.Instance.cleaningWeaponBT.interactable = false;
     }
+
     bool isWaterPointDecreased;
 
     internal void DeductEnergyPoints(int amount)
@@ -370,7 +386,6 @@ public class GameManager : MonoBehaviour
             Debug.Log("Not enough score to buy energy points.");
         }
     }
-
 
     public void ToBuyWaterPoints()
     {

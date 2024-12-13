@@ -23,6 +23,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            GameManager.Instance.checkPlayerInZone = true;
             playerInZone = true;
             UI_Manager.Instance.isPlayerInField = true;
             UI_Manager.Instance.WeaponAttackEvent.ToMakeHammerInactive();
@@ -51,6 +52,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            GameManager.Instance.checkPlayerInZone = false;
             playerInZone = false;
             UI_Manager.Instance.isPlayerInField = false;
 

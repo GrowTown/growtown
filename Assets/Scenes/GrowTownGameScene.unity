@@ -15508,6 +15508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93c7c76c035e4d847bbd80852a726529, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  checkPlayerInZone: 0
 --- !u!4 &231954332
 Transform:
   m_ObjectHideFlags: 0
@@ -61686,7 +61687,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 0.23419717, g: 0.63764215, b: 0.97735846, a: 1}
-  m_Intensity: 1.96
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
