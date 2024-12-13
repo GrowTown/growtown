@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
         switch (action)
         {
             case PlayerAction.Clean:
-                if(!iscleanigStarted) UI_Manager.Instance.cleanigEffect.SetActive(true);
+                //if(!iscleanigStarted) UI_Manager.Instance.cleanigEffect.SetActive(true);
                 UI_Manager.Instance.cleaningTool.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
                 // Debug.Log("Cleaning");

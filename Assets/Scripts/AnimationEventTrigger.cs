@@ -17,11 +17,11 @@ public class AnimationEventTrigger : MonoBehaviour
     }
     public void TriggerForCleaningEffectStart()
     {
-      //  UI_Manager.Instance.cleanigEffect.SetActive(true);
+        UI_Manager.Instance.cleanigEffect.SetActive(true);
     }
     public void TriggerForCleanigEffectStop()
     {
-        //UI_Manager.Instance.cleanigEffect.SetActive(false);
+        UI_Manager.Instance.cleanigEffect.SetActive(false);
     }
     public void TriggerAnimationEvent()
     {
