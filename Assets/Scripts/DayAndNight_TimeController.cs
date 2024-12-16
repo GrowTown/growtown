@@ -6,56 +6,62 @@ using UnityEngine;
 
 public class DayAndNight_TimeController : MonoBehaviour
 {
+    [SerializeField]
+    private float _timeMultiplier;
 
     [SerializeField]
-    private float timeMultiplier;
+    private float _startHour;
 
     [SerializeField]
-    private float startHour;
+    private TextMeshProUGUI _timeText;
 
     [SerializeField]
-    private TextMeshProUGUI timeText;
+    private Light _sunLight;
 
     [SerializeField]
-    private Light sunLight;
+    private float _sunriseHour;
 
     [SerializeField]
-    private float sunriseHour;
+    private float _sunsetHour;
 
     [SerializeField]
-    private float sunsetHour;
+    private Color _dayAmbientLight;
 
     [SerializeField]
-    private Color dayAmbientLight;
+    private Color _nightAmbientLight;
 
     [SerializeField]
-    private Color nightAmbientLight;
+    private AnimationCurve _lightChangeCurve;
 
     [SerializeField]
-    private AnimationCurve lightChangeCurve;
+    private float _maxSunLightIntensity;
 
     [SerializeField]
-    private float maxSunLightIntensity;
+    private Light _moonLight;
 
     [SerializeField]
-    private Light moonLight;
+    private float _maxMoonLightIntensity;
 
     [SerializeField]
-    private float maxMoonLightIntensity;
+    private GameObject _campfire; // Reference to the campfire GameObject
 
-    private DateTime currentTime;
+    private DateTime _currentTime;
 
-    private TimeSpan sunriseTime;
+    private TimeSpan _sunriseTime;
 
-    private TimeSpan sunsetTime;
+    private TimeSpan _sunsetTime;
+
+    private bool _isCampfireActive;
 
     // Start is called before the first frame update
     void Start()
     {
-        currentTime = DateTime.Now.Date + TimeSpan.FromHours(startHour);
+        _currentTime = DateTime.Now.Date + TimeSpan.FromHours(_startHour);
 
-        sunriseTime = TimeSpan.FromHours(sunriseHour);
-        sunsetTime = TimeSpan.FromHours(sunsetHour);
+        _sunriseTime = TimeSpan.FromHours(_sunriseHour);
+        _sunsetTime = TimeSpan.FromHours(_sunsetHour);
+
+        UpdateCampfireState(); 
     }
 
     // Update is called once per frame
@@ -64,15 +70,16 @@ public class DayAndNight_TimeController : MonoBehaviour
         UpdateTimeOfDay();
         RotateSun();
         UpdateLightSettings();
+        UpdateCampfireState();
     }
 
     private void UpdateTimeOfDay()
     {
-        currentTime = currentTime.AddSeconds(Time.deltaTime * timeMultiplier);
+        _currentTime = _currentTime.AddSeconds(Time.deltaTime * _timeMultiplier);
 
-        if (timeText != null)
+        if (_timeText != null)
         {
-            timeText.text = currentTime.ToString("HH:mm");
+            _timeText.text = _currentTime.ToString("HH:mm");
         }
     }
 
@@ -80,10 +87,10 @@ public class DayAndNight_TimeController : MonoBehaviour
     {
         float sunLightRotation;
 
-        if (currentTime.TimeOfDay > sunriseTime && currentTime.TimeOfDay < sunsetTime)
+        if (_currentTime.TimeOfDay > _sunriseTime && _currentTime.TimeOfDay < _sunsetTime)
         {
-            TimeSpan sunriseToSunsetDuration = CalculateTimeDifference(sunriseTime, sunsetTime);
-            TimeSpan timeSinceSunrise = CalculateTimeDifference(sunriseTime, currentTime.TimeOfDay);
+            TimeSpan sunriseToSunsetDuration = CalculateTimeDifference(_sunriseTime, _sunsetTime);
+            TimeSpan timeSinceSunrise = CalculateTimeDifference(_sunriseTime, _currentTime.TimeOfDay);
 
             double percentage = timeSinceSunrise.TotalMinutes / sunriseToSunsetDuration.TotalMinutes;
 
@@ -91,23 +98,39 @@ public class DayAndNight_TimeController : MonoBehaviour
         }
         else
         {
-            TimeSpan sunsetToSunriseDuration = CalculateTimeDifference(sunsetTime, sunriseTime);
-            TimeSpan timeSinceSunset = CalculateTimeDifference(sunsetTime, currentTime.TimeOfDay);
+            TimeSpan sunsetToSunriseDuration = CalculateTimeDifference(_sunsetTime, _sunriseTime);
+            TimeSpan timeSinceSunset = CalculateTimeDifference(_sunsetTime, _currentTime.TimeOfDay);
 
             double percentage = timeSinceSunset.TotalMinutes / sunsetToSunriseDuration.TotalMinutes;
 
             sunLightRotation = Mathf.Lerp(180, 360, (float)percentage);
         }
 
-        sunLight.transform.rotation = Quaternion.AngleAxis(sunLightRotation, Vector3.right);
+        _sunLight.transform.rotation = Quaternion.AngleAxis(sunLightRotation, Vector3.right);
     }
 
     private void UpdateLightSettings()
     {
-        float dotProduct = Vector3.Dot(sunLight.transform.forward, Vector3.down);
-        sunLight.intensity = Mathf.Lerp(0, maxSunLightIntensity, lightChangeCurve.Evaluate(dotProduct));
-        moonLight.intensity = Mathf.Lerp(maxMoonLightIntensity, 0, lightChangeCurve.Evaluate(dotProduct));
-        RenderSettings.ambientLight = Color.Lerp(nightAmbientLight, dayAmbientLight, lightChangeCurve.Evaluate(dotProduct));
+        float dotProduct = Vector3.Dot(_sunLight.transform.forward, Vector3.down);
+        _sunLight.intensity = Mathf.Lerp(0, _maxSunLightIntensity, _lightChangeCurve.Evaluate(dotProduct));
+        _moonLight.intensity = Mathf.Lerp(_maxMoonLightIntensity, 0, _lightChangeCurve.Evaluate(dotProduct));
+        RenderSettings.ambientLight = Color.Lerp(_nightAmbientLight, _dayAmbientLight, _lightChangeCurve.Evaluate(dotProduct));
+    }
+
+    private void UpdateCampfireState()
+    {
+        bool isNight = _currentTime.TimeOfDay >= _sunsetTime || _currentTime.TimeOfDay < _sunriseTime;
+
+        if (isNight && !_isCampfireActive)
+        {
+            _campfire.SetActive(true);
+            _isCampfireActive = true;
+        }
+        else if (!isNight && _isCampfireActive)
+        {
+            _campfire.SetActive(false);
+            _isCampfireActive = false;
+        }
     }
 
     private TimeSpan CalculateTimeDifference(TimeSpan fromTime, TimeSpan toTime)
@@ -121,5 +144,4 @@ public class DayAndNight_TimeController : MonoBehaviour
 
         return difference;
     }
-
 }

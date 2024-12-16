@@ -13,8 +13,8 @@ public class PlantGrowth : MonoBehaviour
     float cuttingHight = 0.2f;
     private WaveManager waveManager;
     internal bool IsTileWatered;
-    public int initialgrowthTime=2;
-    public int AfterWateredgrowthTime=2;
+    public int initialgrowthTime=1;
+    public int AfterWateredgrowthTime=1;
     float _currentGrowth;
     double _currentTimer;
     internal Coroutine InitialCoroutine;
