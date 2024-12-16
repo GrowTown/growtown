@@ -480,8 +480,8 @@ MonoBehaviour:
   - {fileID: 2861254937915597891}
   - {fileID: 5829360147328725288}
   - {fileID: 6815761780017649428}
-  initialgrowthTime: 2
-  AfterWateredgrowthTime: 2
+  initialgrowthTime: 1
+  AfterWateredgrowthTime: 1
 --- !u!136 &7189689854157555782
 CapsuleCollider:
   m_ObjectHideFlags: 0
