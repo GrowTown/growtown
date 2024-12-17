@@ -80,6 +80,62 @@ public class CharacterMovements : MonoBehaviour
             animator.SetBool(_animIDGrounded, Grounded);
         }
     }
+
+    /*   private void CharMovements()
+       {
+           // Get movement input
+           float moveHorizontal = Input.GetAxis("Horizontal");
+           float moveVertical = Input.GetAxis("Vertical");
+
+           // Use the camera's forward and right to calculate movement relative to its orientation
+           Vector3 cameraForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized; // Flatten the forward vector
+           Vector3 cameraRight = Vector3.Scale(cam.right, new Vector3(1, 0, 1)).normalized;     // Flatten the right vector
+
+           // Calculate movement direction relative to the camera
+           Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
+
+           // Determine if running
+           bool isRunning = Input.GetKey(KeyCode.LeftShift);
+
+           // Calculate target speed
+           float targetSpeed = inputDirection == Vector3.zero ? 0f : (isRunning ? runSpeed : walkSpeed);
+
+           // Smooth acceleration and deceleration
+           float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+           if (currentHorizontalSpeed < targetSpeed - 0.1f || currentHorizontalSpeed > targetSpeed + 0.1f)
+           {
+               _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed, Time.deltaTime * SpeedChangeRate);
+               _speed = Mathf.Round(_speed * 1000f) / 1000f;
+           }
+           else
+           {
+               _speed = targetSpeed;
+           }
+
+           // Set blend tree speed
+           _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+           if (_animationBlend < 0.01f) _animationBlend = 0f;
+
+           // Apply movement
+           Vector3 moveDirection = inputDirection * _speed;
+           _controller.Move(moveDirection * Time.deltaTime);
+
+           // Rotate the character if there's movement input
+           if (inputDirection.magnitude > 0f)
+           {
+               Quaternion toRotation = Quaternion.LookRotation(inputDirection, Vector3.up);
+               transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
+           }
+
+           // Update animator parameters
+           if (animator != null)
+           {
+               animator.SetFloat("Speed", _animationBlend); // Use "Speed" for blend tree transitions
+               animator.SetFloat("MotionSpeed", inputDirection.magnitude); // Normalize motion input
+           }
+
+       }*/
+
     private void CharMovements()
     {
         // Get movement input
@@ -87,8 +143,8 @@ public class CharacterMovements : MonoBehaviour
         float moveVertical = Input.GetAxis("Vertical");
 
         // Use the camera's forward and right to calculate movement relative to its orientation
-        Vector3 cameraForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized; // Flatten the forward vector
-        Vector3 cameraRight = Vector3.Scale(cam.right, new Vector3(1, 0, 1)).normalized;     // Flatten the right vector
+        Vector3 cameraForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
+        Vector3 cameraRight = Vector3.Scale(cam.right, new Vector3(1, 0, 1)).normalized;
 
         // Calculate movement direction relative to the camera
         Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
@@ -113,7 +169,7 @@ public class CharacterMovements : MonoBehaviour
 
         // Set blend tree speed
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-        if (_animationBlend < 0.01f) _animationBlend = 0f;
+        if (_animationBlend < 0.01f) _animationBlend = 0f; // Ensure idle is detected
 
         // Apply movement
         Vector3 moveDirection = inputDirection * _speed;
@@ -132,7 +188,6 @@ public class CharacterMovements : MonoBehaviour
             animator.SetFloat("Speed", _animationBlend); // Use "Speed" for blend tree transitions
             animator.SetFloat("MotionSpeed", inputDirection.magnitude); // Normalize motion input
         }
-
     }
 
     bool isJumping;

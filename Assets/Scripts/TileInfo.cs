@@ -4,26 +4,28 @@ using UnityEngine;
 
 public class TileInfo : MonoBehaviour
 {
-    public Transform[] spawnPoints; 
-    internal bool seedsSpawned = false; 
+    public Transform[] spawnPoints;
+    internal bool seedsSpawned = false;
     internal bool plantSpawned = false;
     internal bool plantgrowth = false;
     internal bool isCuttingStarted = false;
+    private MeshRenderer _renderer;
+    internal bool _hasColorChanged = false;
 
-
+    private void Start()
+    {
+        _renderer = GetComponent<MeshRenderer>();
+    }
     public void OnPlayerEnter()
     {
         if (!seedsSpawned)
         {
             if (!GameManager.Instance.HasEnoughPoints(5, 0)) return;
-           SpawnSeeds();
+            SpawnSeeds();
             seedsSpawned = true;
             GameManager.Instance.DeductEnergyPoints(5);
             GameManager.Instance.ForCropSeedDEduction();
-
-
         }
-        
     }
 
     private void SpawnSeeds()
@@ -31,7 +33,7 @@ public class TileInfo : MonoBehaviour
         // Spawn a seed at each spawn point
         foreach (Transform spawnPoint in spawnPoints)
         {
-            var instace=Instantiate(UI_Manager.Instance.seed, spawnPoint.position, Quaternion.identity);
+            var instace = Instantiate(UI_Manager.Instance.seed, spawnPoint.position, Quaternion.identity);
             UI_Manager.Instance.spawnedSeed.Add(instace);
         }
     }
@@ -90,8 +92,29 @@ public class TileInfo : MonoBehaviour
         }
     }
 
+    public void ChangeColor(Color newColor)
+    {
+         if (_renderer != null)
+        {
+            StartCoroutine(ChangeColorOverTime(newColor));
+        }
+    }
 
+    private IEnumerator ChangeColorOverTime(Color targetColor)
+    {
+        Color currentColor = _renderer.material.color;
+        float duration = 1.0f;
+        float elapsed = 0.0f;
 
+        while (elapsed < duration)
+        {
+            _renderer.material.color = Color.Lerp(currentColor, targetColor, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        _renderer.material.color = targetColor;
+    }
 
 }
 

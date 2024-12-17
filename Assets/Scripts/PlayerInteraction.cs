@@ -39,14 +39,17 @@ public class PlayerInteraction : MonoBehaviour
             GameObject hitTileGameObject = hit.collider.gameObject;
             // Get the tile position for the player and try to add it
             //Vector2Int playerTile = UI_Manager.Instance.FieldGrid.GetPlayerTile();
-            UI_Manager.Instance.FieldGrid.AddCoveredTile(hitTileGameObject); // Store the tile if uncovered
+            if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep !=2)
+            {
+                UI_Manager.Instance.FieldGrid.AddCoveredTile(hitTileGameObject); // Store the tile if uncovered
+            }
             UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed(hitTileGameObject);
             if (GameManager.Instance.isCutting)
                 GameManager.Instance.HarvestDeductEnergy(hitTileGameObject);
-            if (GameManager.Instance.isPlantStartGrowing)
+            /*if (GameManager.Instance.isPlantStartGrowing)
             {
                 GameManager.Instance.OnWaterTile(hitTileGameObject);
-            }
+            }*/
             if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
             {
                 if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep == 3)

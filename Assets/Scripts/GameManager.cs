@@ -63,7 +63,6 @@ public class GameManager : MonoBehaviour
         get => _currentTomatoSeedCount;
         set => _currentTomatoSeedCount = value;
     }
-
     public int CurrentEnergyCount
     {
         get => _currentEnergyCount;
@@ -73,7 +72,6 @@ public class GameManager : MonoBehaviour
             _currentEnergyCount = value;
         }
     }
-
     public int CurrentWaterCount
     {
         get => _currentWaterCount;
@@ -206,7 +204,6 @@ public class GameManager : MonoBehaviour
 
     internal bool cropseedingStarted;
     internal bool HasNotEnoughSeeds;
-
     internal void ForCropSeedDEduction()
     {
         if (CurrentTomatoSeedCount >= 1)
@@ -476,7 +473,6 @@ public class GameManager : MonoBehaviour
         isplantGrowthCompleted = false;
 
     }
-
     public bool HasNotEnoughSeed(int seedRequired)
     {
         if (CurrentTomatoSeedCount < seedRequired)

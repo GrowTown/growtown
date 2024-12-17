@@ -38,7 +38,7 @@ public class FieldGrid : MonoBehaviour
 
     /// <summary>
     /// start the action
-    /// </summary>
+    /// </summary>StartCovering
     /// <param name="action"></param>
     public void StartCoverageTracking(PlayerAction action)
     {
