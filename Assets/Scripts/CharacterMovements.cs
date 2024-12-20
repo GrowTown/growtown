@@ -12,8 +12,8 @@ public class CharacterMovements : MonoBehaviour
     public Animator animator;
     private CharacterController _controller;
     private Vector3 _moveDirection;
-    public Vector3 lockedPositionField; 
-    public Vector3 lockedPositionMarket; 
+    public Transform lockedPositionField; 
+    public Transform lockedPositionMarket; 
 
     internal Quaternion lockedRotation; 
     internal bool isCameraLocked = false; 
@@ -237,15 +237,15 @@ public class CharacterMovements : MonoBehaviour
     {
         if (area == "Field")
         {
-            virtualCam.transform.position = lockedPositionField;
-            virtualCam.transform.position = lockedPositionField;
+            virtualCam.transform.position  = lockedPositionField.position;
+            virtualCam.transform.rotation = lockedRotation;
             virtualCam.Follow = null;
-            virtualCam.LookAt = null;
+           // virtualCam.LookAt = null;
         }
-        else
+        if(area== "Market")
         {
-            virtualCam.transform.position = lockedPositionMarket;
-            virtualCam.transform.position = lockedPositionMarket;
+            virtualCam.transform.position = lockedPositionMarket.position;
+            virtualCam.transform.rotation = lockedRotation;
             virtualCam.Follow = null;
         }
     
