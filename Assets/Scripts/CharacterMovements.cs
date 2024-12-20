@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,9 +7,16 @@ using UnityEngine.EventSystems;
 public class CharacterMovements : MonoBehaviour
 {
     public Transform cam;
+    [SerializeField]
+    CinemachineFreeLook virtualCam;
     public Animator animator;
     private CharacterController _controller;
     private Vector3 _moveDirection;
+    public Vector3 lockedPositionField; 
+    public Vector3 lockedPositionMarket; 
+
+    internal Quaternion lockedRotation; 
+    internal bool isCameraLocked = false; 
 
     //Walk,Run variables
     public float walkSpeed = 2f;
@@ -57,6 +65,7 @@ public class CharacterMovements : MonoBehaviour
         HandleJump();
         if(!isJumping)
         AdjustHeightofPlayer();
+        //UpdateVirtualCamera();
     }
 
     void AdjustHeightofPlayer()
@@ -222,19 +231,44 @@ public class CharacterMovements : MonoBehaviour
         _canJump = true;
         isJumping=false;
     }
+     
 
-
-    /*private void OnApplicationFocus(bool focus)
+    internal void CameraLock(string area)
     {
-        if (focus)
+        if (area == "Field")
         {
-            Cursor.lockState = CursorLockMode.Locked;
+            virtualCam.transform.position = lockedPositionField;
+            virtualCam.transform.position = lockedPositionField;
+            virtualCam.Follow = null;
+            virtualCam.LookAt = null;
         }
         else
         {
-            Cursor.lockState = CursorLockMode.None;
+            virtualCam.transform.position = lockedPositionMarket;
+            virtualCam.transform.position = lockedPositionMarket;
+            virtualCam.Follow = null;
         }
-    }*/
+    
+        isCameraLocked = true;
+
+    }
+    internal void CameraUnlock()
+    {       
+        isCameraLocked = false;    
+        virtualCam.Follow = this.transform;
+        virtualCam.LookAt = this.transform;
+    }
+
+    void UpdateVirtualCamera()
+    {
+        if (isCameraLocked && virtualCam!= null)
+        {
+           // virtualCam.transform.position = lockedPosition;
+            virtualCam.transform.rotation = lockedRotation;
+        }
+    }
+
+   
 }
 
 

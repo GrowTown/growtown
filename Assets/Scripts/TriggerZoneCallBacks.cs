@@ -27,8 +27,10 @@ public class TriggerZoneCallBacks : MonoBehaviour
             playerInZone = true;
             UI_Manager.Instance.isPlayerInField = true;
             UI_Manager.Instance.WeaponAttackEvent.ToMakeHammerInactive();
+            
+               UI_Manager.Instance.CharacterMovements.CameraLock(zoneType.ToString());
             switch (zoneType)
-            {
+            {   
                 case ZoneType.Field:
                     if (!UI_Manager.Instance.starterPackInfoPopUpPanel.activeSelf)
                     {
@@ -55,7 +57,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
             GameManager.Instance.checkPlayerInZone = false;
             playerInZone = false;
             UI_Manager.Instance.isPlayerInField = false;
-
+            UI_Manager.Instance.CharacterMovements.CameraUnlock();
             switch (zoneType)
             {
                 case ZoneType.Field:

@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,6 +34,7 @@ public class CameraScript : MonoBehaviour
         transform.LookAt(target);
     }*/
 
+    private Transform originalTarget; 
 
     [Header("Camera Follow")]
     public Transform player; // The player to follow
@@ -104,6 +106,8 @@ public class CameraScript : MonoBehaviour
     }
 
 }
+
+
 
 
 
