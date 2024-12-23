@@ -1,19 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
+public class AnimationEvent : UnityEvent<string>
+{
+
+}
 public class AnimationEventTrigger : MonoBehaviour
 {
+
+    public AnimationEvent CropCycleAnimationEvent = new AnimationEvent();
+
+
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+    public void OnAnimationEvent(string eventName)
+    {
+        CropCycleAnimationEvent.Invoke(eventName);
     }
     public void TriggerForCleaningEffectStart()
     {

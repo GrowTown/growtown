@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     int _currentWaterCount = 0;
     bool _timerStartAfterPlants;
     public bool checkPlayerInZone;
+    public bool checkForEnoughSeeds;
     
 
     Timer _timer;
@@ -121,10 +122,11 @@ public class GameManager : MonoBehaviour
                 break;
             case PlayerAction.Water:
 
+                TimerStartAfterPlants = true;
                 isThroughingseeds = false;
                 UI_Manager.Instance.FieldGrid.checkedOnce = false;
                 if (!HasEnoughPoints(2, 10)) return;
-                TimerStartAfterPlants = true;
+                checkForEnoughSeeds=true;
                 UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
@@ -249,8 +251,6 @@ public class GameManager : MonoBehaviour
                             UI_Manager.Instance.GrowthStartedPlants.Add(item);
                         }
                     }
-
-
                 }
             }
             UI_Manager.Instance.GrowthStartedOnThisTile.Add(tilego);
@@ -405,7 +405,7 @@ public class GameManager : MonoBehaviour
     bool isTimerStarted;
     public IEnumerator ToIncreaseWaterPointsAccordingtoTime()
     {
-        if (CurrentWaterCount < 100)
+        if (CurrentWaterCount < 500)
         {
             if (_timer == null)
             {
@@ -427,10 +427,10 @@ public class GameManager : MonoBehaviour
             }
 
 
-            if (CurrentWaterCount < 100)
+            if (CurrentWaterCount < 500)
             {
                 CurrentWaterCount += 10;
-                CurrentWaterCount = Mathf.Clamp(CurrentWaterCount, 0, 100);
+                CurrentWaterCount = Mathf.Clamp(CurrentWaterCount, 0, 500);
                 //UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
                 isTimerStarted = false;
                 StartCoroutine(ToIncreaseWaterPointsAccordingtoTime());
@@ -477,14 +477,14 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentTomatoSeedCount < seedRequired)
         {
-            if (TimerStartAfterPlants)
+            if (checkForEnoughSeeds)
             {
                 UI_Manager.Instance.warningPopupPanelSeed.SetActive(true);
                 UI_Manager.Instance.warningTextForSeed.text = "Not Enough Seeds";
                 PanelManager.RegisterPanel(UI_Manager.Instance.warningPopupPanelSeed);
                 HideFieldPopup();
                 StopCurrentAction();
-                TimerStartAfterPlants = false;
+                checkForEnoughSeeds = false;
                // HasNotEnoughSeeds = true;
                 return false;
             }

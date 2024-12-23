@@ -52,10 +52,14 @@ public class CharacterMovements : MonoBehaviour
     public LayerMask GroundLayers;
     private int _animIDGrounded;
 
+    [Header("CropCycleAnimationEvents")]
+    public AnimationEventTrigger animationEvents;
+
     private void Start()
     {
         _controller = GetComponent<CharacterController>();
         _animIDGrounded=Animator.StringToHash("Grounded");
+        animationEvents.CropCycleAnimationEvent.AddListener(OnAnimationEvents);
     }
 
     void Update()
@@ -73,6 +77,27 @@ public class CharacterMovements : MonoBehaviour
         var height = new Vector3(transform.position.x, _charGroundPos, transform.position.z);
         transform.position = height;
     }
+
+    void OnAnimationEvents(string eventName)
+    {
+        Debug.Log(eventName);
+        switch (eventName)
+        {
+            case "water_Start":
+                UI_Manager.Instance.waterEffect.SetActive(true);
+                break;
+            case "water_Stop":
+                UI_Manager.Instance.waterEffect.SetActive(false);
+                break;
+            case "refill_Mag1":
+                //RefillMag();
+                break;
+            case "attach_Mag1":
+               // AttachMag();
+                break;
+        }
+    }
+
 
 
     private void GroundedCheck()
@@ -231,20 +256,20 @@ public class CharacterMovements : MonoBehaviour
         _canJump = true;
         isJumping=false;
     }
-     
 
+    float speed=0.50f;
     internal void CameraLock(string area)
     {
         if (area == "Field")
         {
-            virtualCam.transform.position  = lockedPositionField.position;
+            virtualCam.transform.position = Vector3.Lerp(virtualCam.transform.position, lockedPositionField.position, speed * Time.deltaTime); 
             virtualCam.transform.rotation = lockedRotation;
             virtualCam.Follow = null;
            // virtualCam.LookAt = null;
         }
         if(area== "Market")
         {
-            virtualCam.transform.position = lockedPositionMarket.position;
+            virtualCam.transform.position = Vector3.Lerp(virtualCam.transform.position, lockedPositionMarket.position, speed * Time.deltaTime);
             virtualCam.transform.rotation = lockedRotation;
             virtualCam.Follow = null;
         }
