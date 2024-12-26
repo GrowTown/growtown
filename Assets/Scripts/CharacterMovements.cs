@@ -256,7 +256,6 @@ public class CharacterMovements : MonoBehaviour
             _verticalVelocity += gravity * Time.deltaTime;
         }
     }
-
     private IEnumerator JumpCooldown()
     {
         _canJump = false;
@@ -292,7 +291,6 @@ public class CharacterMovements : MonoBehaviour
         virtualCam.Follow = this.transform;
         virtualCam.LookAt = this.transform;
     }
-
     void UpdateVirtualCamera()
     {
         if (isCameraLocked && virtualCam!= null)
@@ -320,10 +318,9 @@ public class CharacterMovements : MonoBehaviour
     private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
     {
         if (isCameraLocked)
-        {
-            // If the character is in the field, set the dog to rest (idle)
+        {      
             SetDogAnimation("Idle");
-            return; // Exit the method so the dog doesn't follow
+            return; 
         }
         string dogStateParam = isCharacterMoving ? "Run" : "Idle";
         SetDogAnimation(dogStateParam);
@@ -336,7 +333,6 @@ public class CharacterMovements : MonoBehaviour
             _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
         }
     }
-
     private void SetDogAnimation(string state)
     {
         switch (state)
