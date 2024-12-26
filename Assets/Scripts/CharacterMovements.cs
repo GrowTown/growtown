@@ -1,4 +1,5 @@
 using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,13 @@ public class CharacterMovements : MonoBehaviour
     [SerializeField]
     CinemachineFreeLook virtualCam;
     public Animator animator;
+    Animator _dogAnimator;
+    [SerializeField]
+    GameObject _dog;
+    [SerializeField] private float followDistance = 2.0f;
+    [SerializeField] private float followSpeed = 5.0f; 
+    [SerializeField] private float followRunSpeed = 6.0f; 
+    [SerializeField] private float followTurnSpeed = 5.0f;
     private CharacterController _controller;
     private Vector3 _moveDirection;
     public Transform lockedPositionField; 
@@ -58,10 +66,10 @@ public class CharacterMovements : MonoBehaviour
     private void Start()
     {
         _controller = GetComponent<CharacterController>();
+        _dogAnimator= _dog.GetComponent<Animator>();
         _animIDGrounded=Animator.StringToHash("Grounded");
         animationEvents.CropCycleAnimationEvent.AddListener(OnAnimationEvents);
     }
-
     void Update()
     {
         Shader.SetGlobalVector("_Player", transform.position);
@@ -71,13 +79,13 @@ public class CharacterMovements : MonoBehaviour
         AdjustHeightofPlayer();
         //UpdateVirtualCamera();
     }
-
     void AdjustHeightofPlayer()
     {
         var height = new Vector3(transform.position.x, _charGroundPos, transform.position.z);
         transform.position = height;
+        var dogheight = new Vector3(_dog.transform.position.x, _charGroundPos, _dog.transform.position.z);
+        _dog.transform.position = dogheight;
     }
-
     void OnAnimationEvents(string eventName)
     {
         Debug.Log(eventName);
@@ -97,9 +105,6 @@ public class CharacterMovements : MonoBehaviour
                 break;
         }
     }
-
-
-
     private void GroundedCheck()
     {
         // set sphere position, with offset
@@ -203,7 +208,7 @@ public class CharacterMovements : MonoBehaviour
 
         // Set blend tree speed
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-        if (_animationBlend < 0.01f) _animationBlend = 0f; // Ensure idle is detected
+        if (_animationBlend < 0.01f) _animationBlend = 0f; 
 
         // Apply movement
         Vector3 moveDirection = inputDirection * _speed;
@@ -216,12 +221,16 @@ public class CharacterMovements : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
         }
 
-        // Update animator parameters
+        // Update the animator parameters
         if (animator != null)
         {
             animator.SetFloat("Speed", _animationBlend); // Use "Speed" for blend tree transitions
             animator.SetFloat("MotionSpeed", inputDirection.magnitude); // Normalize motion input
         }
+
+        // Updating the dog behavior
+       // UpdateDogBehavior(inputDirection.magnitude > 0 ? (isRunning ? 2 : 1) : 0);
+        UpdateDogBehavior(inputDirection.magnitude > 0,isRunning,  isCameraLocked);
     }
 
     bool isJumping;
@@ -257,7 +266,7 @@ public class CharacterMovements : MonoBehaviour
         isJumping=false;
     }
 
-    float speed=0.50f;
+    float speed=0.5f;
     internal void CameraLock(string area)
     {
         if (area == "Field")
@@ -293,7 +302,70 @@ public class CharacterMovements : MonoBehaviour
         }
     }
 
-   
+    /*   private void UpdateDogBehavior(int state)
+    {
+     
+        string dogStateParam = state == 0 ? "Idle" : (state == 1 ? "Walk" : "Run");
+        SetDogAnimation(dogStateParam);
+
+     
+        if (state != 0) // Not idle
+        {
+            Vector3 targetPosition = transform.position - transform.forward * followDistance + Vector3.up *0.5f;
+            _dog.transform.position = Vector3.Lerp(_dog.transform.position, targetPosition, Time.deltaTime * followSpeed);
+            Quaternion lookRotation = Quaternion.LookRotation(transform.position - _dog.transform.position);
+            _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
+        }
+    }*/
+    private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
+    {
+        if (isCameraLocked)
+        {
+            // If the character is in the field, set the dog to rest (idle)
+            SetDogAnimation("Idle");
+            return; // Exit the method so the dog doesn't follow
+        }
+        string dogStateParam = isCharacterMoving ? "Run" : "Idle";
+        SetDogAnimation(dogStateParam);
+        float currentDogSpeed = isCharacterRunning ? followRunSpeed : followSpeed;
+        if (isCharacterMoving)
+        {
+            Vector3 targetPosition = transform.position - transform.forward * followDistance + Vector3.up * 0.5f;
+            _dog.transform.position = Vector3.Lerp(_dog.transform.position, targetPosition, Time.deltaTime * currentDogSpeed);
+            Quaternion lookRotation = Quaternion.LookRotation(transform.position - _dog.transform.position);
+            _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
+        }
+    }
+
+    private void SetDogAnimation(string state)
+    {
+        switch (state)
+        {
+            case "Idle":
+                SetInt("animation,0");
+                break;
+            case "Walk":
+                SetInt("animation,1");
+                break;
+            case "Run":
+                SetInt("animation,2");
+                break;
+        }
+    }
+    public void SetInt(string parameter = "key,value")
+    {
+        char[] separator = { ',', ';' };
+        string[] param = parameter.Split(separator);
+
+        string name = param[0];
+        int value = Convert.ToInt32(param[1]);
+
+        Debug.Log(name + " " + value);
+
+        _dogAnimator.SetInteger(name, value);
+        
+    }
+
 }
 
 

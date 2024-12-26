@@ -116,19 +116,16 @@ public class UI_Manager : MonoBehaviour
         get => _shopManager;
         set => _shopManager = value;
     }
-
     public TriggerZoneCallBacks TriggerZoneCallBacks
     {
         get => _triggerCallBacks;
         set => _triggerCallBacks = value;
     }
-
     public CharacterMovements CharacterMovements
     {
         get => _characterMovements;
         set => _characterMovements = value;
     }
-
     public FieldGrid FieldGrid
     {
         get => _fieldGrid;
@@ -220,9 +217,7 @@ public class UI_Manager : MonoBehaviour
             {
                 sellPopupPanel.SetActive(true);
             }
-
         };
-
 
         TriggerZoneCallBacks.onPlayerExit += (e) =>
         {
@@ -237,7 +232,7 @@ public class UI_Manager : MonoBehaviour
         });
         sellInventoryBT.onClick.AddListener(() =>
         {
-            foreach (var item in UI_Manager.Instance.ListOfHarvestCount)
+            foreach (var item in ListOfHarvestCount)
             {
                 GameManager.Instance.CounttheHarvest(item.Value.Count);
             }
@@ -390,8 +385,7 @@ public class UI_Manager : MonoBehaviour
     void HideShowPopUpNotEnoughPoints()
     {
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
-        {
-            
+        {        
             PanelManager.HideAllPanels();
         }
     }

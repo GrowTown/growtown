@@ -4,10 +4,7 @@ using UnityEngine;
 
 public static class PanelManager
 { 
-
     private static List<GameObject> panels = new List<GameObject>();
-
-   
     public static  void RegisterPanel(GameObject panel)
     {
         if (!panels.Contains(panel))
@@ -15,7 +12,6 @@ public static class PanelManager
             panels.Add(panel);
         }
     }
-
     public static void HideAllPanels()
     {
         foreach (var panel in panels)
@@ -23,6 +19,7 @@ public static class PanelManager
             if (panel.activeSelf)
             {
                 panel.SetActive(false);
+                //panels.Remove(panel);
             }
         }
     }

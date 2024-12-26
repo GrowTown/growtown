@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     internal bool checkingForSeedingStarted;
     internal bool isplantGrowthCompleted;
     internal int spawnedTomatoesCount;
+    internal bool checkPlayerInZone;
+    internal bool checkForEnoughSeeds;
 
     int _currentFieldID;
     int _currentWheatSeedCount = 0;
@@ -23,10 +25,6 @@ public class GameManager : MonoBehaviour
     int _currentEnergyCount = 0;
     int _currentWaterCount = 0;
     bool _timerStartAfterPlants;
-    public bool checkPlayerInZone;
-    public bool checkForEnoughSeeds;
-    
-
     Timer _timer;
 
 
@@ -48,7 +46,6 @@ public class GameManager : MonoBehaviour
         get => _currentFieldID;
         set => _currentFieldID = value;
     }
-
     public int CurrentStrawberriesSeedCount
     {
         get => _currentStrawberriesSeedCount;
@@ -115,6 +112,7 @@ public class GameManager : MonoBehaviour
             case PlayerAction.Seed:
 
                 if (!HasEnoughPoints(5, 0)) return;
+                if (!HasNotEnoughSeed(1)) return;
                 isThroughingseeds = true;
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
@@ -281,7 +279,7 @@ public class GameManager : MonoBehaviour
         }
         else if (grownPlantCount > 75)
         {
-            UI_Manager.Instance.scoreIn += 200; 
+             UI_Manager.Instance.scoreIn += 200; 
         }
         else if (grownPlantCount > 50)
         {
@@ -404,9 +402,7 @@ public class GameManager : MonoBehaviour
 
     bool isTimerStarted;
     public IEnumerator ToIncreaseWaterPointsAccordingtoTime()
-    {
-        if (CurrentWaterCount < 500)
-        {
+    { 
             if (_timer == null)
             {
                 _timer = this.gameObject.AddComponent<Timer>();
@@ -416,17 +412,12 @@ public class GameManager : MonoBehaviour
                 _timer.Initialize("Water", DateTime.Now, TimeSpan.FromMinutes(1));
                 _timer.StartTimer();
                 isTimerStarted = true;
-
             }
-
-            // Loop while the timer is running
             while (_timer.secondsLeft > 0)
             {
                 Debug.Log("Time Left :: " + _timer.secondsLeft);
                 yield return null;
             }
-
-
             if (CurrentWaterCount < 500)
             {
                 CurrentWaterCount += 10;
@@ -438,8 +429,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 Destroy(_timer);
-            }
-        }
+            }  
     }
 
     internal bool isResetetValues;
@@ -453,6 +443,7 @@ public class GameManager : MonoBehaviour
             tile.plantSpawned = false;
             tile.plantgrowth = false;
             tile.isCuttingStarted = false;
+            tile._hasColorChanged = false;
         }
         IsHarvestCount = false;
         UI_Manager.Instance.isWentInsideOnce = false;
@@ -471,14 +462,11 @@ public class GameManager : MonoBehaviour
             item.GetComponent<POPSelectionFunctionality>()._hasBeenClicked = false;
         }
         isplantGrowthCompleted = false;
-
     }
-    public bool HasNotEnoughSeed(int seedRequired)
+    public bool HasNotEnoughSeed(int seedRequired) 
     {
         if (CurrentTomatoSeedCount < seedRequired)
         {
-            if (checkForEnoughSeeds)
-            {
                 UI_Manager.Instance.warningPopupPanelSeed.SetActive(true);
                 UI_Manager.Instance.warningTextForSeed.text = "Not Enough Seeds";
                 PanelManager.RegisterPanel(UI_Manager.Instance.warningPopupPanelSeed);
@@ -486,10 +474,8 @@ public class GameManager : MonoBehaviour
                 StopCurrentAction();
                 checkForEnoughSeeds = false;
                // HasNotEnoughSeeds = true;
-                return false;
-            }
+                return false; 
         }
-
         return true;
     }
     public bool HasEnoughPoints(int energyRequired, int waterRequired)
