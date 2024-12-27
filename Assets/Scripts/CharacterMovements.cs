@@ -291,14 +291,6 @@ public class CharacterMovements : MonoBehaviour
         virtualCam.Follow = this.transform;
         virtualCam.LookAt = this.transform;
     }
-    void UpdateVirtualCamera()
-    {
-        if (isCameraLocked && virtualCam!= null)
-        {
-           // virtualCam.transform.position = lockedPosition;
-            virtualCam.transform.rotation = lockedRotation;
-        }
-    }
 
     /*   private void UpdateDogBehavior(int state)
     {

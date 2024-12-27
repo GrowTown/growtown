@@ -177,6 +177,7 @@ public class UI_Manager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
+                if(PopupImg[currentPopupIndex].activeSelf)
                 HandleSelection(currentPlayerAction, currentPopupIndex, currentSelectionFunctionality);
             }
         }
@@ -315,10 +316,11 @@ public class UI_Manager : MonoBehaviour
             }
             else
             {
-                if (Input.GetKeyDown(KeyCode.E))
+           /*     if (Input.GetKeyDown(KeyCode.E))
                 {
-                    HandleSelection(currentAction, popupIndex, selectionFunctionality);
-                }
+                    if (popup.activeSelf)
+                        HandleSelection(currentAction, popupIndex, selectionFunctionality);
+                }*/
 
                 selectionFunctionality.onClick = (selected) =>
                 {
@@ -359,7 +361,7 @@ public class UI_Manager : MonoBehaviour
 
         GameManager.Instance.StartPlayerAction(currentAction);
         GameManager.Instance.isOneWorkingActionCompleted = false;
-        UI_Manager.Instance.oldcurrentStep = popupIndex;
+        oldcurrentStep = popupIndex;
     }
 
     internal void HideFieldPopup()
