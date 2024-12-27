@@ -8,10 +8,13 @@ namespace Suriyun
     {
 
         public Animator[] animators;
+
         public void SwapVisibility(GameObject obj)
         {
             obj.SetActive(!obj.activeSelf);
         }
+
+
         public void SetFloat(string parameter = "key,value")
         {
             char[] separator = { ',', ';' };
