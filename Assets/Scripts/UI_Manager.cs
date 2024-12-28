@@ -68,7 +68,8 @@ public class UI_Manager : MonoBehaviour
     private WeaponAttackEvent _weaponAttackEvent;
     [SerializeField]
     private EnemyPool _enemyPool;
-
+    [SerializeField]
+    private TriggerForStoppingTheRun _triggerForStoppingTheRun;
 
     internal int oldcurrentStep = -1;
     InventoryNames[] inventoryNames;
@@ -79,6 +80,8 @@ public class UI_Manager : MonoBehaviour
     internal bool isTimerOn = false;
     internal bool isinitialgrowStarted = false;
     public int currentIndex;
+
+     internal bool IsPlayerInSecondZone = true;
 
     internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
     internal List<GameObject> spawnPlantsForInitialGrowth = new List<GameObject>();
@@ -95,7 +98,12 @@ public class UI_Manager : MonoBehaviour
     #endregion
 
     #region Properties
-   
+     
+    public TriggerForStoppingTheRun TriggerForStoppingTheRun
+    {
+        get => _triggerForStoppingTheRun;
+        set=>_triggerForStoppingTheRun = value;
+    }
     public EnemyPool EnemyPool
     {
         get => _enemyPool;
@@ -316,11 +324,11 @@ public class UI_Manager : MonoBehaviour
             }
             else
             {
-           /*     if (Input.GetKeyDown(KeyCode.E))
+                if (Input.GetKeyDown(KeyCode.E))
                 {
                     if (popup.activeSelf)
                         HandleSelection(currentAction, popupIndex, selectionFunctionality);
-                }*/
+                }
 
                 selectionFunctionality.onClick = (selected) =>
                 {

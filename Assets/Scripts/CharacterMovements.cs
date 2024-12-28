@@ -190,8 +190,7 @@ public class CharacterMovements : MonoBehaviour
         // Calculate movement direction relative to the camera
         Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
 
-        // Determine if running
-        bool isRunning = Input.GetKey(KeyCode.LeftShift);
+        bool isRunning = Input.GetKey(KeyCode.LeftShift) && !UI_Manager.Instance.IsPlayerInSecondZone;
 
         // Calculate target speed
         float targetSpeed = inputDirection == Vector3.zero ? 0f : (isRunning ? runSpeed : walkSpeed);
