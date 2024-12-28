@@ -43,6 +43,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                 case ZoneType.Market:
                         
                     onPlayerEnter?.Invoke(this);
+                    other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(2);
 
 
                     break;
@@ -57,12 +58,12 @@ public class TriggerZoneCallBacks : MonoBehaviour
             GameManager.Instance.checkPlayerInZone = false;
             playerInZone = false;
             UI_Manager.Instance.isPlayerInField = false;
-            UI_Manager.Instance.CharacterMovements.CameraUnlock();
+           
+           other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
             switch (zoneType)
             {
                 case ZoneType.Field:
                     GameManager.Instance.HideFieldPopup();
-                    other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
                     GameManager.Instance.StopCurrentAction();
                     if (UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(fieldID))
                     {
