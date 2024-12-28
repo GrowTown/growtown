@@ -80,16 +80,6 @@ public class CharacterMovements : MonoBehaviour
         if (!isJumping)
             AdjustHeightofPlayer();
         //UpdateVirtualCamera();
-        if (virtualCam.Follow != null)
-        {
-            float distance = Vector3.Distance(virtualCam.transform.position, lockedPositionField.position);
-
-            if (distance >= 3&& GameManager.Instance.checkPlayerInZone)
-            {
-               /* CameraLock("Field");
-                AdjustCameraToFitField();*/
-            }
-        }
     }
     void AdjustHeightofPlayer()
     {
@@ -242,7 +232,7 @@ public class CharacterMovements : MonoBehaviour
 
         // Updating the dog behavior
         // UpdateDogBehavior(inputDirection.magnitude > 0 ? (isRunning ? 2 : 1) : 0);
-        UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, isCameraLocked);
+        UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, GameManager.Instance.checkPlayerInZone);
     }
 
     bool isJumping;
@@ -278,68 +268,6 @@ public class CharacterMovements : MonoBehaviour
     }
 
     float speed = 0.5f;
-
-
-    internal void CameraLock(string area)
-    {
-        if (area == "Field")
-        {
-                virtualCam.Follow = null;
-                virtualCam.LookAt = fieldTransform;
-            /*// Smoothly move the camera to the locked position
-            virtualCam.Follow.DOMove(lockedPositionField.position, 1f)
-                .SetEase(Ease.InOutQuad); // Adjust duration and easing as needed
-            virtualCam.LookAt.DOMove(lockedPositionField.position, 1f)
-                .SetEase(Ease.InOutQuad); // Adjust duration and easing as needed
-            virtualCam.transform.DORotate(lockedRotation.eulerAngles, 1f)
-               .SetEase(Ease.InOutQuad);*/
-            AdjustCameraToFitField();
-        }
-        else if (area == "Market")
-        {
-            virtualCam.Follow = null;
-            virtualCam.transform.DOMove(lockedPositionMarket.position, 1f)
-                .SetEase(Ease.InOutQuad);
-            virtualCam.transform.DORotate(lockedRotation.eulerAngles, 1f)
-                .SetEase(Ease.InOutQuad);
-
-        }
-
-        isCameraLocked = true;
-    }
-    private void AdjustCameraToFitField()
-    {
-        // Calculate the bounds of the field using the Collider
-        Bounds fieldBounds = fieldCollider.bounds;
-
-        // Get the size of the field
-        float fieldWidth = fieldBounds.size.x;
-        float fieldHeight = fieldBounds.size.z; // Assuming the field is on the XZ plane
-
-        // Calculate the required distance for the full field to fit in view
-        float fieldDiagonal = Mathf.Sqrt(fieldWidth * fieldWidth + fieldHeight * fieldHeight);
-        float requiredDistance = fieldDiagonal / (2f * Mathf.Tan(Mathf.Deg2Rad * (virtualCam.m_Lens.FieldOfView / 2f)));
-
-        // Adjust the camera position to fit the field
-        Vector3 directionToField = (fieldBounds.center - virtualCam.transform.position).normalized;
-        virtualCam.transform.DOMove(fieldBounds.center - directionToField * requiredDistance,1f);
-
-        Debug.Log($"Adjusted camera distance: {requiredDistance}");
-    }
-
-    internal void CameraUnlock()
-    {
-        isCameraLocked = false;
-
-        // Reset the camera to follow and look at the player smoothly
-        virtualCam.transform.DOMove(this.transform.position, 1f)
-            .SetEase(Ease.InOutQuad);
-        virtualCam.transform.DORotate(this.transform.rotation.eulerAngles, 1f)
-            .SetEase(Ease.InOutQuad);
-
-        virtualCam.Follow = this.transform;
-        virtualCam.LookAt = this.transform;
-    }
 
 
     /*   private void UpdateDogBehavior(int state)

@@ -28,7 +28,6 @@ public class TriggerZoneCallBacks : MonoBehaviour
             UI_Manager.Instance.isPlayerInField = true;
             UI_Manager.Instance.WeaponAttackEvent.ToMakeHammerInactive();
             
-               UI_Manager.Instance.CharacterMovements.CameraLock(zoneType.ToString());
             switch (zoneType)
             {   
                 case ZoneType.Field:
@@ -38,6 +37,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                         GameManager.Instance.CurrentFieldID = fieldID;
 
                     }
+                    other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
 
                     break;
                 case ZoneType.Market:
@@ -62,7 +62,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
             {
                 case ZoneType.Field:
                     GameManager.Instance.HideFieldPopup();
-
+                    other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
                     GameManager.Instance.StopCurrentAction();
                     if (UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(fieldID))
                     {
