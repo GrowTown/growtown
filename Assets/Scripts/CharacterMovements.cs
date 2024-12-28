@@ -1,9 +1,8 @@
 using Cinemachine;
+using DG.Tweening;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class CharacterMovements : MonoBehaviour
 {
@@ -15,16 +14,17 @@ public class CharacterMovements : MonoBehaviour
     [SerializeField]
     GameObject _dog;
     [SerializeField] private float followDistance = 2.0f;
-    [SerializeField] private float followSpeed = 5.0f; 
-    [SerializeField] private float followRunSpeed = 6.0f; 
+    [SerializeField] private float followSpeed = 5.0f;
+    [SerializeField] private float followRunSpeed = 6.0f;
     [SerializeField] private float followTurnSpeed = 5.0f;
     private CharacterController _controller;
     private Vector3 _moveDirection;
-    public Transform lockedPositionField; 
-    public Transform lockedPositionMarket; 
+    public Transform lockedPositionField;
+    public Transform lockedPositionMarket;
 
-    internal Quaternion lockedRotation; 
-    internal bool isCameraLocked = false; 
+    internal Quaternion lockedRotation;
+    internal bool isCameraLocked = false;
+    internal bool isPlayerEnterZone = false;
 
     //Walk,Run variables
     public float walkSpeed = 2f;
@@ -40,13 +40,13 @@ public class CharacterMovements : MonoBehaviour
     // Variables for jump logic
     [SerializeField] private float jumpHeight = 2.0f;
     [SerializeField] private float gravity = -9.81f;
-    [SerializeField] private float jumpCooldown = 0.5f; 
+    [SerializeField] private float jumpCooldown = 0.5f;
 
-    private float _verticalVelocity; 
+    private float _verticalVelocity;
     private bool _canJump = true;
 
     // Ground Check variables
-     [Header("Player Grounded")]
+    [Header("Player Grounded")]
     [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
     public bool Grounded = true;
 
@@ -63,11 +63,13 @@ public class CharacterMovements : MonoBehaviour
     [Header("CropCycleAnimationEvents")]
     public AnimationEventTrigger animationEvents;
 
+    [SerializeField] private Transform fieldTransform; // Reference to the field
+    [SerializeField] private Collider fieldCollider; // Renderer of the field to calculate bounds
     private void Start()
     {
         _controller = GetComponent<CharacterController>();
-        _dogAnimator= _dog.GetComponent<Animator>();
-        _animIDGrounded=Animator.StringToHash("Grounded");
+        _dogAnimator = _dog.GetComponent<Animator>();
+        _animIDGrounded = Animator.StringToHash("Grounded");
         animationEvents.CropCycleAnimationEvent.AddListener(OnAnimationEvents);
     }
     void Update()
@@ -75,9 +77,19 @@ public class CharacterMovements : MonoBehaviour
         Shader.SetGlobalVector("_Player", transform.position);
         CharMovements();
         HandleJump();
-        if(!isJumping)
-        AdjustHeightofPlayer();
+        if (!isJumping)
+            AdjustHeightofPlayer();
         //UpdateVirtualCamera();
+        if (virtualCam.Follow != null)
+        {
+            float distance = Vector3.Distance(virtualCam.transform.position, lockedPositionField.position);
+
+            if (distance >= 3&& GameManager.Instance.checkPlayerInZone)
+            {
+               /* CameraLock("Field");
+                AdjustCameraToFitField();*/
+            }
+        }
     }
     void AdjustHeightofPlayer()
     {
@@ -101,7 +113,7 @@ public class CharacterMovements : MonoBehaviour
                 //RefillMag();
                 break;
             case "attach_Mag1":
-               // AttachMag();
+                // AttachMag();
                 break;
         }
     }
@@ -208,7 +220,7 @@ public class CharacterMovements : MonoBehaviour
 
         // Set blend tree speed
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-        if (_animationBlend < 0.01f) _animationBlend = 0f; 
+        if (_animationBlend < 0.01f) _animationBlend = 0f;
 
         // Apply movement
         Vector3 moveDirection = inputDirection * _speed;
@@ -229,8 +241,8 @@ public class CharacterMovements : MonoBehaviour
         }
 
         // Updating the dog behavior
-       // UpdateDogBehavior(inputDirection.magnitude > 0 ? (isRunning ? 2 : 1) : 0);
-        UpdateDogBehavior(inputDirection.magnitude > 0,isRunning,  isCameraLocked);
+        // UpdateDogBehavior(inputDirection.magnitude > 0 ? (isRunning ? 2 : 1) : 0);
+        UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, isCameraLocked);
     }
 
     bool isJumping;
@@ -239,15 +251,15 @@ public class CharacterMovements : MonoBehaviour
         // Check if the player is grounded
         if (Grounded)
         {
-            _verticalVelocity = 0f; 
+            _verticalVelocity = 0f;
 
             // Trigger jump if the spacebar is pressed and cooldown allows it
             if (Input.GetKeyDown(KeyCode.Space) && _canJump)
             {
-                isJumping= true;
-                _verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity); 
-                animator.SetTrigger("IsJumping"); 
-                StartCoroutine(JumpCooldown()); 
+                isJumping = true;
+                _verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                animator.SetTrigger("IsJumping");
+                StartCoroutine(JumpCooldown());
             }
         }
         else
@@ -260,45 +272,83 @@ public class CharacterMovements : MonoBehaviour
     {
         _canJump = false;
         yield return new WaitForSeconds(jumpCooldown);
-        animator.SetBool("IsJumping",false);
+        animator.SetBool("IsJumping", false);
         _canJump = true;
-        isJumping=false;
+        isJumping = false;
     }
 
-    float speed=0.5f;
+    float speed = 0.5f;
+
+
     internal void CameraLock(string area)
     {
         if (area == "Field")
         {
-            virtualCam.transform.position = Vector3.Lerp(virtualCam.transform.position, lockedPositionField.position, speed * Time.deltaTime); 
-            virtualCam.transform.rotation = lockedRotation;
-            virtualCam.Follow = null;
-           // virtualCam.LookAt = null;
+                virtualCam.Follow = null;
+                virtualCam.LookAt = fieldTransform;
+            /*// Smoothly move the camera to the locked position
+            virtualCam.Follow.DOMove(lockedPositionField.position, 1f)
+                .SetEase(Ease.InOutQuad); // Adjust duration and easing as needed
+            virtualCam.LookAt.DOMove(lockedPositionField.position, 1f)
+                .SetEase(Ease.InOutQuad); // Adjust duration and easing as needed
+            virtualCam.transform.DORotate(lockedRotation.eulerAngles, 1f)
+               .SetEase(Ease.InOutQuad);*/
+            AdjustCameraToFitField();
         }
-        if(area== "Market")
+        else if (area == "Market")
         {
-            virtualCam.transform.position = Vector3.Lerp(virtualCam.transform.position, lockedPositionMarket.position, speed * Time.deltaTime);
-            virtualCam.transform.rotation = lockedRotation;
             virtualCam.Follow = null;
-        }
-    
-        isCameraLocked = true;
+            virtualCam.transform.DOMove(lockedPositionMarket.position, 1f)
+                .SetEase(Ease.InOutQuad);
+            virtualCam.transform.DORotate(lockedRotation.eulerAngles, 1f)
+                .SetEase(Ease.InOutQuad);
 
+        }
+
+        isCameraLocked = true;
     }
+    private void AdjustCameraToFitField()
+    {
+        // Calculate the bounds of the field using the Collider
+        Bounds fieldBounds = fieldCollider.bounds;
+
+        // Get the size of the field
+        float fieldWidth = fieldBounds.size.x;
+        float fieldHeight = fieldBounds.size.z; // Assuming the field is on the XZ plane
+
+        // Calculate the required distance for the full field to fit in view
+        float fieldDiagonal = Mathf.Sqrt(fieldWidth * fieldWidth + fieldHeight * fieldHeight);
+        float requiredDistance = fieldDiagonal / (2f * Mathf.Tan(Mathf.Deg2Rad * (virtualCam.m_Lens.FieldOfView / 2f)));
+
+        // Adjust the camera position to fit the field
+        Vector3 directionToField = (fieldBounds.center - virtualCam.transform.position).normalized;
+        virtualCam.transform.DOMove(fieldBounds.center - directionToField * requiredDistance,1f);
+
+        Debug.Log($"Adjusted camera distance: {requiredDistance}");
+    }
+
     internal void CameraUnlock()
-    {       
-        isCameraLocked = false;    
+    {
+        isCameraLocked = false;
+
+        // Reset the camera to follow and look at the player smoothly
+        virtualCam.transform.DOMove(this.transform.position, 1f)
+            .SetEase(Ease.InOutQuad);
+        virtualCam.transform.DORotate(this.transform.rotation.eulerAngles, 1f)
+            .SetEase(Ease.InOutQuad);
+
         virtualCam.Follow = this.transform;
         virtualCam.LookAt = this.transform;
     }
 
+
     /*   private void UpdateDogBehavior(int state)
     {
-     
+
         string dogStateParam = state == 0 ? "Idle" : (state == 1 ? "Walk" : "Run");
         SetDogAnimation(dogStateParam);
 
-     
+
         if (state != 0) // Not idle
         {
             Vector3 targetPosition = transform.position - transform.forward * followDistance + Vector3.up *0.5f;
@@ -310,9 +360,9 @@ public class CharacterMovements : MonoBehaviour
     private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
     {
         if (isCameraLocked)
-        {      
+        {
             SetDogAnimation("Idle");
-            return; 
+            return;
         }
         string dogStateParam = isCharacterMoving ? "Run" : "Idle";
         SetDogAnimation(dogStateParam);
@@ -351,7 +401,7 @@ public class CharacterMovements : MonoBehaviour
         Debug.Log(name + " " + value);
 
         _dogAnimator.SetInteger(name, value);
-        
+
     }
 
 }

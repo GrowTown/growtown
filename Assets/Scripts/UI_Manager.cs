@@ -174,7 +174,7 @@ public class UI_Manager : MonoBehaviour
         }
 
         if (currentPopupIndex >= 0)
-        {
+        { 
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if(PopupImg[currentPopupIndex].activeSelf)
