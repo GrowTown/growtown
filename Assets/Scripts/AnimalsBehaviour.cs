@@ -1,33 +1,35 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AnimalsBehaviour : MonoBehaviour
 {
-    private enum CowState { WalkingToDestination, Walking,Turning,Eating, WalkingBack, Resting }
+
+    private enum CowState { WalkingToDestination, Eating, WalkingBack, Resting }
     private CowState currentState;
 
     public Animator animator; // Reference to the Animator component
-    public Transform startPosition; // Starting point of the cow
-    public Transform endPosition; // Destination point of the cow
-    public float stepDuration = 2f; // Time for each step
-    public float restDuration = 30f; // Rest time
-    private Vector3 nextTarget; // Next target position
-    private float stateStartTime; // Tracks when the current state started
+    public Transform startPoint; // Starting point
+    public Transform endPoint; // End point
+    public Transform turnPoint; // Turn point for semi-circle
+    public float speed = 2f; // Movement speed
+    public float curveResolution = 50f; // Number of points in the semi-circular path
     public float eatingDuration = 5f; // Eating time
-    public float turnRadius = 2f; // Radius of the semi-circle turn
-    public int turnSegments = 10; // Number of steps in the turn
-    public float turnSpeed = 2f; // Speed for turning
+    public float restDuration = 30f; // Resting time
 
-    private int currentTurnStep = 0; // Step index for the semi-circle turn
-    private Vector3[] turnPath; // Path points for the semi-circle turn
-    public int stepsBeforeEating = 4; // Number of steps before eating
-    private int currentStep;
+    private List<Vector3> pathPoints; // All the points along the path
+    private int currentTargetIndex; // Current target index along the path
+    private float stateStartTime; // Tracks when the current state started
+    private bool isPathGenerated = false;
+    private List<float> targetRotations;
+
     void Start()
     {
-        currentState = CowState.Walking;
-        nextTarget = GetNextStep(startPosition.position, endPosition.position);
+        currentState = CowState.WalkingToDestination;
+        GeneratePath();
+        currentTargetIndex = 0;
         stateStartTime = Time.time;
-        SetInt("animation,1"); // Set walking animation
+        SetInt("animation,1"); // Start walking animation
     }
 
     void Update()
@@ -39,18 +41,16 @@ public class AnimalsBehaviour : MonoBehaviour
     {
         switch (currentState)
         {
-            case CowState.Walking:
-                HandleWalking();
+            case CowState.WalkingToDestination:
+                MoveAlongPath(true); // Move forward along the path
                 break;
-            case CowState.Turning:
-                HandleTurning();
-                break;
+
             case CowState.Eating:
                 HandleEating();
                 break;
 
             case CowState.WalkingBack:
-                HandleWalking();
+                MoveAlongPath(false); // Move backward along the path
                 break;
 
             case CowState.Resting:
@@ -59,153 +59,103 @@ public class AnimalsBehaviour : MonoBehaviour
         }
     }
 
-    /*private void WalkBehavior()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, nextTarget, Time.deltaTime);
-
-        if (Vector3.Distance(transform.position, nextTarget) < 0.1f)
-        {
-            currentState = CowState.Eating;
-            stateStartTime = Time.time;
-            SetInt("animation,4"); // Set eating animation
-        }
-    }*/
-    private void HandleWalking()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, nextTarget, Time.deltaTime);
-
-        if (Vector3.Distance(transform.position, nextTarget) < 0.1f)
-        {
-            currentStep++;
-            if (currentStep % stepsBeforeEating == 0)
-            {
-                currentState = CowState.Eating;
-                stateStartTime = Time.time;
-                SetInt("animation,4"); // Set eating animation
-            }
-            else
-            {
-                nextTarget = GetNextStep(nextTarget, currentStep % stepsBeforeEating == 0 ? startPosition.position : endPosition.position);
-            }
-        }
-
-        // Transition to turning state when reaching the destination
-        if (currentStep % stepsBeforeEating == 0 && Vector3.Distance(transform.position, endPosition.position) < 0.1f)
-        {
-            PrepareForTurn(endPosition.position, true); // Turn away from the destination
-            currentState = CowState.Turning;
-        }
-        else if (currentStep % stepsBeforeEating == 0 && Vector3.Distance(transform.position, startPosition.position) < 0.1f)
-        {
-            PrepareForTurn(startPosition.position, false); // Turn away from the start
-            currentState = CowState.Turning;
-        }
-    }
-
-    private void HandleTurning()
-    {
-        if (currentTurnStep < turnPath.Length)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, turnPath[currentTurnStep], turnSpeed * Time.deltaTime);
-            Vector3 direction = (turnPath[currentTurnStep] - transform.position).normalized;
-            if (direction != Vector3.zero)
-            {
-                transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
-            }
-
-            if (Vector3.Distance(transform.position, turnPath[currentTurnStep]) < 0.1f)
-            {
-                currentTurnStep++;
-            }
-        }
-        else
-        {
-            currentState = CowState.Walking;
-            nextTarget = currentStep % stepsBeforeEating == 0 ? startPosition.position : endPosition.position;
-            stateStartTime = Time.time;
-            SetInt("animation,1"); // Set walking animation
-        }
-    }
-
-    private void PrepareForTurn(Vector3 pivotPoint, bool isTurningAway)
-    {
-        // Create semi-circle path
-        Vector3 direction = isTurningAway ? (pivotPoint - transform.position).normalized : (transform.position - pivotPoint).normalized;
-        Vector3 perpendicular = Vector3.Cross(direction, Vector3.up).normalized;
-
-        turnPath = new Vector3[turnSegments + 1];
-        for (int i = 0; i <= turnSegments; i++)
-        {
-            float angle = Mathf.PI * i / turnSegments; // Semi-circle angle
-            Vector3 offset = Mathf.Cos(angle) * direction * turnRadius + Mathf.Sin(angle) * perpendicular * turnRadius;
-            turnPath[i] = pivotPoint + offset;
-        }
-
-        currentTurnStep = 0;
-    }
-    /* private void HandleEating()
-     {
-         if (Time.time - stateStartTime >= eatingDuration)
-         {
-             if (Vector3.Distance(transform.position, endPosition.position) >= 0.1f)
-             {
-                 currentState = CowState.WalkingToDestination;
-             }
-             else
-             {
-                 currentState = CowState.WalkingBack;
-             }
-             // Determine the next state: Continue walking or transition to walking back
-             if (currentState == CowState.WalkingToDestination)
-             {
-                 nextTarget = GetNextStep(transform.position, endPosition.position);
-
-                 if (Vector3.Distance(transform.position, endPosition.position) < 0.1f)
-                 {
-                     currentState = CowState.WalkingBack;
-                     nextTarget = GetNextStep(endPosition.position, startPosition.position);
-                 }
-             }
-             else if (currentState == CowState.WalkingBack)
-             {
-                 nextTarget = GetNextStep(transform.position, startPosition.position);
-
-                 if (Vector3.Distance(transform.position, startPosition.position) < 0.1f)
-                 {
-                     currentState = CowState.Resting;
-                     stateStartTime = Time.time;
-                     SetInt("animation,5"); // Set resting animation
-                     return;
-                 }
-             }
-             //currentState = currentState == CowState.WalkingToDestination ? CowState.WalkingToDestination : CowState.WalkingBack;
-             stateStartTime = Time.time;
-             SetInt("animation,1");
-         }
-     }*/
     private void HandleEating()
     {
         if (Time.time - stateStartTime >= eatingDuration)
         {
-            currentState = CowState.WalkingToDestination;
-            nextTarget = GetNextStep(transform.position, currentStep % stepsBeforeEating == 0 ? startPosition.position : endPosition.position);
-            SetInt("animation,1"); // Set walking animation
+            if (currentState == CowState.WalkingToDestination)
+            {
+                currentState = CowState.WalkingBack;
+                currentTargetIndex = pathPoints.Count - 1; // Start from the end of the path
+            }
+            stateStartTime = Time.time;
+            SetInt("animation,1"); // Resume walking animation
         }
     }
+
     private void HandleResting()
     {
         if (Time.time - stateStartTime >= restDuration)
         {
             currentState = CowState.WalkingToDestination;
-            nextTarget = GetNextStep(startPosition.position, endPosition.position);
+            currentTargetIndex = 0; // Restart from the beginning of the path
             stateStartTime = Time.time;
-            SetInt("animation,1"); // Set walking animation
+            SetInt("animation,1"); // Start walking animation
         }
     }
 
-    private Vector3 GetNextStep(Vector3 current, Vector3 target)
+    private void MoveAlongPath(bool forward)
     {
-        return Vector3.MoveTowards(current, target, Vector3.Distance(current, target) / 4); // Divide the distance into 4 steps
+        if (currentTargetIndex >= 0 && currentTargetIndex < pathPoints.Count)
+        {
+            Vector3 target = pathPoints[currentTargetIndex];
+            float targetRotation = targetRotations[currentTargetIndex];
+
+            // Move towards the target point
+            transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+
+            // Smoothly rotate to the target rotation
+            Quaternion desiredRotation = Quaternion.Euler(0, targetRotation, 0);
+            transform.rotation = Quaternion.Lerp(transform.rotation, desiredRotation, Time.deltaTime * speed);
+
+            // Check if reached the current target
+            if (Vector3.Distance(transform.position, target) < 0.1f)
+            {
+                currentTargetIndex += forward ? 1 : -1; // Move forward or backward
+            }
+        }
+        else
+        {
+            // Transition to Eating or Resting
+            if (forward)
+            {
+                currentState = CowState.Eating;
+                SetInt("animation,4"); // Eating animation
+            }
+            else
+            {
+                currentState = CowState.Resting;
+                SetInt("animation,15"); // Resting animation
+            }
+            stateStartTime = Time.time;
+        }
+    }
+
+    private void GeneratePath()
+    {
+        if (isPathGenerated) return;
+
+        pathPoints = new List<Vector3>();
+        targetRotations = new List<float>();
+
+        // Add points for straight line (start to end)
+        pathPoints.Add(startPoint.position);
+        targetRotations.Add(0f); // Rotation for straight line
+
+        pathPoints.Add(endPoint.position);
+        targetRotations.Add(-60f); // Rotation at the end point
+
+        // Add points for the semi-circular path
+        Vector3 center = (endPoint.position + turnPoint.position) / 2; // Center of the semi-circle
+        float radius = Vector3.Distance(center, endPoint.position);
+
+        for (float t = 0; t <= 1f; t += 1f / curveResolution)
+        {
+            float angle = Mathf.PI * t; // Semi-circle angle (0 to 180 degrees)
+            float x = center.x + radius * Mathf.Cos(angle);
+            float z = center.z + radius * Mathf.Sin(angle);
+            pathPoints.Add(new Vector3(x, endPoint.position.y, z));
+            targetRotations.Add(-60f + (t * -60f)); // Adjust rotation smoothly along the semi-circle
+        }
+
+        // Add points for straight line (turn to start)
+        pathPoints.Add(turnPoint.position);
+        targetRotations.Add(-120f); // Rotation at the turn point
+
+        pathPoints.Add(startPoint.position);
+        targetRotations.Add(-120f); // Final rotation back at the start
+
+        isPathGenerated = true;
     }
 
     public void SetInt(string parameter = "key,value")
@@ -220,7 +170,20 @@ public class AnimalsBehaviour : MonoBehaviour
 
         animator.SetInteger(name, value);
     }
+
+    private void OnDrawGizmos()
+    {
+        if (pathPoints == null) return;
+
+        Gizmos.color = Color.red;
+        for (int i = 0; i < pathPoints.Count - 1; i++)
+        {
+            Gizmos.DrawLine(pathPoints[i], pathPoints[i + 1]);
+        }
+    }
 }
+
+
 
 
 
