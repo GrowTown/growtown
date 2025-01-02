@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     internal int spawnedTomatoesCount;
     internal bool checkPlayerInZone;
     internal bool checkForEnoughSeeds;
+    internal int HarvestCount;
 
     int _currentFieldID;
     int _currentWheatSeedCount = 0;
@@ -300,7 +301,6 @@ public class GameManager : MonoBehaviour
 
         UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
     }
-    int HarvestCount;
     bool IsHarvestCount;
     public void HarvestDeductEnergy(GameObject tilego)
     {

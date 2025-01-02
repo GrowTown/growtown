@@ -248,6 +248,8 @@ public class UI_Manager : MonoBehaviour
             sellPopupPanel.SetActive(false);
             GameManager.Instance.isHarvestCompleted = false;
             ListOfHarvestCount.Clear();
+            GameManager.Instance.HarvestCount = 0;
+            GrowthStartedPlants.Clear();
 
         });
 
