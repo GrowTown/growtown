@@ -81,8 +81,7 @@ public class UI_Manager : MonoBehaviour
     internal bool isinitialgrowStarted = false;
     public int currentIndex;
 
-     internal bool IsPlayerInSecondZone = true;
-
+    internal bool IsPlayerInSecondZone = false;
     internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
     internal List<GameObject> spawnPlantsForInitialGrowth = new List<GameObject>();
     internal List<GameObject> spawnedSeed = new List<GameObject>();
