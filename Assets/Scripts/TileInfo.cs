@@ -24,6 +24,7 @@ public class TileInfo : MonoBehaviour
             SpawnSeeds();
             seedsSpawned = true;
             GameManager.Instance.DeductEnergyPoints(5);
+            UI_Manager.Instance.PlayerXp.AddingXP(2);
             GameManager.Instance.ForCropSeedDEduction();
         }
     }

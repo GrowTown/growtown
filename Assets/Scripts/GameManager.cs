@@ -232,6 +232,7 @@ public class GameManager : MonoBehaviour
             {
                 ToDecreaseTheWaterPoints();
                 DeductEnergyPoints(2);
+                UI_Manager.Instance.PlayerXp.AddingXP(1);
                 foreach (var item in UI_Manager.Instance.spawnPlantsForGrowth[tilego])
                 {
                     var pg = item.GetComponent<PlantGrowth>();
@@ -309,6 +310,7 @@ public class GameManager : MonoBehaviour
         if (!tileInfo.isCuttingStarted)
         {
             DeductEnergyPoints(3);
+            UI_Manager.Instance.PlayerXp.AddingXP(4);
             tileInfo.isCuttingStarted = true;
         }
         if (UI_Manager.Instance.FieldGrid.IsCoverageComplete() && !IsHarvestCount)

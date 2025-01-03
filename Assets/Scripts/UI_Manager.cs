@@ -51,6 +51,7 @@ public class UI_Manager : MonoBehaviour
     public TextMeshProUGUI waterText;
     public TextMeshProUGUI warningTextEnergy;
     public TextMeshProUGUI warningTextForSeed;
+    public TextMeshProUGUI playerXpTxt;
 
     [Header("References")]
 
@@ -70,6 +71,8 @@ public class UI_Manager : MonoBehaviour
     private EnemyPool _enemyPool;
     [SerializeField]
     private TriggerForStoppingTheRun _triggerForStoppingTheRun;
+    [SerializeField]
+    private PlayerXp _playerXP;
 
     internal int oldcurrentStep = -1;
     InventoryNames[] inventoryNames;
@@ -97,11 +100,15 @@ public class UI_Manager : MonoBehaviour
     #endregion
 
     #region Properties
-     
+    public PlayerXp PlayerXp
+    {
+        get => _playerXP;
+        set => _playerXP = value;
+    }
     public TriggerForStoppingTheRun TriggerForStoppingTheRun
     {
         get => _triggerForStoppingTheRun;
-        set=>_triggerForStoppingTheRun = value;
+        set => _triggerForStoppingTheRun = value;
     }
     public EnemyPool EnemyPool
     {
@@ -163,6 +170,7 @@ public class UI_Manager : MonoBehaviour
         GameManager.Instance.CurrentWaterCount = 500;
         energyText.text = GameManager.Instance.CurrentEnergyCount.ToString();
         waterText.text = GameManager.Instance.CurrentWaterCount.ToString();
+        playerXpTxt.text=PlayerXp.PlayerXpPoints.ToString();
         CallBackEvents();
     }
 
@@ -181,11 +189,11 @@ public class UI_Manager : MonoBehaviour
         }
 
         if (currentPopupIndex >= 0)
-        { 
+        {
             if (Input.GetKeyDown(KeyCode.E))
             {
-                if(PopupImg[currentPopupIndex].activeSelf)
-                HandleSelection(currentPlayerAction, currentPopupIndex, currentSelectionFunctionality);
+                if (PopupImg[currentPopupIndex].activeSelf)
+                    HandleSelection(currentPlayerAction, currentPopupIndex, currentSelectionFunctionality);
             }
         }
 
@@ -398,7 +406,7 @@ public class UI_Manager : MonoBehaviour
     void HideShowPopUpNotEnoughPoints()
     {
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
-        {        
+        {
             PanelManager.HideAllPanels();
         }
     }
