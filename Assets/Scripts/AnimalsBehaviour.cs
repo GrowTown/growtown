@@ -68,7 +68,7 @@ public class AnimalsBehaviour : MonoBehaviour
             yield return new WaitForSeconds(5f);
 
             // Resting animation
-            SetInt("animation,15"); 
+            SetInt("animation,5"); 
             yield return new WaitForSeconds(2f); 
 
             isEating = false;

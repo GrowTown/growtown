@@ -43,7 +43,7 @@ public class DayAndNight_TimeController : MonoBehaviour
     private float _maxMoonLightIntensity;
 
     [SerializeField]
-    private GameObject _campfire; // Reference to the campfire GameObject
+    private GameObject _campfire;
 
     private DateTime _currentTime;
 
