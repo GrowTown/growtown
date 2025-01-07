@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,6 +24,7 @@ public class GameManager : MonoBehaviour
     int _currentStrawberriesSeedCount = 0;
     int _currentEnergyCount = 0;
     int _currentWaterCount = 0;
+    int _currentPasticideCount = 0;
     bool _timerStartAfterPlants;
     Timer _timer;
 
@@ -81,6 +81,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int CurrentPasticideCount
+    {
+        get => _currentPasticideCount;
+        set
+        {
+            _currentPasticideCount = value;
+            UI_Manager.Instance.pasticideCount.text = _currentPasticideCount.ToString();
+        }
+    }
+
     #endregion
 
     private void Awake()
@@ -105,15 +115,16 @@ public class GameManager : MonoBehaviour
         switch (action)
         {
             case PlayerAction.Clean:
-                //if(!iscleanigStarted) UI_Manager.Instance.cleanigEffect.SetActive(true);
+                //if(!iscleanigStarted) UI_Manager.Instance.cleanigEffect.SetActive(true);      
                 UI_Manager.Instance.cleaningTool.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
                 // Debug.Log("Cleaning");
                 break;
             case PlayerAction.Seed:
-
+                if (!HasEnoughLandHealth(5)) return;
                 if (!HasEnoughPoints(5, 0)) return;
                 if (!HasNotEnoughSeed(1)) return;
+                UI_Manager.Instance.LandHealth.LandHealthDecrease(5);
                 isThroughingseeds = true;
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
@@ -125,11 +136,11 @@ public class GameManager : MonoBehaviour
                 isThroughingseeds = false;
                 UI_Manager.Instance.FieldGrid.checkedOnce = false;
                 if (!HasEnoughPoints(2, 10)) return;
-                checkForEnoughSeeds=true;
+                checkForEnoughSeeds = true;
                 UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
-            
+
                 break;
             case PlayerAction.Harvest:
 
@@ -180,7 +191,7 @@ public class GameManager : MonoBehaviour
             isOneWorkingActionCompleted = true;
             if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep == 1)
             {
-                isPlantStartGrowing = true;  
+                isPlantStartGrowing = true;
             }
             UI_Manager.Instance.TriggerZoneCallBacks.currentStep++;
             UI_Manager.Instance.oldcurrentStep = UI_Manager.Instance.TriggerZoneCallBacks.currentStep;
@@ -190,9 +201,9 @@ public class GameManager : MonoBehaviour
                 {
                     UI_Manager.Instance.FieldManager.fieldSteps[UI_Manager.Instance.FieldManager.CurrentFieldID] = UI_Manager.Instance.oldcurrentStep;
                 }
-               
+
                 if (checkPlayerInZone)
-               ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
+                    ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
             }
             else
             {
@@ -277,27 +288,27 @@ public class GameManager : MonoBehaviour
 
         if (grownPlantCount == 100)
         {
-            UI_Manager.Instance.scoreIn += 250; 
+            UI_Manager.Instance.scoreIn += 250;
         }
         else if (grownPlantCount > 75)
         {
-             UI_Manager.Instance.scoreIn += 200; 
+            UI_Manager.Instance.scoreIn += 200;
         }
         else if (grownPlantCount > 50)
         {
-            UI_Manager.Instance.scoreIn += 150; 
+            UI_Manager.Instance.scoreIn += 150;
         }
         else if (grownPlantCount > 25)
         {
-            UI_Manager.Instance.scoreIn += 100; 
+            UI_Manager.Instance.scoreIn += 100;
         }
         else if (grownPlantCount >= 15)
         {
-            UI_Manager.Instance.scoreIn += 50; 
+            UI_Manager.Instance.scoreIn += 50;
         }
         else
         {
-            UI_Manager.Instance.scoreIn += 0; 
+            UI_Manager.Instance.scoreIn += 0;
         }
 
         UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
@@ -328,7 +339,6 @@ public class GameManager : MonoBehaviour
             HarvestCount++;
             IsHarvestCount = true;
         }
-
     }
     public void StartPackToBuy()
     {
@@ -348,7 +358,6 @@ public class GameManager : MonoBehaviour
     {
         CurrentEnergyCount -= amount;
         CurrentEnergyCount = Mathf.Clamp(CurrentEnergyCount, 0, int.MaxValue);
-
         // isEnergyDeducted = true;
     }
     public void ToDecreaseTheWaterPoints()
@@ -394,7 +403,6 @@ public class GameManager : MonoBehaviour
                 CurrentWaterCount = 500;
                 UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
             }
-
         }
         else
         {
@@ -404,34 +412,34 @@ public class GameManager : MonoBehaviour
 
     bool isTimerStarted;
     public IEnumerator ToIncreaseWaterPointsAccordingtoTime()
-    { 
-            if (_timer == null)
-            {
-                _timer = this.gameObject.AddComponent<Timer>();
-            }
-            if (!isTimerStarted)
-            {
-                _timer.Initialize("Water", DateTime.Now, TimeSpan.FromMinutes(1));
-                _timer.StartTimer();
-                isTimerStarted = true;
-            }
-            while (_timer.secondsLeft > 0)
-            {
-                Debug.Log("Time Left :: " + _timer.secondsLeft);
-                yield return null;
-            }
-            if (CurrentWaterCount < 500)
-            {
-                CurrentWaterCount += 10;
-                CurrentWaterCount = Mathf.Clamp(CurrentWaterCount, 0, 500);
-                //UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
-                isTimerStarted = false;
-                StartCoroutine(ToIncreaseWaterPointsAccordingtoTime());
-            }
-            else
-            {
-                Destroy(_timer);
-            }  
+    {
+        if (_timer == null)
+        {
+            _timer = this.gameObject.AddComponent<Timer>();
+        }
+        if (!isTimerStarted)
+        {
+            _timer.Initialize("Water", DateTime.Now, TimeSpan.FromMinutes(1));
+            _timer.StartTimer();
+            isTimerStarted = true;
+        }
+        while (_timer.secondsLeft > 0)
+        {
+            Debug.Log("Time Left :: " + _timer.secondsLeft);
+            yield return null;
+        }
+        if (CurrentWaterCount < 500)
+        {
+            CurrentWaterCount += 10;
+            CurrentWaterCount = Mathf.Clamp(CurrentWaterCount, 0, 500);
+            //UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
+            isTimerStarted = false;
+            StartCoroutine(ToIncreaseWaterPointsAccordingtoTime());
+        }
+        else
+        {
+            Destroy(_timer);
+        }
     }
 
     internal bool isResetetValues;
@@ -465,18 +473,18 @@ public class GameManager : MonoBehaviour
         }
         isplantGrowthCompleted = false;
     }
-    public bool HasNotEnoughSeed(int seedRequired) 
+    public bool HasNotEnoughSeed(int seedRequired)
     {
         if (CurrentTomatoSeedCount < seedRequired)
         {
-                UI_Manager.Instance.warningPopupPanelSeed.SetActive(true);
-                UI_Manager.Instance.warningTextForSeed.text = "Not Enough Seeds";
-                PanelManager.RegisterPanel(UI_Manager.Instance.warningPopupPanelSeed);
-                HideFieldPopup();
-                StopCurrentAction();
-                checkForEnoughSeeds = false;
-               // HasNotEnoughSeeds = true;
-                return false; 
+            UI_Manager.Instance.warningPopupPanelSeed.SetActive(true);
+            UI_Manager.Instance.warningTextForSeed.text = "Not Enough Seeds";
+            PanelManager.RegisterPanel(UI_Manager.Instance.warningPopupPanelSeed);
+            HideFieldPopup();
+            StopCurrentAction();
+            checkForEnoughSeeds = false;
+            // HasNotEnoughSeeds = true;
+            return false;
         }
         return true;
     }
@@ -498,7 +506,26 @@ public class GameManager : MonoBehaviour
         }
         return true;
     }
+    public bool HasEnoughLandHealth(int lhRequired)
+    {
+        if (UI_Manager.Instance.LandHealth.CurrentLandHealth < lhRequired)
+        {
+            UI_Manager.Instance.warningPasticidePopUpPanel.SetActive(true);
+            PanelManager.RegisterPanel(UI_Manager.Instance.warningPasticidePopUpPanel);
+            HideFieldPopup();
+            StopCurrentAction();
+            return false;
+        }
+        return true;
+    }
 
+    internal void ToIncreaseLandHealthUsePasticide()
+    {
+        UI_Manager.Instance.LandHealth.LandHealthIncrease(100);
+        CurrentPasticideCount -= 1;
+        Debug.Log("LAND is healing");
+    }
+ 
 
     #endregion
 }

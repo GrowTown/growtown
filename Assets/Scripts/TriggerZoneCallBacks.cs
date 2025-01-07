@@ -38,6 +38,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
 
                     }
                     other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
+                    UI_Manager.Instance.LandHealthBarImg.SetActive(true);
 
                     break;
                 case ZoneType.Market:
@@ -73,6 +74,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     {
                         UI_Manager.Instance.FieldManager.fieldSteps.Add(fieldID, UI_Manager.Instance.oldcurrentStep);
                     }
+                    UI_Manager.Instance.LandHealthBarImg.SetActive(false);
 
                     // UI_Manager.Instance.oldcurrentStep = currentStep;
                     break;

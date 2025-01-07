@@ -25,6 +25,11 @@ public class UI_Manager : MonoBehaviour
     public GameObject sellPopupPanel;
     public GameObject warningPopupPanelEnergy;
     public GameObject warningPopupPanelSeed;
+    public GameObject contentOfPasticidePanel;
+    public GameObject contentOfPasticedMsgPanel;
+    public GameObject pasticidePopUpPanel;
+    public GameObject warningPasticidePopUpPanel;
+    public GameObject LandHealthBarImg;
 
     [Header("Effects")]
     public GameObject waterEffect;
@@ -43,6 +48,8 @@ public class UI_Manager : MonoBehaviour
     public Button starterPackBuyBT;
     public Button energyBuyBT;
     public Button waterBuyBT;
+    public Button pasticideUseBT;
+    public Button pasticideBuyBT;
 
     [Header("Text")]
     public TextMeshProUGUI score;
@@ -52,6 +59,8 @@ public class UI_Manager : MonoBehaviour
     public TextMeshProUGUI warningTextEnergy;
     public TextMeshProUGUI warningTextForSeed;
     public TextMeshProUGUI playerXpTxt;
+    public TextMeshProUGUI pasticideCount;
+    public TextMeshProUGUI pasticideMsgTxt;
 
     [Header("References")]
 
@@ -73,6 +82,8 @@ public class UI_Manager : MonoBehaviour
     private TriggerForStoppingTheRun _triggerForStoppingTheRun;
     [SerializeField]
     private PlayerXp _playerXP;
+    [SerializeField]
+    private LandHealth _landHealth;
 
     internal int oldcurrentStep = -1;
     InventoryNames[] inventoryNames;
@@ -93,13 +104,20 @@ public class UI_Manager : MonoBehaviour
     internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
     internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
     internal List<GameObject> GrownPlantsToCut = new List<GameObject>();
-    [SerializeField] internal List<ShopItem> shopItems = new List<ShopItem>();
+    [SerializeField]
+    internal List<ShopItem> shopItems = new List<ShopItem>();
 
     #region Fields
     internal int scoreIn = 500;
     #endregion
 
     #region Properties
+
+    public LandHealth LandHealth
+    {
+        get => _landHealth;
+        set => _landHealth = value;
+    }
     public PlayerXp PlayerXp
     {
         get => _playerXP;
@@ -170,11 +188,10 @@ public class UI_Manager : MonoBehaviour
         GameManager.Instance.CurrentWaterCount = 500;
         energyText.text = GameManager.Instance.CurrentEnergyCount.ToString();
         waterText.text = GameManager.Instance.CurrentWaterCount.ToString();
-        playerXpTxt.text=PlayerXp.PlayerXpPoints.ToString();
+        playerXpTxt.text = PlayerXp.PlayerXpPoints.ToString();
         CallBackEvents();
     }
 
-    // Update is called once per frame
     void Update()
     {
 
@@ -196,6 +213,8 @@ public class UI_Manager : MonoBehaviour
                     HandleSelection(currentPlayerAction, currentPopupIndex, currentSelectionFunctionality);
             }
         }
+
+       
 
         HideShowPopUpNotEnoughPoints();
     }
@@ -240,7 +259,12 @@ public class UI_Manager : MonoBehaviour
             marketPopUp.SetActive(false);
             sellPopupPanel.SetActive(false);
         };
-
+        pasticideBuyBT.onClick.AddListener(() => { ShopManager.ToBuyPasticide(); });
+        pasticideUseBT.onClick.AddListener(() =>
+        { 
+            GameManager.Instance.ToIncreaseLandHealthUsePasticide();
+            pasticidePopUpPanel.SetActive(false);
+        });
         buyInventoryBT.onClick.AddListener(() =>
         {
             marketPopUp.SetActive(true);
@@ -410,6 +434,39 @@ public class UI_Manager : MonoBehaviour
             PanelManager.HideAllPanels();
         }
     }
+
+    internal void ShowPasticidePop()
+    {
+        if (!ShopManager.isPasticidsBought)
+        {
+            contentOfPasticidePanel.SetActive(false);
+            contentOfPasticedMsgPanel.SetActive(true);
+            if (LandHealth.CurrentLandHealth <= 70)
+            {
+                pasticideMsgTxt.text = "your land is not good enough to Harvest and you didn't bought pasticide";
+                pasticideMsgTxt.color = Color.red;   
+            }
+            else
+            {
+                pasticideMsgTxt.text = "your land is good enough to Harvest";
+            }
+
+        }
+        else
+        {
+            if (LandHealth.CurrentLandHealth >= 70)
+            {
+                pasticideMsgTxt.text = "your land is good enough to Harvest";
+            }
+            else
+            {
+                contentOfPasticidePanel.SetActive(true);
+            }
+        }
+
+
+    }
+
     #endregion
 
 }

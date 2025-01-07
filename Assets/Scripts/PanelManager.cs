@@ -12,6 +12,25 @@ public static class PanelManager
             panels.Add(panel);
         }
     }
+    /*public static void HideAllPanels()
+    {
+        List<GameObject> panelsToRemove = new List<GameObject>();
+
+        foreach (var panel in panels)
+        {
+            if (panel.activeSelf)
+            {
+                panel.SetActive(false);
+                panelsToRemove.Add(panel);
+            }
+        }
+
+        foreach (var panel in panelsToRemove)
+        {
+            panels.Remove(panel);
+        }
+    }*/
+
     public static void HideAllPanels()
     {
         foreach (var panel in panels)
@@ -19,10 +38,9 @@ public static class PanelManager
             if (panel.activeSelf)
             {
                 panel.SetActive(false);
-                //panels.Remove(panel);
+               
             }
         }
     }
-
 
 }
