@@ -460,7 +460,19 @@ public class UI_Manager : MonoBehaviour
             }
             else
             {
-                contentOfPasticidePanel.SetActive(true);
+                if(GameManager.Instance.CurrentPasticideCount > 0)
+                {
+                    contentOfPasticedMsgPanel.SetActive(false);
+                    contentOfPasticidePanel.SetActive(true);
+                }
+                else
+                {
+                    contentOfPasticedMsgPanel.SetActive(true);
+                    contentOfPasticidePanel.SetActive(false);
+                    pasticideMsgTxt.text = "you have to buy pasticide";
+                    pasticideMsgTxt.color= Color.red;
+                }
+
             }
         }
 
