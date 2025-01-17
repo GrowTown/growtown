@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Device;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,11 +27,23 @@ public class GameManager : MonoBehaviour
     int _currentEnergyCount = 0;
     int _currentWaterCount = 0;
     int _currentPasticideCount = 0;
+     int _currentscoreIn = 0;
+    PlayerAction _currentAction;
     bool _timerStartAfterPlants;
     Timer _timer;
 
 
     #region Properties
+
+    public int CurrentScore
+    {
+        get => _currentscoreIn;
+        set
+        {
+            _currentscoreIn = value;
+            UI_Manager.Instance.score.text = _currentscoreIn.ToString();
+        }
+    }
     public bool TimerStartAfterPlants
     {
         get => _timerStartAfterPlants;
@@ -55,7 +69,11 @@ public class GameManager : MonoBehaviour
     public int CurrentWheatSeedCount
     {
         get => _currentWheatSeedCount;
-        set => _currentWheatSeedCount = value;
+        set
+        {
+            _currentWheatSeedCount = value;
+            UI_Manager.Instance.inventoryPanel.transform.GetChild(1).gameObject.GetComponent<SelectionFunctionality>().productCount.text = _currentWheatSeedCount.ToString();
+        }
     }
     public int CurrentTomatoSeedCount
     {
@@ -89,6 +107,12 @@ public class GameManager : MonoBehaviour
             _currentPasticideCount = value;
             UI_Manager.Instance.pasticideCount.text = _currentPasticideCount.ToString();
         }
+    }
+
+    public PlayerAction CurrentAction
+    {
+        get => _currentAction;
+        set => _currentAction = value;
     }
 
     #endregion
@@ -220,7 +244,7 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentTomatoSeedCount >= 1)
         {
-            GameManager.Instance.CurrentTomatoSeedCount -= 1;
+            CurrentTomatoSeedCount -= 1;
             UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
         }
     }
@@ -243,7 +267,7 @@ public class GameManager : MonoBehaviour
             {
                 ToDecreaseTheWaterPoints();
                 DeductEnergyPoints(2);
-                UI_Manager.Instance.PlayerXp.AddingXP(1);
+                UI_Manager.Instance.PlayerXp.SuperXp(1);
                 foreach (var item in UI_Manager.Instance.spawnPlantsForGrowth[tilego])
                 {
                     var pg = item.GetComponent<PlantGrowth>();
@@ -321,7 +345,7 @@ public class GameManager : MonoBehaviour
         if (!tileInfo.isCuttingStarted)
         {
             DeductEnergyPoints(3);
-            UI_Manager.Instance.PlayerXp.AddingXP(4);
+            UI_Manager.Instance.PlayerXp.SuperXp(4);
             tileInfo.isCuttingStarted = true;
         }
         if (UI_Manager.Instance.FieldGrid.IsCoverageComplete() && !IsHarvestCount)
@@ -363,12 +387,7 @@ public class GameManager : MonoBehaviour
     public void ToDecreaseTheWaterPoints()
     {
         CurrentWaterCount -= 10;
-        /*  if (!isWaterPointDecreased)
-          {
-              CurrentWaterCount -= 10;
-
-              isWaterPointDecreased = true;
-          }*/
+       
     }
 
     public void ToBuyEnergyPoints()
@@ -376,14 +395,13 @@ public class GameManager : MonoBehaviour
         int energyToAdd = 250;
         int energyMax = 500;
 
-        if (UI_Manager.Instance.scoreIn >= 15)
+        if (CurrentScore >= 15)
         {
             if (CurrentEnergyCount < energyMax)
             {
                 int availableSpace = energyMax - CurrentEnergyCount;
                 CurrentEnergyCount += Mathf.Min(energyToAdd, availableSpace);
-                UI_Manager.Instance.scoreIn -= 15;
-                UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+                CurrentScore -= 15;
                 UI_Manager.Instance.energyText.text = CurrentEnergyCount.ToString();
             }
         }
@@ -395,11 +413,11 @@ public class GameManager : MonoBehaviour
 
     public void ToBuyWaterPoints()
     {
-        if (UI_Manager.Instance.scoreIn >= 20)
+        if (CurrentScore >= 20)
         {
             if (CurrentWaterCount < 500)
             {
-
+                CurrentScore -= 20;
                 CurrentWaterCount = 500;
                 UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
             }
@@ -517,15 +535,29 @@ public class GameManager : MonoBehaviour
             return false;
         }
         return true;
-    }
-
+    }  
     internal void ToIncreaseLandHealthUsePasticide()
     {
         UI_Manager.Instance.LandHealth.LandHealthIncrease(100);
         CurrentPasticideCount -= 1;
         Debug.Log("LAND is healing");
+    }  
+    internal void LevelRewards(string level)
+    {
+        if ("level1" == level)
+        {
+            CurrentPasticideCount += 1;
+            if(CurrentEnergyCount<500)
+            CurrentEnergyCount += 50;
+            if(CurrentWaterCount<500)
+            CurrentWaterCount += 100;
+            CurrentWheatSeedCount += 50;
+        }
+        else
+        {
+            UI_Manager.Instance.lockImageForLand.SetActive(false);
+            UI_Manager.Instance.lockImageForSuperXp.SetActive(false);
+        }
     }
- 
-
     #endregion
 }

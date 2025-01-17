@@ -11,15 +11,14 @@ public class FieldGrid : MonoBehaviour
     //internal HashSet<Vector3> coveredTiles = new HashSet<Vector3>();
     internal List<GameObject> tiles = new List<GameObject>();
     internal List<GameObject> coveredtiles = new List<GameObject>();
-    private PlayerAction currentAction;
     internal bool isTracking = false;
     internal bool checkedOnce;
+    private PlayerAction currentAction;
 
     private void Start()
     {
         GenerateGrid();
     }
-
     private void GenerateGrid()
     {
         Vector3 gridOffset = new Vector3((columns - 1) * cellSpacing / 2, 0, (rows - 1) * cellSpacing / 2);
@@ -58,7 +57,6 @@ public class FieldGrid : MonoBehaviour
         GameManager.Instance.StopCurrentAnimations(); // Stop the action animation
     }
 
-   
     /// <summary>
     /// Adding the player covered tiles
     /// </summary>
@@ -70,23 +68,15 @@ public class FieldGrid : MonoBehaviour
         {
             checkedOnce = true;
           if (!GameManager.Instance.HasEnoughPoints(5, 10)) return;
-      
         }
         if(UI_Manager.Instance.TriggerZoneCallBacks.currentStep == 1)
         {
             if (!GameManager.Instance.HasNotEnoughSeed(1) && GameManager.Instance.isThroughingseeds) return;
         }
-        /*  if (!coveredTiles.Contains(tilePosition))
-          {
-              coveredTiles.Add(tilePosition);
-              tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9098039f, 0.6431373f, 0.6431373f, 1f));
-
-              Debug.Log("Tile added at position: " + tilePosition);
-          }*/
+       
 
         if (!coveredtiles.Contains(tileGo))
         {
-
             switch (currentAction)
             {
                 case PlayerAction.Clean:
@@ -111,9 +101,7 @@ public class FieldGrid : MonoBehaviour
                     coveredtiles.Add(tileGo);
                     tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(1f, 1f, 1f, 1f));
                     break;
-            }
-
-             
+            }    
             Debug.Log("Tile added: " + tileGo);
         }
     }

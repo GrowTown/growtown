@@ -30,7 +30,10 @@ public class UI_Manager : MonoBehaviour
     public GameObject pasticidePopUpPanel;
     public GameObject warningPasticidePopUpPanel;
     public GameObject LandHealthBarImg;
-
+    public GameObject lockImageForLand;
+    public GameObject lockImageForSuperXp;
+    public GameObject wheatFieldArea;
+ 
     [Header("Effects")]
     public GameObject waterEffect;
     public GameObject cleanigEffect;
@@ -38,7 +41,7 @@ public class UI_Manager : MonoBehaviour
 
     [Header("Buttons")]
     public Button tomatoSeedBT;
-    public Button carrotsSeedBT;
+    public Button wheatSeedBT;
     public Button strawberriesSeedBT;
     public Button cleaningWeaponBT;
     public Button wateringWeaponBT;
@@ -50,6 +53,8 @@ public class UI_Manager : MonoBehaviour
     public Button waterBuyBT;
     public Button pasticideUseBT;
     public Button pasticideBuyBT;
+    public Button superXpBuyBT;
+    public Button wheatlandBuyBT;
 
     [Header("Text")]
     public TextMeshProUGUI score;
@@ -61,9 +66,9 @@ public class UI_Manager : MonoBehaviour
     public TextMeshProUGUI playerXpTxt;
     public TextMeshProUGUI pasticideCount;
     public TextMeshProUGUI pasticideMsgTxt;
+    public TextMeshProUGUI currentplayerLevelTxt;
 
     [Header("References")]
-
     [SerializeField]
     private TriggerZoneCallBacks _triggerCallBacks;
     [SerializeField]
@@ -84,6 +89,10 @@ public class UI_Manager : MonoBehaviour
     private PlayerXp _playerXP;
     [SerializeField]
     private LandHealth _landHealth;
+    [SerializeField]
+    private SliderControls _sliderControls;
+
+    private PlayerLevel _playerLevel;
 
     internal int oldcurrentStep = -1;
     InventoryNames[] inventoryNames;
@@ -93,6 +102,7 @@ public class UI_Manager : MonoBehaviour
     public bool isPlayerInField = false;
     internal bool isTimerOn = false;
     internal bool isinitialgrowStarted = false;
+    internal bool isSuperXpEnable= false;
     public int currentIndex;
 
     internal bool IsPlayerInSecondZone = false;
@@ -113,6 +123,19 @@ public class UI_Manager : MonoBehaviour
 
     #region Properties
 
+    public SliderControls SliderControls
+    {
+        get=>_sliderControls; 
+        set=>_sliderControls = value;
+    }
+    public PlayerLevel PlayerLevel
+    {
+        get
+        {
+            return _playerLevel=_characterMovements.gameObject.GetComponent<PlayerLevel>(); 
+        }
+        set=>_playerLevel=value;
+    }
     public LandHealth LandHealth
     {
         get => _landHealth;
@@ -183,28 +206,22 @@ public class UI_Manager : MonoBehaviour
     void Start()
     {
         starterPackInfoPopUpPanel.SetActive(true);
-        score.text = scoreIn.ToString();
+      //  score.text = scoreIn.ToString();
         GameManager.Instance.CurrentEnergyCount = 500;
         GameManager.Instance.CurrentWaterCount = 500;
+        GameManager.Instance.CurrentScore = 500;
         energyText.text = GameManager.Instance.CurrentEnergyCount.ToString();
         waterText.text = GameManager.Instance.CurrentWaterCount.ToString();
-        playerXpTxt.text = PlayerXp.PlayerXpPoints.ToString();
+        playerXpTxt.text = PlayerXp.CurrentPlayerXpPoints.ToString();
         CallBackEvents();
     }
 
+
     void Update()
     {
-
+       
         InventorySetUp();
-        if (GameManager.Instance.CurrentEnergyCount == 500)
-        {
-            energyBuyBT.interactable = true;
-        }
-        if (GameManager.Instance.CurrentWaterCount == 100)
-        {
-            waterBuyBT.interactable = true;
-        }
-
+        MakeButtonsInteractable();
         if (currentPopupIndex >= 0)
         {
             if (Input.GetKeyDown(KeyCode.E))
@@ -213,10 +230,35 @@ public class UI_Manager : MonoBehaviour
                     HandleSelection(currentPlayerAction, currentPopupIndex, currentSelectionFunctionality);
             }
         }
-
-       
-
         HideShowPopUpNotEnoughPoints();
+    }
+
+    void MakeButtonsInteractable()
+    {
+        if (GameManager.Instance.CurrentEnergyCount == 500)
+        {
+            energyBuyBT.interactable = false;
+        }
+        else
+        {
+            energyBuyBT.interactable = true;
+        }
+        if (GameManager.Instance.CurrentWaterCount == 500)
+        {
+            waterBuyBT.interactable = false;
+        }
+        else
+        {
+            waterBuyBT.interactable = true;
+        }
+        if (SliderControls.gameObject.activeSelf)
+        {
+            superXpBuyBT.interactable = false;
+        }
+        else
+        {
+            superXpBuyBT.interactable = true;
+        }
     }
 
     #region Functions
@@ -253,7 +295,6 @@ public class UI_Manager : MonoBehaviour
                 sellPopupPanel.SetActive(true);
             }
         };
-
         TriggerZoneCallBacks.onPlayerExit += (e) =>
         {
             marketPopUp.SetActive(false);
@@ -284,8 +325,7 @@ public class UI_Manager : MonoBehaviour
             GrowthStartedPlants.Clear();
 
         });
-
-        carrotsSeedBT.onClick.AddListener(() =>
+        wheatSeedBT.onClick.AddListener(() =>
         {
             ShopManager.ToBuyWheat();
         });
@@ -323,7 +363,14 @@ public class UI_Manager : MonoBehaviour
         starterPackBuyBT.onClick.AddListener(() => { GameManager.Instance.StartPackToBuy(); });
         energyBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyEnergyPoints(); });
         waterBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyWaterPoints(); });
+        superXpBuyBT.onClick.AddListener(() => 
+        {
+            isSuperXpEnable=true;
+            SliderControls.gameObject.SetActive(true);
+            SliderControls.StartSliderBehavior();
 
+        });
+        wheatlandBuyBT.onClick.AddListener(() => { wheatFieldArea.SetActive(true); });
     }
 
     POPSelectionFunctionality currentSelectedPopUp;
@@ -336,7 +383,6 @@ public class UI_Manager : MonoBehaviour
     {
         HideFieldPopup();
         int popupIndex = (int)currentAction;
-
         if (popupIndex >= 0 && popupIndex < PopupImg.Length)
         {
             var popup = PopupImg[popupIndex];
@@ -364,7 +410,6 @@ public class UI_Manager : MonoBehaviour
                     if (popup.activeSelf)
                         HandleSelection(currentAction, popupIndex, selectionFunctionality);
                 }
-
                 selectionFunctionality.onClick = (selected) =>
                 {
                     HandleSelection(currentAction, popupIndex, selectionFunctionality);
@@ -372,7 +417,6 @@ public class UI_Manager : MonoBehaviour
             }
         }
     }
-
     private void HandleSelection(PlayerAction currentAction, int popupIndex, POPSelectionFunctionality selectionFunctionality)
     {
         if (popupIndex == 3)
@@ -390,23 +434,19 @@ public class UI_Manager : MonoBehaviour
             }
         }
     }
-
     private void SelectPopup(PlayerAction currentAction, int popupIndex, POPSelectionFunctionality selectionFunctionality)
     {
         if (currentSelectedPopUp != null)
         {
             currentSelectedPopUp.IsSelected = false;
         }
-
         oldcurrentAction = popupIndex;
         selectionFunctionality.IsSelected = true;
         currentSelectedPopUp = selectionFunctionality;
-
         GameManager.Instance.StartPlayerAction(currentAction);
         GameManager.Instance.isOneWorkingActionCompleted = false;
         oldcurrentStep = popupIndex;
     }
-
     internal void HideFieldPopup()
     {
         if (TriggerZoneCallBacks.currentStep <= PopupImg.Length - 1)
@@ -420,7 +460,6 @@ public class UI_Manager : MonoBehaviour
         seedsBag.gameObject.SetActive(false);
         GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }
-
     public void ShowPopUpNotEnoughPoints(string text)
     {
         warningPopupPanelEnergy.SetActive(true);
@@ -434,7 +473,6 @@ public class UI_Manager : MonoBehaviour
             PanelManager.HideAllPanels();
         }
     }
-
     internal void ShowPasticidePop()
     {
         if (!ShopManager.isPasticidsBought)
@@ -450,7 +488,6 @@ public class UI_Manager : MonoBehaviour
             {
                 pasticideMsgTxt.text = "your land is good enough to Harvest";
             }
-
         }
         else
         {
@@ -472,11 +509,8 @@ public class UI_Manager : MonoBehaviour
                     pasticideMsgTxt.text = "you have to buy pasticide";
                     pasticideMsgTxt.color= Color.red;
                 }
-
             }
         }
-
-
     }
 
     #endregion

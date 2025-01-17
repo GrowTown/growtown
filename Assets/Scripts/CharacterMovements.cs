@@ -2,6 +2,7 @@ using Cinemachine;
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterMovements : MonoBehaviour
@@ -13,7 +14,7 @@ public class CharacterMovements : MonoBehaviour
     Animator _dogAnimator;
     [SerializeField]
     GameObject _dog;
-    [SerializeField] private float followDistance = 2.0f;
+    [SerializeField] private float followDistance = 2.0f; 
     [SerializeField] private float followSpeed = 5.0f;
     [SerializeField] private float followRunSpeed = 6.0f;
     [SerializeField] private float followTurnSpeed = 5.0f;
@@ -284,6 +285,64 @@ public class CharacterMovements : MonoBehaviour
             _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
         }
     }*/
+    /*  private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
+      {
+          if (isCameraLocked)
+          {
+              SetDogAnimation("Idle");
+              return;
+          }
+          string dogStateParam = isCharacterMoving ? "Run" : "Idle";
+          SetDogAnimation(dogStateParam);
+          float currentDogSpeed = isCharacterRunning ? followRunSpeed : followSpeed;
+          if (isCharacterMoving)
+          {
+              Vector3 targetPosition = transform.position - transform.forward * followDistance + Vector3.up * 0.5f;
+              _dog.transform.position = Vector3.Lerp(_dog.transform.position, targetPosition, Time.deltaTime * currentDogSpeed);
+              Quaternion lookRotation = Quaternion.LookRotation(transform.position - _dog.transform.position);
+              _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
+          }
+      }*/
+
+    /* private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
+     {
+         if (isCameraLocked)
+         {
+             SetDogAnimation("Idle");
+             return;
+         }
+
+         string dogStateParam = isCharacterMoving ? "Run" : "Idle";
+         SetDogAnimation(dogStateParam);
+
+         float currentDogSpeed = isCharacterRunning ? followRunSpeed : followSpeed;
+
+         if (isCharacterMoving)
+         {
+             Vector3 targetPosition = transform.position - transform.forward * followDistance + Vector3.up * 0.5f;
+
+             // Ensure the dog does not walk inside the field collider
+             if (fieldTransform.TryGetComponent<Collider>(out var fieldCollider))
+             {
+                 Bounds fieldBounds = fieldCollider.bounds;
+
+                 // Check if the target position is within the field's bounds
+                 if (fieldBounds.Contains(targetPosition))
+                 {
+                     // Adjust the position to stay outside the field
+                     targetPosition = fieldBounds.ClosestPoint(targetPosition);
+                 }
+             }
+
+             _dog.transform.position = Vector3.Lerp(_dog.transform.position, targetPosition, Time.deltaTime * currentDogSpeed);
+
+             Quaternion lookRotation = Quaternion.LookRotation(transform.position - _dog.transform.position);
+             _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
+         }
+     }*/
+    private List<Vector3> calculatedPath = new List<Vector3>();
+    private bool isAvoidingField = false;
+
     private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
     {
         if (isCameraLocked)
@@ -291,17 +350,134 @@ public class CharacterMovements : MonoBehaviour
             SetDogAnimation("Idle");
             return;
         }
+
         string dogStateParam = isCharacterMoving ? "Run" : "Idle";
         SetDogAnimation(dogStateParam);
+
         float currentDogSpeed = isCharacterRunning ? followRunSpeed : followSpeed;
+
         if (isCharacterMoving)
         {
             Vector3 targetPosition = transform.position - transform.forward * followDistance + Vector3.up * 0.5f;
-            _dog.transform.position = Vector3.Lerp(_dog.transform.position, targetPosition, Time.deltaTime * currentDogSpeed);
-            Quaternion lookRotation = Quaternion.LookRotation(transform.position - _dog.transform.position);
-            _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
+
+            if (fieldTransform.TryGetComponent<Collider>(out var fieldCollider))
+            {
+                Vector3 directionToTarget = targetPosition - _dog.transform.position;
+
+                // Check if the field is nearby using raycasting
+                if (Physics.Raycast(_dog.transform.position, directionToTarget.normalized, out RaycastHit hit, 3.0f))
+                {
+                    if (hit.collider == fieldCollider)
+                    {
+                        // Field detected; calculate avoidance path
+                        if (!isAvoidingField)
+                        {
+                            isAvoidingField = true;
+                            CalculatePathAvoidingField(_dog.transform.position, targetPosition, fieldCollider);
+                        }
+                    }
+                }
+                else
+                {
+                    // No field detected; stop avoidance
+                    isAvoidingField = false;
+                    calculatedPath.Clear();
+                }
+            }
+
+            // Move the dog along the calculated path or directly toward the target
+            if (isAvoidingField && calculatedPath.Count > 0)
+            {
+                Vector3 nextWaypoint = calculatedPath[0];
+                _dog.transform.position = Vector3.MoveTowards(_dog.transform.position, nextWaypoint, Time.deltaTime * currentDogSpeed);
+
+                if (Vector3.Distance(_dog.transform.position, nextWaypoint) < 0.1f)
+                {
+                    calculatedPath.RemoveAt(0); // Move to the next waypoint
+                }
+
+                // Rotate the dog to face the next waypoint
+                if (calculatedPath.Count > 0)
+                {
+                    Quaternion lookRotation = Quaternion.LookRotation(nextWaypoint - _dog.transform.position);
+                    _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
+                }
+            }
+            else
+            {
+                // Follow directly when no avoidance is needed
+                _dog.transform.position = Vector3.Lerp(_dog.transform.position, targetPosition, Time.deltaTime * currentDogSpeed);
+
+                // Rotate the dog to face the player
+                Quaternion lookRotation = Quaternion.LookRotation(transform.position - _dog.transform.position);
+                _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
+            }
         }
     }
+
+    /// <summary>
+    /// Calculates a path avoiding the field collider to reach the target position.
+    /// </summary>
+    private void CalculatePathAvoidingField(Vector3 startPosition, Vector3 targetPosition, Collider fieldCollider)
+    {
+        calculatedPath.Clear();
+        calculatedPath.Add(startPosition);
+
+        Vector3 currentPosition = startPosition;
+
+        while (true)
+        {
+            // Raycast to check if the path to the target is clear
+            Vector3 directionToTarget = targetPosition - currentPosition;
+            if (!Physics.Raycast(currentPosition, directionToTarget.normalized, out RaycastHit hit, directionToTarget.magnitude) || hit.collider != fieldCollider)
+            {
+                // Path is clear; add the target position and break
+                calculatedPath.Add(targetPosition);
+                break;
+            }
+
+            // If obstructed, calculate a new direction to move alongside the field
+            Vector3 hitPoint = hit.point;
+            Vector3 hitNormal = hit.normal;
+
+            // Calculate a new direction perpendicular to the collider surface
+            Vector3 newDirection = Vector3.Cross(hitNormal, Vector3.up).normalized;
+            Vector3 avoidancePoint = hitPoint + newDirection * 0.5f;
+
+            // Add the avoidance point to the path
+            calculatedPath.Add(avoidancePoint);
+
+            // Update the current position to the avoidance point
+            currentPosition = avoidancePoint;
+
+            // Limit iterations to prevent infinite loops
+            if (calculatedPath.Count > 50)
+            {
+                Debug.LogWarning("Pathfinding failed: Too many iterations.");
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Draws the calculated path in the Unity Editor using Gizmos.
+    /// </summary>
+    private void OnDrawGizmos()
+    {
+        if (calculatedPath == null || calculatedPath.Count < 2)
+            return;
+
+        Gizmos.color = Color.blue;
+
+        for (int i = 0; i < calculatedPath.Count - 1; i++)
+        {
+            Gizmos.DrawLine(calculatedPath[i], calculatedPath[i + 1]);
+            Gizmos.DrawSphere(calculatedPath[i], 0.1f);
+        }
+
+        Gizmos.DrawSphere(calculatedPath[calculatedPath.Count - 1], 0.1f);
+    }
+
     private void SetDogAnimation(string state)
     {
         switch (state)

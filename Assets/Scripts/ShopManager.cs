@@ -8,12 +8,11 @@ public class ShopManager : MonoBehaviour
     #region Functions
     public void ToBuyWheat()
     {
-        if (UI_Manager.Instance.scoreIn >= 10)
+        if (GameManager.Instance.CurrentScore >= 10)
         {
-            UI_Manager.Instance.scoreIn -= 10;
-            UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+            GameManager.Instance.CurrentScore -= 10;
             GameManager.Instance.CurrentWheatSeedCount += 1;
-            // UI_Manager.Instance.inventoryPanel.transform.GetChild().gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentWheatSeedCount.ToString();
+           
 
         }
         else
@@ -27,9 +26,8 @@ public class ShopManager : MonoBehaviour
     {
         if (!forStarterPack)
         {
-            UI_Manager.Instance.scoreIn -= 125;
-            UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
-            GameManager.Instance.CurrentTomatoSeedCount += 25;
+            GameManager.Instance.CurrentScore -= 250;
+            GameManager.Instance.CurrentTomatoSeedCount += 50;
             UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
             GameManager.Instance.HasNotEnoughSeeds = false;
             GameManager.Instance.cropseedingStarted = false;
@@ -37,10 +35,9 @@ public class ShopManager : MonoBehaviour
         }
         else
         {
-            if (UI_Manager.Instance.scoreIn >= 5)
+            if (GameManager.Instance.CurrentScore >= 5)
             {
-                UI_Manager.Instance.scoreIn -= 5;
-                UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+                GameManager.Instance.CurrentScore -= 5;
                 GameManager.Instance.CurrentTomatoSeedCount += 1;
                 UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
                 GameManager.Instance.HasNotEnoughSeeds = false;
@@ -57,10 +54,9 @@ public class ShopManager : MonoBehaviour
     }
     public void ToBuyStrawberries()
     {
-        if (UI_Manager.Instance.scoreIn >= 12)
+        if (GameManager.Instance.CurrentScore >= 12)
         {
-            UI_Manager.Instance.scoreIn -= 12;
-            UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+            GameManager.Instance.CurrentScore -= 12;
             GameManager.Instance.CurrentStrawberriesSeedCount += 1;
             UI_Manager.Instance.inventoryPanel.transform.GetChild(2).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentStrawberriesSeedCount.ToString();
         }
@@ -77,11 +73,10 @@ public class ShopManager : MonoBehaviour
     internal bool isPasticidsBought=false;
     public void ToBuyCleaningTool()
     {
-        if (UI_Manager.Instance.scoreIn >= 5)
+        if (GameManager.Instance.CurrentScore >= 5)
         {
-            UI_Manager.Instance.scoreIn -= 5;
-            UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
-            isCleningToolBought = true;
+            GameManager.Instance.CurrentScore -= 5;
+             isCleningToolBought = true;
             //ForWeaponAdd += 1;
             // UI_Manager.Instance.inventoryPanel.transform.GetChild(3).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForWeaponAdd.ToString();
         }
@@ -93,10 +88,9 @@ public class ShopManager : MonoBehaviour
     }
     public void ToBuyWateringTool()
     {
-        if (UI_Manager.Instance.scoreIn >= 5)
+        if (GameManager.Instance.CurrentScore >= 5)
         {
-            UI_Manager.Instance.scoreIn -= 5;
-            UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+            GameManager.Instance.CurrentScore -= 5;
             isWateringToolBought = true;
             // ForWeaponAdd1 += 1;
             //UI_Manager.Instance.inventoryPanel.transform.GetChild(4).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForWeaponAdd.ToString();
@@ -109,10 +103,9 @@ public class ShopManager : MonoBehaviour
     }
     public void ToBuyCuttingTool()
     {
-        if (UI_Manager.Instance.scoreIn >= 5)
+        if (GameManager.Instance.CurrentScore >= 5)
         {
-            UI_Manager.Instance.scoreIn -= 5;
-            UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+            GameManager.Instance.CurrentScore -= 5;
             isCuttingToolBought = true;
             // ForWeaponAdd2 += 1;
             // UI_Manager.Instance.inventoryPanel.transform.GetChild(5).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForWeaponAdd.ToString();
@@ -126,10 +119,9 @@ public class ShopManager : MonoBehaviour
 
     public void ToBuyPasticide()
     {
-        if (UI_Manager.Instance.scoreIn >= 20)
+        if (GameManager.Instance.CurrentScore >= 20)
         {
-            UI_Manager.Instance.scoreIn -= 20;
-            UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
+            GameManager.Instance.CurrentScore -= 20;
             isPasticidsBought = true;
             GameManager.Instance.CurrentPasticideCount += 1;
              
