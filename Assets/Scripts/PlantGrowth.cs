@@ -1,6 +1,8 @@
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+//using System.Numerics;
 using UnityEngine;
 
 public class PlantGrowth : MonoBehaviour
@@ -13,8 +15,8 @@ public class PlantGrowth : MonoBehaviour
     float cuttingHight = 0.2f;
     private WaveManager waveManager;
     internal bool IsTileWatered;
-    public int initialgrowthTime=1;
-    public int AfterWateredgrowthTime=1;
+    public int initialgrowthTime = 1;
+    public int AfterWateredgrowthTime = 1;
     float _currentGrowth;
     double _currentTimer;
     internal Coroutine InitialCoroutine;
@@ -36,7 +38,7 @@ public class PlantGrowth : MonoBehaviour
     void Start()
     {
         waveManager = FindObjectOfType<WaveManager>();
-     
+
     }
 
     internal bool isWateredDuringWithering = false;
@@ -49,18 +51,18 @@ public class PlantGrowth : MonoBehaviour
         _initialGrowTimer.StartTimer();
         UI_Manager.Instance.isTimerOn = true;
         float totalGrowthTime = (float)_initialGrowTimer.timeToFinish.TotalSeconds;
-       
+
         while (_initialGrowTimer.secondsLeft > 0)
         {
-            Debug.Log("initialTimer :: "+ _initialGrowTimer.secondsLeft);
-            CurrentTimer = totalGrowthTime-_initialGrowTimer.secondsLeft;
+            Debug.Log("initialTimer :: " + _initialGrowTimer.secondsLeft);
+            CurrentTimer = totalGrowthTime - _initialGrowTimer.secondsLeft;
             float growthProgress = (float)(1.0f - (_initialGrowTimer.secondsLeft / totalGrowthTime));
             // Update blend shape only up to 50%
             if (!IsTileWatered)
             {
-                plantMesh.SetBlendShapeWeight(0, growthProgress* 100f);
+                plantMesh.SetBlendShapeWeight(0, growthProgress * 100f);
                 CurrentGrowth = growthProgress;
-                if (growthProgress>=0.5f&&!isWateredDuringWithering)
+                if (growthProgress >= 0.5f && !isWateredDuringWithering)
                 {
                     GameManager.Instance.Withering();
                     isNotWateredDuringWithering = true;
@@ -68,11 +70,11 @@ public class PlantGrowth : MonoBehaviour
                     if (!GameManager.Instance.isplantGrowthCompleted)
                     {
                         UI_Manager.Instance.FieldGrid.coveredtiles.Clear();
-                        GameManager.Instance.CompleteAction();
+                        UI_Manager.Instance.TriggerZoneCallBacks.CompleteAction();
                         GameManager.Instance.isplantGrowthCompleted = true;
                     }
                     Destroy(_initialGrowTimer);
-                 yield break;
+                    yield break;
                 }
             }
             yield return null;
@@ -105,7 +107,7 @@ public class PlantGrowth : MonoBehaviour
         _afterwateredGrowTimer.TimerFinishedEvent.AddListener(delegate
         {
             OnGrowthComplete();
-       
+
             StopCoroutine(AfterWateredCoroutine);
             Destroy(_afterwateredGrowTimer);
         });
@@ -138,13 +140,13 @@ public class PlantGrowth : MonoBehaviour
         }
         Debug.Log("Tomatoes spawned at designated points.");
         var plantCount = UI_Manager.Instance.GrowthStartedPlants.Count;
-        GameManager.Instance.spawnedTomatoesCount= plantCount*5;
+        GameManager.Instance.spawnedTomatoesCount = plantCount * 5;
         if (UI_Manager.Instance.spawnTomatosForGrowth.Count == GameManager.Instance.spawnedTomatoesCount)
         {
             UI_Manager.Instance.isPlantGrowthCompleted = true;
         }
     }
-
+    bool loopOnce = false;
     private void OnTriggerEnter(Collider other)
     {
 
@@ -159,12 +161,56 @@ public class PlantGrowth : MonoBehaviour
             {
                 this.gameObject.transform.DOMoveY(cuttingHight, 0.1f);
                 GameManager.Instance.isHarvestCompleted = true;
+                /*
+                                if (UI_Manager.Instance.GrownPlantsToCut.Contains(this.gameObject))
+                                {
+                                    UI_Manager.Instance.GrownPlantsToCut.Remove(this.gameObject);
+                                    Destroy(this.gameObject); 
+                                }*/
 
-                if (UI_Manager.Instance.GrownPlantsToCut.Contains(this.gameObject))
+                if (UI_Manager.Instance.GrownPlantsToCut.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID))
                 {
-                    UI_Manager.Instance.GrownPlantsToCut.Remove(this.gameObject);
-                    Destroy(this.gameObject); 
+                    // Access the list for the current field
+                    List<GameObject> plantList = UI_Manager.Instance.GrownPlantsToCut[UI_Manager.Instance.FieldManager.CurrentFieldID];
+
+
+                    // Loop through the plants associated with tiles
+                    foreach (var entry in UI_Manager.Instance.spawnPlantsForGrowth)
+                    {
+                        GameObject tile = entry.Key; // Tile GameObject
+                        List<GameObject> plants = entry.Value; // List of plants on this tile
+
+                        if (plants.Contains(this.gameObject)) // Check if this plant is part of the current tile
+                        {
+                            plants.Remove(this.gameObject); // Remove the plant from the list
+
+                            // Check if all plants for this tile are destroyed
+                            if (plants.Count == 0)
+                            {
+                                // Change the tile color (or mark it as covered)
+                                UI_Manager.Instance.FieldGrid.AddCoveredTile(tile);
+                            }
+
+                            break; // Exit the loop once the plant is handled
+                        }
+                    }
+
+                    if (plantList.Contains(this.gameObject))
+                    {
+                        plantList.Remove(this.gameObject); // Remove the GameObject from the list
+
+                        // Optionally check if the list is empty and perform additional actions
+                        if (plantList.Count == 0)
+                        {
+                            // Perform any cleanup or special handling for an empty list
+                            UI_Manager.Instance.GrownPlantsToCut.Remove(UI_Manager.Instance.FieldManager.CurrentFieldID);
+                        }
+
+                        Destroy(this.gameObject); // Destroy the GameObject
+
+                    }
                 }
+
             }
         }
 

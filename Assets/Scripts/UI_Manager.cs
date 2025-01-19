@@ -110,10 +110,11 @@ public class UI_Manager : MonoBehaviour
     internal List<GameObject> spawnPlantsForInitialGrowth = new List<GameObject>();
     internal List<GameObject> spawnedSeed = new List<GameObject>();
     internal Dictionary<GameObject, List<GameObject>> spawnPlantsForGrowth = new Dictionary<GameObject, List<GameObject>>();
+    internal Dictionary<List<GameObject>, GameObject> spawnPlantsAndTile = new Dictionary<List<GameObject>, GameObject>();
     internal Dictionary<int, List<int>> ListOfHarvestCount = new Dictionary<int, List<int>>();
     internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
     internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
-    internal List<GameObject> GrownPlantsToCut = new List<GameObject>();
+    internal Dictionary<int ,List<GameObject>> GrownPlantsToCut = new Dictionary<int,List<GameObject>>();
     [SerializeField]
     internal List<ShopItem> shopItems = new List<ShopItem>();
 
@@ -319,6 +320,7 @@ public class UI_Manager : MonoBehaviour
             }
 
             sellPopupPanel.SetActive(false);
+            marketPopUp.SetActive(true);
             GameManager.Instance.isHarvestCompleted = false;
             ListOfHarvestCount.Clear();
             GameManager.Instance.HarvestCount = 0;
@@ -370,7 +372,14 @@ public class UI_Manager : MonoBehaviour
             SliderControls.StartSliderBehavior();
 
         });
-        wheatlandBuyBT.onClick.AddListener(() => { wheatFieldArea.SetActive(true); });
+        wheatlandBuyBT.onClick.AddListener(() => 
+        {
+            wheatFieldArea.SetActive(true);
+            GameManager.Instance.isShowingnewLand = true;
+            StartCoroutine(GameManager.Instance.ShowBoughtLand(3));
+            wheatlandBuyBT.interactable = false;
+
+        });
     }
 
     POPSelectionFunctionality currentSelectedPopUp;
@@ -399,7 +408,7 @@ public class UI_Manager : MonoBehaviour
                 isWentInsideOnce = true;
 
             }
-            if (oldcurrentStep != -1 && UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID) && !GameManager.Instance.isOneWorkingActionCompleted)
+            if (oldcurrentStep != -1 && FieldManager.fieldSteps.ContainsKey(FieldManager.CurrentFieldID) && !GameManager.Instance.isOneWorkingActionCompleted)
             {
                 GameManager.Instance.StartPlayerAction(currentAction);
             }
@@ -449,14 +458,14 @@ public class UI_Manager : MonoBehaviour
     }
     internal void HideFieldPopup()
     {
-        if (TriggerZoneCallBacks.currentStep <= PopupImg.Length - 1)
+        if (FieldManager.CurrentStepID <= PopupImg.Length - 1)
         {
-            PopupImg[TriggerZoneCallBacks.currentStep].SetActive(false);
+            PopupImg[FieldManager.CurrentStepID].SetActive(false);
         }
         sickleWeapon.SetActive(false);
         wateringTool.SetActive(false);
         cleaningTool.SetActive(false);
-        UI_Manager.Instance.cleanigEffect.SetActive(false);
+        cleanigEffect.SetActive(false);
         seedsBag.gameObject.SetActive(false);
         GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }

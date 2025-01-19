@@ -23,7 +23,7 @@ public class PlayerInteraction : MonoBehaviour
         UI_Manager.Instance.FieldGrid.StopCoverageTracking();
         Debug.Log("All Collected");
 
-        GameManager.Instance.CompleteAction();
+        UI_Manager.Instance.TriggerZoneCallBacks.CompleteAction();
         if (GameManager.Instance.isCutting)
         {
             GameManager.Instance.ResetValues();
@@ -39,27 +39,20 @@ public class PlayerInteraction : MonoBehaviour
             GameObject hitTileGameObject = hit.collider.gameObject;
             // Get the tile position for the player and try to add it
             //Vector2Int playerTile = UI_Manager.Instance.FieldGrid.GetPlayerTile();
-            if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep !=2)
+            if (UI_Manager.Instance.FieldManager.CurrentStepID != 2 && UI_Manager.Instance.FieldManager.CurrentStepID != 3)
             {
-                UI_Manager.Instance.FieldGrid.AddCoveredTile(hitTileGameObject); // Store the tile if uncovered
+                UI_Manager.Instance.FieldGrid.AddCoveredTile(hitTileGameObject);
             }
             UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed(hitTileGameObject);
             if (GameManager.Instance.isCutting)
                 GameManager.Instance.HarvestDeductEnergy(hitTileGameObject);
-            /*if (GameManager.Instance.isPlantStartGrowing)
-            {
-                GameManager.Instance.OnWaterTile(hitTileGameObject);
-            }*/
+   
             if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
             {
-                if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep == 3)
+                if (UI_Manager.Instance.FieldManager.CurrentStepID == 3)
                 {
-                    if (UI_Manager.Instance.GrownPlantsToCut.Count == 0)
-                    {
-                        ChangetheValues();
-                    }
+                    ChangetheValues();
                 }
-           
                 else
                 {
                     ChangetheValues();

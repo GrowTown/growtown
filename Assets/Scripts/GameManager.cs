@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Device;
 using UnityEngine.SocialPlatforms.Impl;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class GameManager : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class GameManager : MonoBehaviour
     int _currentEnergyCount = 0;
     int _currentWaterCount = 0;
     int _currentPasticideCount = 0;
-     int _currentscoreIn = 0;
+    int _currentscoreIn = 0;
     PlayerAction _currentAction;
     bool _timerStartAfterPlants;
     Timer _timer;
@@ -98,7 +99,6 @@ public class GameManager : MonoBehaviour
             _currentWaterCount = value;
         }
     }
-
     public int CurrentPasticideCount
     {
         get => _currentPasticideCount;
@@ -108,7 +108,6 @@ public class GameManager : MonoBehaviour
             UI_Manager.Instance.pasticideCount.text = _currentPasticideCount.ToString();
         }
     }
-
     public PlayerAction CurrentAction
     {
         get => _currentAction;
@@ -207,7 +206,7 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.FieldGrid.StopCoverageTracking();
     }
 
-    public void CompleteAction()
+    /*public void CompleteAction()
     {
         HideFieldPopup();
         if (UI_Manager.Instance.TriggerZoneCallBacks.currentStep < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length - 1)
@@ -234,7 +233,7 @@ public class GameManager : MonoBehaviour
                 ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.TriggerZoneCallBacks.currentStep]);
             }
         }
-    }
+    }*/
 
     PlantGrowth Pg;
 
@@ -256,7 +255,7 @@ public class GameManager : MonoBehaviour
             instance.InitialCoroutine = StartCoroutine((instance.InitialGrowPlant()));
         }
     }
-
+    
     public void OnWaterTile(GameObject tilego)
     {
         if (!HasEnoughPoints(2, 10)) return;
@@ -271,6 +270,7 @@ public class GameManager : MonoBehaviour
                 foreach (var item in UI_Manager.Instance.spawnPlantsForGrowth[tilego])
                 {
                     var pg = item.GetComponent<PlantGrowth>();
+                   
                     if (!pg.isNotWateredDuringWithering)
                     {
                         if (pg._initialGrowTimer != null)
@@ -294,6 +294,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(item);
         }
+       
 
     }
     public void Withering()
@@ -387,7 +388,7 @@ public class GameManager : MonoBehaviour
     public void ToDecreaseTheWaterPoints()
     {
         CurrentWaterCount -= 10;
-       
+
     }
 
     public void ToBuyEnergyPoints()
@@ -477,11 +478,11 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.isWentInsideOnce = false;
         //UI_Manager.Instance.FieldGrid.coveredtiles.Clear();
         UI_Manager.Instance.spawnPlantsForInitialGrowth.Clear();
-        UI_Manager.Instance.FieldManager.fieldSteps.Clear();
+        //UI_Manager.Instance.FieldManager.fieldSteps.Clear();
         UI_Manager.Instance.GrowthStartedOnThisTile.Clear();
         UI_Manager.Instance.spawnPlantsForGrowth.Clear();
         UI_Manager.Instance.oldcurrentStep = -1;
-        UI_Manager.Instance.TriggerZoneCallBacks.currentStep = 0;
+        //UI_Manager.Instance.TriggerZoneCallBacks.currentStep = 0;
         UI_Manager.Instance.FieldManager.fieldSteps.Remove(CurrentFieldID);
         isCutting = false;
         //isResetetValues = true;
@@ -535,29 +536,42 @@ public class GameManager : MonoBehaviour
             return false;
         }
         return true;
-    }  
+    }
     internal void ToIncreaseLandHealthUsePasticide()
     {
         UI_Manager.Instance.LandHealth.LandHealthIncrease(100);
         CurrentPasticideCount -= 1;
         Debug.Log("LAND is healing");
-    }  
+    }
     internal void LevelRewards(string level)
     {
         if ("level1" == level)
         {
             CurrentPasticideCount += 1;
-            if(CurrentEnergyCount<500)
-            CurrentEnergyCount += 50;
-            if(CurrentWaterCount<500)
-            CurrentWaterCount += 100;
+            if (CurrentEnergyCount < 500)
+                CurrentEnergyCount += 50;
+            if (CurrentWaterCount < 500)
+                CurrentWaterCount += 100;
             CurrentWheatSeedCount += 50;
+            UI_Manager.Instance.lockImageForLand.SetActive(false);
         }
         else
         {
-            UI_Manager.Instance.lockImageForLand.SetActive(false);
             UI_Manager.Instance.lockImageForSuperXp.SetActive(false);
         }
+    }
+
+    internal bool isShowingnewLand=false;
+    internal IEnumerator ShowBoughtLand(int camNo)
+    {
+        
+      var Cam=UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
+          Cam.virtualCams[3].LookAt=UI_Manager.Instance.wheatFieldArea.transform;
+          Cam.SwitchToCam(3);
+          isShowingnewLand = false;
+        yield return new WaitForSeconds(5f);
+        //Cam.virtualCams[3].LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
+     
     }
     #endregion
 }

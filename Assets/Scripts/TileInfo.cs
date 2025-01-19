@@ -53,7 +53,7 @@ public class TileInfo : MonoBehaviour
 
      }*/
 
-    internal void SpawnPlant(GameObject tilego)
+    internal void SpawnPlant(GameObject tilego) 
     {
         if (!plantSpawned)
         {
@@ -83,7 +83,13 @@ public class TileInfo : MonoBehaviour
                 // Add the instance to the respective lists
                 UI_Manager.Instance.spawnPlantsForGrowth[tilego].Add(instance);
                 UI_Manager.Instance.spawnPlantsForInitialGrowth.Add(instance);
-                UI_Manager.Instance.GrownPlantsToCut.Add(instance);
+
+                if (!UI_Manager.Instance.GrownPlantsToCut.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID))
+                {
+                    UI_Manager.Instance.GrownPlantsToCut[UI_Manager.Instance.FieldManager.CurrentFieldID] = new List<GameObject>();
+                }
+
+                UI_Manager.Instance.GrownPlantsToCut[UI_Manager.Instance.FieldManager.CurrentFieldID].Add(instance);
 
                 // Increment the index for the next rotation
                 index++;

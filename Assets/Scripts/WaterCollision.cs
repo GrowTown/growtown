@@ -24,13 +24,14 @@ public class WaterCollision : MonoBehaviour
                 {
                     GameManager.Instance.OnWaterTile(tile.gameObject);
                 }
-                UI_Manager.Instance.FieldGrid.coveredtiles.Add(tile.gameObject);
+
+                UI_Manager.Instance.FieldGrid.AddCoveredTile(tile.gameObject);
                 tile.ChangeColor(hitColor); // Change the tile color;
                 if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
                 {
                     UI_Manager.Instance.FieldGrid.StopCoverageTracking();
                     Debug.Log("All Collected");
-                    GameManager.Instance.CompleteAction();
+                    UI_Manager.Instance.TriggerZoneCallBacks.CompleteAction();
                 }
                 tile._hasColorChanged = true;
             }

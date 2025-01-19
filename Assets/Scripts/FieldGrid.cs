@@ -11,6 +11,8 @@ public class FieldGrid : MonoBehaviour
     //internal HashSet<Vector3> coveredTiles = new HashSet<Vector3>();
     internal List<GameObject> tiles = new List<GameObject>();
     internal List<GameObject> coveredtiles = new List<GameObject>();
+    internal List<GameObject> coveredtiles1 = new List<GameObject>();
+    internal List<GameObject> coveredtiles2 = new List<GameObject>();
     internal bool isTracking = false;
     internal bool checkedOnce;
     private PlayerAction currentAction;
@@ -41,8 +43,17 @@ public class FieldGrid : MonoBehaviour
     /// <param name="action"></param>
     public void StartCoverageTracking(PlayerAction action)
     {
-        if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
-            coveredtiles.Clear();
+        if(UI_Manager.Instance.FieldManager.CurrentFieldID == 2)
+        {
+            if (IsCoverageComplete())
+                coveredtiles.Clear();
+        }
+        else
+        {
+            if (IsCoverageComplete())
+                coveredtiles1.Clear();
+        }
+        
         currentAction = action;
         isTracking = true;
         GameManager.Instance.StartActionAnimation(action);  // Start animation for the action
@@ -69,42 +80,54 @@ public class FieldGrid : MonoBehaviour
             checkedOnce = true;
           if (!GameManager.Instance.HasEnoughPoints(5, 10)) return;
         }
-        if(UI_Manager.Instance.TriggerZoneCallBacks.currentStep == 1)
+        if(UI_Manager.Instance.FieldManager.CurrentStepID == 1)
         {
             if (!GameManager.Instance.HasNotEnoughSeed(1) && GameManager.Instance.isThroughingseeds) return;
         }
        
-
-        if (!coveredtiles.Contains(tileGo))
+        if (UI_Manager.Instance.FieldManager.CurrentFieldID==2)
         {
-            switch (currentAction)
+            if (!coveredtiles.Contains(tileGo))
             {
-                case PlayerAction.Clean:
-                    coveredtiles.Add(tileGo);
-                    tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(1f, 0.9188f, 0.9188f, 1f));
-                    Debug.Log("Cleanig");
-                    break;
-                case PlayerAction.Seed:
-                    if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed)
-                    {
-                        coveredtiles.Add(tileGo);
-                        tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7095f, 0.7095f, 0.7095f, 1f));
-                        UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
-                    }
-                    // Debug.Log("Seeding");
-                    break;
-                case PlayerAction.Water:
-                    coveredtiles.Add(tileGo);
-                    tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9098039f, 0.6431373f, 0.6431373f, 1f));
-                    break;
-                case PlayerAction.Harvest:
-                    coveredtiles.Add(tileGo);
-                    tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(1f, 1f, 1f, 1f));
-                    break;
-            }    
+              coveredtiles.Add(tileGo);
+              TochangetheTileColor(tileGo);
+            }
             Debug.Log("Tile added: " + tileGo);
         }
+        else if (UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
+        {
+            if (!coveredtiles1.Contains(tileGo))
+            {
+               coveredtiles1.Add(tileGo);
+               TochangetheTileColor(tileGo);
+            }
+        }
     }
+
+    void TochangetheTileColor(GameObject tileGo)
+    {
+        switch (currentAction)
+        {
+            case PlayerAction.Clean:
+                tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(1f, 0.9188f, 0.9188f, 1f));
+                Debug.Log("Cleanig");
+                break;
+            case PlayerAction.Seed:
+                if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed)
+                {
+                    tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7095f, 0.7095f, 0.7095f, 1f));
+                    UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
+                }
+                // Debug.Log("Seeding");
+                break;
+            case PlayerAction.Water:
+                tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9098039f, 0.6431373f, 0.6431373f, 1f));
+                break;
+            case PlayerAction.Harvest:
+                tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(1f, 1f, 1f, 1f));
+                break;
+        }
+    } 
 
     /// <summary>
     /// Checking the player covered all tiles are not
@@ -112,7 +135,15 @@ public class FieldGrid : MonoBehaviour
     /// <returns></returns>
     public bool IsCoverageComplete()
     {
-        return coveredtiles.Count >= rows * columns;
+        if(UI_Manager.Instance.FieldManager.CurrentFieldID == 2)
+        {
+             return coveredtiles.Count >= rows * columns;
+        }
+        else
+        {
+            return coveredtiles1.Count >= rows * columns;
+        }
+        
     }
 
     /// <summary>

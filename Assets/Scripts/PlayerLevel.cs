@@ -23,8 +23,7 @@ public class PlayerLevel : MonoBehaviour
 
 
     private void Start()
-    {
-       
+    { 
         UI_Manager.Instance.currentplayerLevelTxt.text=_levelOfPlayer.ToString();
     }
     bool isLevel1=false;
@@ -35,20 +34,19 @@ public class PlayerLevel : MonoBehaviour
         // Define acceptable ranges for XP thresholds
         const int level1Threshold = 100;
         const int level2Threshold = 150;
-        const int thresholdMargin = 4; // Allowable deviation
-
-        if (Mathf.Abs(Xp - level1Threshold) <= thresholdMargin&&!isLevel1) // Within 95 to 105
+        const int thresholdMargin = 5; // Allowable deviation
+        if (Xp >= level1Threshold && Xp - level1Threshold <= thresholdMargin && !isLevel1) // Within 100 to 105
         {
             CurrentPlayerLevel += 1;
             isLevel1 = true;
             GameManager.Instance.LevelRewards("level1");
             Debug.Log($"Level increased to {CurrentPlayerLevel} for XP: {Xp}");
         }
-        else if (Mathf.Abs(Xp - level2Threshold) <= thresholdMargin&&!isLevel2) // Within 145 to 155
+        else if (Xp >= level2Threshold && Xp - level2Threshold <= thresholdMargin && !isLevel2) // Within 150 to 155
         {
             CurrentPlayerLevel += 1;
-            GameManager.Instance.LevelRewards("level2");
             isLevel2 = true;
+            GameManager.Instance.LevelRewards("level2");
             Debug.Log($"Level increased to {CurrentPlayerLevel} for XP: {Xp}");
         }
         else
