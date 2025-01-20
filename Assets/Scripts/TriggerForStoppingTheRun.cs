@@ -11,7 +11,7 @@ public class TriggerForStoppingTheRun : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-           // other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(4);
+            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
             UI_Manager.Instance.IsPlayerInSecondZone = true;
         }
     }
@@ -21,7 +21,7 @@ public class TriggerForStoppingTheRun : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            //other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(4);
+            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
             UI_Manager.Instance.IsPlayerInSecondZone = false;
         }
     }

@@ -36,7 +36,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     {
                         if (fieldID == 2)
                         {
-                            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
+                            //other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
                         }
                         else
                         {
@@ -111,8 +111,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
             playerInZone = false;
             UI_Manager.Instance.isPlayerInField = false;
 
-            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0 );
-
+           
             switch (zoneType)
             {
                 case ZoneType.Field:
@@ -124,6 +123,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     break;
 
                 case ZoneType.Market:
+                    other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
                     if (UI_Manager.Instance.ShopManager.isCuttingToolBought &&
                         UI_Manager.Instance.ShopManager.isWateringToolBought &&
                         UI_Manager.Instance.ShopManager.isCleningToolBought)
