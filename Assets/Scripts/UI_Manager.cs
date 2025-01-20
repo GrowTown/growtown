@@ -215,6 +215,8 @@ public class UI_Manager : MonoBehaviour
         waterText.text = GameManager.Instance.CurrentWaterCount.ToString();
         playerXpTxt.text = PlayerXp.CurrentPlayerXpPoints.ToString();
         CallBackEvents();
+        wheatFieldArea.SetActive(true);
+
     }
 
 
@@ -376,7 +378,7 @@ public class UI_Manager : MonoBehaviour
         {
             wheatFieldArea.SetActive(true);
             GameManager.Instance.isShowingnewLand = true;
-            StartCoroutine(GameManager.Instance.ShowBoughtLand(3));
+            //StartCoroutine(GameManager.Instance.ShowBoughtLand(3));
             wheatlandBuyBT.interactable = false;
 
         });

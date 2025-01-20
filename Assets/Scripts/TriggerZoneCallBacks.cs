@@ -59,27 +59,6 @@ public class TriggerZoneCallBacks : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            switch (zoneType)
-            {
-                case ZoneType.Market:
-                    if (GameManager.Instance.isShowingnewLand)
-                    {
-                        //GameManager.Instance.ShowBoughtLand(3);
-
-                    }
-                    else
-                    {
-                        other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(2);
-                    }
-                    break;
-            }
-        }
-    }
-   
     /* private void OnTriggerExit(Collider other)
      {
          if (other.CompareTag("Player"))
@@ -132,7 +111,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
             playerInZone = false;
             UI_Manager.Instance.isPlayerInField = false;
 
-            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
+            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0 );
 
             switch (zoneType)
             {
@@ -141,6 +120,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     GameManager.Instance.StopCurrentAction();
                     UI_Manager.Instance.FieldManager.SaveFieldStep(fieldID, UI_Manager.Instance.FieldManager.CurrentStepID);
                     UI_Manager.Instance.LandHealthBarImg.SetActive(false);
+                 
                     break;
 
                 case ZoneType.Market:
@@ -222,19 +202,6 @@ public class TriggerZoneCallBacks : MonoBehaviour
          }
      }*/
 
-    /*   public void CompleteAction()
-       {
-           int currentStep = UI_Manager.Instance.FieldManager.CurrentStepID;
-
-           if (currentStep < actionSequence.Length - 1)
-           {
-               currentStep++;
-               UI_Manager.Instance.FieldManager.CurrentStepID = currentStep; // Update FieldManager
-               UI_Manager.Instance.FieldManager.SaveFieldStep(fieldID, currentStep); // Save the step
-
-               GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
-           }
-       }*/
 
     public void CompleteAction()
     {

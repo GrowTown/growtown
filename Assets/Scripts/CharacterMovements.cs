@@ -191,7 +191,7 @@ public class CharacterMovements : MonoBehaviour
         // Calculate movement direction relative to the camera
         Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
 
-        bool isRunning = Input.GetKey(KeyCode.LeftShift) && !UI_Manager.Instance.IsPlayerInSecondZone;
+        bool isRunning = Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone ;
 
         // Calculate target speed
         float targetSpeed = inputDirection == Vector3.zero ? 0f : (isRunning ? runSpeed : walkSpeed);
@@ -506,6 +506,10 @@ public class CharacterMovements : MonoBehaviour
         _dogAnimator.SetInteger(name, value);
 
     }
+
+
+
+
 
 }
 
