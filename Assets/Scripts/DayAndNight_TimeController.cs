@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+//using System.Drawing;
 using TMPro;
 using UnityEngine;
+
 
 public class DayAndNight_TimeController : MonoBehaviour
 {
@@ -125,9 +127,15 @@ public class DayAndNight_TimeController : MonoBehaviour
         {
             _campfire.SetActive(true);
             _isCampfireActive = true;
+            RenderSettings.sun = _moonLight;
+            var color = new Color(0.3063813f, 0.5416211f, 0.8018868f, 1f);
+            RenderSettings.fogColor = color; // Set fog color
+
         }
         else if (!isNight && _isCampfireActive)
         {
+            RenderSettings.sun = _sunLight;
+            RenderSettings.fogColor = Color.gray; // Set fog color
             _campfire.SetActive(false);
             _isCampfireActive = false;
         }
