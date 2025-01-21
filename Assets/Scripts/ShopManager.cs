@@ -86,21 +86,7 @@ public class ShopManager : MonoBehaviour
             //Debug.Log("You didn't have enough money");
         }
     }
-    public void ToBuyWateringTool()
-    {
-        if (GameManager.Instance.CurrentScore >= 5)
-        {
-            GameManager.Instance.CurrentScore -= 5;
-            isWateringToolBought = true;
-            // ForWeaponAdd1 += 1;
-            //UI_Manager.Instance.inventoryPanel.transform.GetChild(4).gameObject.GetComponent<SelectionFunctionality>().productCount.text = ForWeaponAdd.ToString();
-        }
-        else
-        {
-            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
-            //Debug.Log("You didn't have enough money");
-        }
-    }
+   
     public void ToBuyCuttingTool()
     {
         if (GameManager.Instance.CurrentScore >= 5)
@@ -125,6 +111,38 @@ public class ShopManager : MonoBehaviour
             isPasticidsBought = true;
             GameManager.Instance.CurrentPasticideCount += 1;
              
+        }
+        else
+        {
+            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
+            //Debug.Log("You didn't have enough money");
+        }
+    }
+    public void ToBuySuperXp()
+    {
+        if (GameManager.Instance.CurrentScore >= 20)
+        {
+            GameManager.Instance.CurrentScore -= 20;
+            UI_Manager.Instance.isSuperXpEnable = true;
+            UI_Manager.Instance.SliderControls.gameObject.SetActive(true);
+            UI_Manager.Instance.SliderControls.StartSliderBehavior();
+        }
+        else
+        {
+            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
+            //Debug.Log("You didn't have enough money");
+        }
+    }
+    public void ToBuyWheatField()
+    {
+        if (GameManager.Instance.CurrentScore >= 20)
+        {
+            GameManager.Instance.CurrentScore -= 20;
+            UI_Manager.Instance.wheatFieldArea.SetActive(true);
+            GameManager.Instance.isShowingnewLand = true;
+            //StartCoroutine(GameManager.Instance.ShowBoughtLand(3));
+            UI_Manager.Instance.wheatlandBuyBT.interactable = false;
+
         }
         else
         {

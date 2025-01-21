@@ -47,6 +47,9 @@ public class DayAndNight_TimeController : MonoBehaviour
     [SerializeField]
     private GameObject _campfire;
 
+    [SerializeField]
+    private Light _campfireLight;
+
     private DateTime _currentTime;
 
     private TimeSpan _sunriseTime;

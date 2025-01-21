@@ -369,18 +369,11 @@ public class UI_Manager : MonoBehaviour
         waterBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyWaterPoints(); });
         superXpBuyBT.onClick.AddListener(() => 
         {
-            isSuperXpEnable=true;
-            SliderControls.gameObject.SetActive(true);
-            SliderControls.StartSliderBehavior();
-
+            ShopManager.ToBuySuperXp();
         });
         wheatlandBuyBT.onClick.AddListener(() => 
         {
-            wheatFieldArea.SetActive(true);
-            GameManager.Instance.isShowingnewLand = true;
-            //StartCoroutine(GameManager.Instance.ShowBoughtLand(3));
-            wheatlandBuyBT.interactable = false;
-
+            ShopManager.ToBuyWheatField();
         });
     }
 

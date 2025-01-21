@@ -232,7 +232,7 @@ public class CharacterMovements : MonoBehaviour
 
         // Updating the dog behavior
         // UpdateDogBehavior(inputDirection.magnitude > 0 ? (isRunning ? 2 : 1) : 0);
-        UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, GameManager.Instance.checkPlayerInZone);
+        UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, UI_Manager.Instance.IsPlayerInSecondZone);
     }
 
     bool isJumping;
@@ -285,24 +285,24 @@ public class CharacterMovements : MonoBehaviour
             _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
         }
     }*/
-    /*  private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
-      {
-          if (isCameraLocked)
-          {
-              SetDogAnimation("Idle");
-              return;
-          }
-          string dogStateParam = isCharacterMoving ? "Run" : "Idle";
-          SetDogAnimation(dogStateParam);
-          float currentDogSpeed = isCharacterRunning ? followRunSpeed : followSpeed;
-          if (isCharacterMoving)
-          {
-              Vector3 targetPosition = transform.position - transform.forward * followDistance + Vector3.up * 0.5f;
-              _dog.transform.position = Vector3.Lerp(_dog.transform.position, targetPosition, Time.deltaTime * currentDogSpeed);
-              Quaternion lookRotation = Quaternion.LookRotation(transform.position - _dog.transform.position);
-              _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
-          }
-      }*/
+    private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
+    {
+        if (isCameraLocked)
+        {
+            SetDogAnimation("Idle");
+            return;
+        }
+        string dogStateParam = isCharacterMoving ? "Run" : "Idle";
+        SetDogAnimation(dogStateParam);
+        float currentDogSpeed = isCharacterRunning ? followRunSpeed : followSpeed;
+        if (isCharacterMoving)
+        {
+            Vector3 targetPosition = transform.position - transform.forward * followDistance + Vector3.up * 0.5f;
+            _dog.transform.position = Vector3.Lerp(_dog.transform.position, targetPosition, Time.deltaTime * currentDogSpeed);
+            Quaternion lookRotation = Quaternion.LookRotation(transform.position - _dog.transform.position);
+            _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
+        }
+    }
 
     /* private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
      {
@@ -343,7 +343,7 @@ public class CharacterMovements : MonoBehaviour
     private List<Vector3> calculatedPath = new List<Vector3>();
     private bool isAvoidingField = false;
 
-    private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
+   /* private void UpdateDogBehavior(bool isCharacterMoving, bool isCharacterRunning, bool isCameraLocked)
     {
         if (isCameraLocked)
         {
@@ -458,7 +458,7 @@ public class CharacterMovements : MonoBehaviour
             }
         }
     }
-
+*/
     /// <summary>
     /// Draws the calculated path in the Unity Editor using Gizmos.
     /// </summary>
