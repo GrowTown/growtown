@@ -33,6 +33,12 @@ public class DayAndNight_TimeController : MonoBehaviour
     private Color _nightAmbientLight;
 
     [SerializeField]
+    private Color _nightTimeFog;
+
+    [SerializeField]
+    private Color _dayTimeFog;
+
+    [SerializeField]
     private AnimationCurve _lightChangeCurve;
 
     [SerializeField]
@@ -129,17 +135,18 @@ public class DayAndNight_TimeController : MonoBehaviour
         if (isNight && !_isCampfireActive)
         {
             _campfire.SetActive(true);
+            _campfireLight.gameObject.SetActive(true);
             _isCampfireActive = true;
             RenderSettings.sun = _moonLight;
-            var color = new Color(0.3063813f, 0.5416211f, 0.8018868f, 1f);
-            RenderSettings.fogColor = color; // Set fog color
+            RenderSettings.fogColor = _nightTimeFog; // Set fog color
 
         }
         else if (!isNight && _isCampfireActive)
         {
             RenderSettings.sun = _sunLight;
-            RenderSettings.fogColor = Color.gray; // Set fog color
+            RenderSettings.fogColor = _dayTimeFog; // Set fog color
             _campfire.SetActive(false);
+            _campfireLight.gameObject.SetActive(false);
             _isCampfireActive = false;
         }
     }

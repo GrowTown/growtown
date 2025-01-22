@@ -215,8 +215,7 @@ public class UI_Manager : MonoBehaviour
         waterText.text = GameManager.Instance.CurrentWaterCount.ToString();
         playerXpTxt.text = PlayerXp.CurrentPlayerXpPoints.ToString();
         CallBackEvents();
-        wheatFieldArea.SetActive(true);
-
+       
     }
 
 

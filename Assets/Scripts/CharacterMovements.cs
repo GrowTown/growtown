@@ -28,15 +28,16 @@ public class CharacterMovements : MonoBehaviour
     internal bool isPlayerEnterZone = false;
 
     //Walk,Run variables
-    public float walkSpeed = 2f;
-    public float runSpeed = 4f;
+    public float walkSpeed = 3f;
+    public float runSpeed = 6f;
     public float turnSpeed = 7f;
     public float turnSpeedVelocity = 0.1f;
     public float _charGroundPos = 3f;
     public float SpeedChangeRate = 10.0f;
     private float _speed;
     private float _animationBlend;
-
+    public float backwardWalkSpeed = 3f; 
+    public float backwardRunSpeed = 6f;
 
     // Variables for jump logic
     [SerializeField] private float jumpHeight = 2.0f;
@@ -180,6 +181,7 @@ public class CharacterMovements : MonoBehaviour
 
     private void CharMovements()
     {
+        
         // Get movement input
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
@@ -191,7 +193,7 @@ public class CharacterMovements : MonoBehaviour
         // Calculate movement direction relative to the camera
         Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
 
-        bool isRunning = Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone ;
+        bool isRunning = Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone;
 
         // Calculate target speed
         float targetSpeed = inputDirection == Vector3.zero ? 0f : (isRunning ? runSpeed : walkSpeed);
@@ -234,6 +236,8 @@ public class CharacterMovements : MonoBehaviour
         // UpdateDogBehavior(inputDirection.magnitude > 0 ? (isRunning ? 2 : 1) : 0);
         UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, GameManager.Instance.checkPlayerInZone);
     }
+
+
 
     bool isJumping;
     private void HandleJump()

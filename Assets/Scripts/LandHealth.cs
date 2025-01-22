@@ -31,6 +31,16 @@ public class LandHealth : MonoBehaviour
         }
     }
 
+    public string CurrentLandName
+    {
+        get => _landName;
+        set
+        {
+            _landName=value;
+            _landNameTxt.text = _landName;
+        }
+    }
+
     private void Start()
     {
         _landNameTxt.text = _landName;

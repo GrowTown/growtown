@@ -423,7 +423,7 @@ public class GameManager : MonoBehaviour
                 UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
             }
         }
-        else
+         else
         {
             Debug.Log("Not enough score to buy water points.");
         }
@@ -562,16 +562,18 @@ public class GameManager : MonoBehaviour
     }
 
     internal bool isShowingnewLand=false;
-    internal IEnumerator ShowBoughtLand(int camNo)
+    internal IEnumerator ShowBoughtLand()
     {
         
       var Cam=UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
-          Cam.virtualCams[3].LookAt=UI_Manager.Instance.wheatFieldArea.transform;
-          Cam.SwitchToCam(3);
-          isShowingnewLand = false;
-        yield return new WaitForSeconds(5f);
+        Cam.SwitchToCam(3);
+          Cam.activeCamera.LookAt=UI_Manager.Instance.wheatFieldArea.transform;
+        yield return new WaitForSeconds(1f);
         //Cam.virtualCams[3].LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
-     
+        isShowingnewLand = false;
+        Cam.SwitchToCam(2);
+        Cam.activeCamera.LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
+
     }
     #endregion
 }

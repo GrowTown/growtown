@@ -155,7 +155,7 @@ public class ShopManager : MonoBehaviour
             GameManager.Instance.CurrentScore -= 20;
             UI_Manager.Instance.wheatFieldArea.SetActive(true);
             GameManager.Instance.isShowingnewLand = true;
-            //StartCoroutine(GameManager.Instance.ShowBoughtLand(3));
+           StartCoroutine (GameManager.Instance.ShowBoughtLand());
             UI_Manager.Instance.wheatlandBuyBT.interactable = false;
 
         }

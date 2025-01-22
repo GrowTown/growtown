@@ -37,15 +37,17 @@ public class TriggerZoneCallBacks : MonoBehaviour
                         if (fieldID == 2)
                         {
                             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
+                            UI_Manager.Instance.LandHealth.CurrentLandName = "TomatoField";
                         }
                         else
                         {
                             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(3);
+                            UI_Manager.Instance.LandHealth.CurrentLandName = "WheatField";
                         }
                         GameManager.Instance.CurrentFieldID = fieldID;
                         UI_Manager.Instance.FieldManager.EnterField(fieldID);
+                        UI_Manager.Instance.LandHealthBarImg.SetActive(true);
                     }
-                    UI_Manager.Instance.LandHealthBarImg.SetActive(true);
 
                     break;
                 case ZoneType.Market:

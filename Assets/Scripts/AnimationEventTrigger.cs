@@ -50,11 +50,11 @@ public class AnimationEventTrigger : MonoBehaviour
         //UI_Manager.Instance.wateringTool.GetComponent<PourDetector>().StartPour();
     }
 
-    public void TriggerWaterStop()
+/*    public void TriggerWaterStop()
     {
 
         UI_Manager.Instance.waterEffect.SetActive(false);
         //UI_Manager.Instance.wateringTool.GetComponent<PourDetector>().EndPour();
-    }
+    }*/
 
 }
