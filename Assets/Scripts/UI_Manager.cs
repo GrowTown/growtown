@@ -30,10 +30,15 @@ public class UI_Manager : MonoBehaviour
     public GameObject pasticidePopUpPanel;
     public GameObject warningPasticidePopUpPanel;
     public GameObject LandHealthBarImg;
-    public GameObject lockImageForLand;
+    public GameObject lockImageForWheatLand;
+    public GameObject lockImageForCarrotLand;
     public GameObject lockImageForSuperXp;
     public GameObject wheatFieldArea;
- 
+    public GameObject carrotFieldArea;
+
+    [Header("Transforms")]
+    public Transform lhHolderTransform;
+
     [Header("Effects")]
     public GameObject waterEffect;
     public GameObject cleanigEffect;
@@ -55,6 +60,7 @@ public class UI_Manager : MonoBehaviour
     public Button pasticideBuyBT;
     public Button superXpBuyBT;
     public Button wheatlandBuyBT;
+    public Button carrotlandBuyBT;
 
     [Header("Text")]
     public TextMeshProUGUI score;
@@ -91,19 +97,24 @@ public class UI_Manager : MonoBehaviour
     private LandHealth _landHealth;
     [SerializeField]
     private SliderControls _sliderControls;
+    [SerializeField]
+    private RewardsForLevel _rewardsForLevel;
 
     private PlayerLevel _playerLevel;
 
     internal int oldcurrentStep = -1;
     InventoryNames[] inventoryNames;
+    public int currentIndex;
     public bool isPlanted;
     public bool waveStarted;
     public bool isPlantGrowthCompleted;
     public bool isPlayerInField = false;
     internal bool isTimerOn = false;
     internal bool isinitialgrowStarted = false;
-    internal bool isSuperXpEnable= false;
-    public int currentIndex;
+    internal bool isSuperXpEnable = false;
+    internal bool isTomatoHealthBarspawn = false;
+    internal bool isWheatHealthBarspawn = false;
+    internal bool isCarrotHealthBarspawn = false;
 
     internal bool IsPlayerInSecondZone = false;
     internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
@@ -114,7 +125,7 @@ public class UI_Manager : MonoBehaviour
     internal Dictionary<int, List<int>> ListOfHarvestCount = new Dictionary<int, List<int>>();
     internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
     internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
-    internal Dictionary<int ,List<GameObject>> GrownPlantsToCut = new Dictionary<int,List<GameObject>>();
+    internal Dictionary<int, List<GameObject>> GrownPlantsToCut = new Dictionary<int, List<GameObject>>();
     [SerializeField]
     internal List<ShopItem> shopItems = new List<ShopItem>();
 
@@ -124,18 +135,23 @@ public class UI_Manager : MonoBehaviour
 
     #region Properties
 
+    public RewardsForLevel RewardsForLevel
+    {
+        get => _rewardsForLevel;
+        set => _rewardsForLevel = value;
+    }
     public SliderControls SliderControls
     {
-        get=>_sliderControls; 
-        set=>_sliderControls = value;
+        get => _sliderControls;
+        set => _sliderControls = value;
     }
     public PlayerLevel PlayerLevel
     {
         get
         {
-            return _playerLevel=_characterMovements.gameObject.GetComponent<PlayerLevel>(); 
+            return _playerLevel = _characterMovements.gameObject.GetComponent<PlayerLevel>();
         }
-        set=>_playerLevel=value;
+        set => _playerLevel = value;
     }
     public LandHealth LandHealth
     {
@@ -207,7 +223,7 @@ public class UI_Manager : MonoBehaviour
     void Start()
     {
         starterPackInfoPopUpPanel.SetActive(true);
-      //  score.text = scoreIn.ToString();
+        //  score.text = scoreIn.ToString();
         GameManager.Instance.CurrentEnergyCount = 500;
         GameManager.Instance.CurrentWaterCount = 500;
         GameManager.Instance.CurrentScore = 500;
@@ -215,13 +231,13 @@ public class UI_Manager : MonoBehaviour
         waterText.text = GameManager.Instance.CurrentWaterCount.ToString();
         playerXpTxt.text = PlayerXp.CurrentPlayerXpPoints.ToString();
         CallBackEvents();
-       
+
     }
 
 
     void Update()
     {
-       
+
         InventorySetUp();
         MakeButtonsInteractable();
         if (currentPopupIndex >= 0)
@@ -304,7 +320,7 @@ public class UI_Manager : MonoBehaviour
         };
         pasticideBuyBT.onClick.AddListener(() => { ShopManager.ToBuyPasticide(); });
         pasticideUseBT.onClick.AddListener(() =>
-        { 
+        {
             GameManager.Instance.ToIncreaseLandHealthUsePasticide();
             pasticidePopUpPanel.SetActive(false);
         });
@@ -366,13 +382,17 @@ public class UI_Manager : MonoBehaviour
         starterPackBuyBT.onClick.AddListener(() => { GameManager.Instance.StartPackToBuy(); });
         energyBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyEnergyPoints(); });
         waterBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyWaterPoints(); });
-        superXpBuyBT.onClick.AddListener(() => 
+        superXpBuyBT.onClick.AddListener(() =>
         {
             ShopManager.ToBuySuperXp();
         });
-        wheatlandBuyBT.onClick.AddListener(() => 
+        wheatlandBuyBT.onClick.AddListener(() =>
         {
             ShopManager.ToBuyWheatField();
+        });
+        carrotlandBuyBT.onClick.AddListener(() =>
+        {
+            ShopManager.ToBuyCarrotField();
         });
     }
 
@@ -485,7 +505,7 @@ public class UI_Manager : MonoBehaviour
             if (LandHealth.CurrentLandHealth <= 70)
             {
                 pasticideMsgTxt.text = "your land is not good enough to Harvest and you didn't bought pasticide";
-                pasticideMsgTxt.color = Color.red;   
+                pasticideMsgTxt.color = Color.red;
             }
             else
             {
@@ -500,7 +520,7 @@ public class UI_Manager : MonoBehaviour
             }
             else
             {
-                if(GameManager.Instance.CurrentPasticideCount > 0)
+                if (GameManager.Instance.CurrentPasticideCount > 0)
                 {
                     contentOfPasticedMsgPanel.SetActive(false);
                     contentOfPasticidePanel.SetActive(true);
@@ -510,9 +530,64 @@ public class UI_Manager : MonoBehaviour
                     contentOfPasticedMsgPanel.SetActive(true);
                     contentOfPasticidePanel.SetActive(false);
                     pasticideMsgTxt.text = "you have to buy pasticide";
-                    pasticideMsgTxt.color= Color.red;
+                    pasticideMsgTxt.color = Color.red;
                 }
             }
+        }
+    }
+
+    internal void ToInstantiateLandHealthbar(int fieldID)
+    {
+        if (fieldID == 0)
+        {
+            if (!isCarrotHealthBarspawn)
+            {
+                isCarrotHealthBarspawn = true;
+                var go = Instantiate(LandHealthBarImg, lhHolderTransform);
+                go.GetComponent<LandHealth>().CurrentLandName = "CarrotField";
+            }
+        }
+        else if (fieldID == 1)
+        {
+            if (!isWheatHealthBarspawn)
+            {
+                isWheatHealthBarspawn = true;
+                var go = Instantiate(LandHealthBarImg, lhHolderTransform);
+                go.GetComponent<LandHealth>().CurrentLandName = "WheatField";
+            }
+        }
+        else
+        {
+            if (!isTomatoHealthBarspawn)
+            {
+                isTomatoHealthBarspawn = true;
+                var go = Instantiate(LandHealthBarImg, lhHolderTransform);
+                go.GetComponent<LandHealth>().CurrentLandName = "TomatoField";
+            }
+        }
+    }
+
+    internal void ShowLandHealthBar(int fieldID)
+    {
+        if (fieldID == 0)
+        {
+            lhHolderTransform.GetChild(2).gameObject.SetActive(true);
+        }
+        else if (fieldID == 1)
+        {
+            lhHolderTransform.GetChild(1).gameObject.SetActive(true);
+        }
+        else
+        {
+            lhHolderTransform.GetChild(0).gameObject.SetActive(true);
+        }
+    }
+
+    internal void HideLandHealthBar()
+    {
+        for (int i = 0; i < lhHolderTransform.childCount; i++)
+        {
+            lhHolderTransform.GetChild(i).gameObject.SetActive(true);
         }
     }
 

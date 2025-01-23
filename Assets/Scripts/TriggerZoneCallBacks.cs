@@ -37,16 +37,22 @@ public class TriggerZoneCallBacks : MonoBehaviour
                         if (fieldID == 2)
                         {
                             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
-                            UI_Manager.Instance.LandHealth.CurrentLandName = "TomatoField";
+
+                        }
+                        if (fieldID == 1)
+                        {
+                            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(3);
+                            
                         }
                         else
                         {
-                            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(3);
-                            UI_Manager.Instance.LandHealth.CurrentLandName = "WheatField";
+                            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(4);
+                           
                         }
                         GameManager.Instance.CurrentFieldID = fieldID;
                         UI_Manager.Instance.FieldManager.EnterField(fieldID);
-                        UI_Manager.Instance.LandHealthBarImg.SetActive(true);
+                        UI_Manager.Instance.ToInstantiateLandHealthbar(fieldID);
+                        UI_Manager.Instance.ShowLandHealthBar(fieldID);
                     }
 
                     break;
@@ -118,6 +124,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
             {
                 case ZoneType.Field:
                     GameManager.Instance.HideFieldPopup();
+                    UI_Manager.Instance.HideLandHealthBar();
                     GameManager.Instance.StopCurrentAction();
                     UI_Manager.Instance.FieldManager.SaveFieldStep(fieldID, UI_Manager.Instance.FieldManager.CurrentStepID);
                     UI_Manager.Instance.LandHealthBarImg.SetActive(false);
@@ -141,69 +148,6 @@ public class TriggerZoneCallBacks : MonoBehaviour
             }
         }
     }
-
-    /* public void CompleteAction()
-     {
-         GameManager.Instance.HideFieldPopup();
-         int currentStep = UI_Manager.Instance.FieldManager.GetCurrentStep(fieldID);
-         if (currentStep < actionSequence.Length - 1)
-         {
-             GameManager.Instance.isOneWorkingActionCompleted = true;
-             if (currentStep == 1)
-             {
-                 GameManager.Instance.isPlantStartGrowing = true;
-             }
-             currentStep++;
-             UI_Manager.Instance.FieldManager.SetCurrentStep(fieldID, currentStep);
-             UI_Manager.Instance.FieldManager.CurrentStepID = currentStep;
-             UI_Manager.Instance.oldcurrentStep = currentStep;
-             if (currentStep == 3)
-             {
-                 if (UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID))
-                 {
-                     UI_Manager.Instance.FieldManager.fieldSteps[UI_Manager.Instance.FieldManager.CurrentFieldID] = UI_Manager.Instance.oldcurrentStep;
-                 }
-
-                 if (GameManager.Instance.checkPlayerInZone)
-                     GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
-             }
-             else
-             {
-                 GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
-             }
-         }
-     }
- */
-    /* public void CompleteAction()
-     {
-         GameManager.Instance.HideFieldPopup();
-
-         int currentStep = UI_Manager.Instance.FieldManager.CurrentStepID;
-
-         if (currentStep < actionSequence.Length - 1)
-         {
-             GameManager.Instance.isOneWorkingActionCompleted = true;
-
-             if (currentStep == 1)
-             {
-                 GameManager.Instance.isPlantStartGrowing = true;
-             }
-
-             currentStep++; // Increment the current step
-             UI_Manager.Instance.FieldManager.CurrentStepID = currentStep; // Update FieldManager
-             UI_Manager.Instance.FieldManager.SetCurrentStep(fieldID, currentStep); // Save step for this field
-
-             if (currentStep == 3)
-             {
-                 GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
-             }
-             else
-             {
-                 GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
-             }
-         }
-     }*/
-
 
     public void CompleteAction()
     {

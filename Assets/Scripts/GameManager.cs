@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Device;
 using UnityEngine.SocialPlatforms.Impl;
 using static UnityEngine.EventSystems.EventTrigger;
+using static UnityEngine.Rendering.DebugUI;
 
 public class GameManager : MonoBehaviour
 {
@@ -65,7 +66,11 @@ public class GameManager : MonoBehaviour
     public int CurrentStrawberriesSeedCount
     {
         get => _currentStrawberriesSeedCount;
-        set => _currentStrawberriesSeedCount = value;
+        set 
+         {
+            _currentStrawberriesSeedCount = value;
+            UI_Manager.Instance.inventoryPanel.transform.GetChild(2).gameObject.GetComponent<SelectionFunctionality>().productCount.text = _currentStrawberriesSeedCount.ToString();
+        }
     }
     public int CurrentWheatSeedCount
     {
@@ -79,7 +84,11 @@ public class GameManager : MonoBehaviour
     public int CurrentTomatoSeedCount
     {
         get => _currentTomatoSeedCount;
-        set => _currentTomatoSeedCount = value;
+        set
+        {
+            _currentTomatoSeedCount = value;
+            UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = _currentTomatoSeedCount.ToString();
+        }
     }
     public int CurrentEnergyCount
     {
@@ -147,7 +156,7 @@ public class GameManager : MonoBehaviour
                 if (!HasEnoughLandHealth(5)) return;
                 if (!HasEnoughPoints(5, 0)) return;
                 if (!HasNotEnoughSeed(1)) return;
-                UI_Manager.Instance.LandHealth.LandHealthDecrease(5);
+                ToDecreaseTHElandHealth(UI_Manager.Instance.FieldManager.CurrentFieldID, 5);
                 isThroughingseeds = true;
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
@@ -244,7 +253,6 @@ public class GameManager : MonoBehaviour
         if (CurrentTomatoSeedCount >= 1)
         {
             CurrentTomatoSeedCount -= 1;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
         }
     }
     public void BeforeWaterTile()
@@ -543,37 +551,45 @@ public class GameManager : MonoBehaviour
         CurrentPasticideCount -= 1;
         Debug.Log("LAND is healing");
     }
-    internal void LevelRewards(string level)
+   
+    internal bool isShowingnewLand=false;
+    internal IEnumerator ShowBoughtLand(string landname)
     {
-        if ("level1" == level)
+       var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
+        if (landname == "wheat")
         {
-            CurrentPasticideCount += 1;
-            if (CurrentEnergyCount < 500)
-                CurrentEnergyCount += 50;
-            if (CurrentWaterCount < 500)
-                CurrentWaterCount += 100;
-            CurrentWheatSeedCount += 50;
-            UI_Manager.Instance.lockImageForLand.SetActive(false);
+            Cam.SwitchToCam(3);
+            Cam.activeCamera.LookAt = UI_Manager.Instance.wheatFieldArea.transform;
         }
         else
         {
-            UI_Manager.Instance.lockImageForSuperXp.SetActive(false);
+            Cam.SwitchToCam(4);
+            Cam.activeCamera.LookAt = UI_Manager.Instance.carrotFieldArea.transform;
         }
-    }
-
-    internal bool isShowingnewLand=false;
-    internal IEnumerator ShowBoughtLand()
-    {
         
-      var Cam=UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
-        Cam.SwitchToCam(3);
-          Cam.activeCamera.LookAt=UI_Manager.Instance.wheatFieldArea.transform;
+      
         yield return new WaitForSeconds(1f);
         //Cam.virtualCams[3].LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
         isShowingnewLand = false;
         Cam.SwitchToCam(2);
         Cam.activeCamera.LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
 
+    }
+
+    internal void ToDecreaseTHElandHealth(int fieldID,int deduct)
+    {
+        if (fieldID == 0)
+        {
+            UI_Manager.Instance.lhHolderTransform.GetChild(3).gameObject.GetComponent<LandHealth>().LandHealthDecrease(deduct);
+        }
+        else if (fieldID == 1)
+        {
+            UI_Manager.Instance.lhHolderTransform.GetChild(1).gameObject.GetComponent<LandHealth>().LandHealthDecrease(deduct);
+        }
+        else
+        {
+            UI_Manager.Instance.lhHolderTransform.GetChild(0).gameObject.GetComponent<LandHealth>().LandHealthDecrease(deduct);
+        }
     }
     #endregion
 }

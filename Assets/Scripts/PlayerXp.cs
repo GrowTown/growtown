@@ -11,7 +11,7 @@ public  class PlayerXp:MonoBehaviour
         {
             _playerXp = value;
             UI_Manager.Instance.playerXpTxt.text = _playerXp.ToString();
-            UI_Manager.Instance.PlayerLevel.UpdatetingthePlayerLevel(_playerXp);
+            UI_Manager.Instance.PlayerLevel.UpdatePlayerLevel(_playerXp);
         }
     }
     
@@ -32,22 +32,5 @@ public  class PlayerXp:MonoBehaviour
             Xp += Xp;
             AddingXP(Xp);
         }
-        /*  switch (currentAction)
-          {
-              case PlayerAction.Clean:
-
-                  Debug.Log("Cleanig");
-                  break;
-              case PlayerAction.Seed:
-                  AddingXP(4);
-                  // Debug.Log("Seeding");
-                  break;
-              case PlayerAction.Water:
-                  AddingXP(2);
-                  break;
-              case PlayerAction.Harvest:
-                  AddingXP(8);
-                  break;
-          }*/
     }
 }

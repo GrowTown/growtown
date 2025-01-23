@@ -28,7 +28,6 @@ public class ShopManager : MonoBehaviour
         {
             GameManager.Instance.CurrentScore -= 250;
             GameManager.Instance.CurrentTomatoSeedCount += 50;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
             GameManager.Instance.HasNotEnoughSeeds = false;
             GameManager.Instance.cropseedingStarted = false;
             forStarterPack = true;
@@ -39,7 +38,6 @@ public class ShopManager : MonoBehaviour
             {
                 GameManager.Instance.CurrentScore -= 5;
                 GameManager.Instance.CurrentTomatoSeedCount += 1;
-                UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentTomatoSeedCount.ToString();
                 GameManager.Instance.HasNotEnoughSeeds = false;
                 GameManager.Instance.cropseedingStarted = false;
             }
@@ -58,7 +56,6 @@ public class ShopManager : MonoBehaviour
         {
             GameManager.Instance.CurrentScore -= 12;
             GameManager.Instance.CurrentStrawberriesSeedCount += 1;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(2).gameObject.GetComponent<SelectionFunctionality>().productCount.text = GameManager.Instance.CurrentStrawberriesSeedCount.ToString();
         }
         else
         {
@@ -155,7 +152,7 @@ public class ShopManager : MonoBehaviour
             GameManager.Instance.CurrentScore -= 20;
             UI_Manager.Instance.wheatFieldArea.SetActive(true);
             GameManager.Instance.isShowingnewLand = true;
-           StartCoroutine (GameManager.Instance.ShowBoughtLand());
+           StartCoroutine (GameManager.Instance.ShowBoughtLand("wheat"));
             UI_Manager.Instance.wheatlandBuyBT.interactable = false;
 
         }
@@ -166,6 +163,23 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+    public void ToBuyCarrotField()
+    {
+        if (GameManager.Instance.CurrentScore >= 20)
+        {
+            GameManager.Instance.CurrentScore -= 20;
+            UI_Manager.Instance.carrotFieldArea.SetActive(true);
+            GameManager.Instance.isShowingnewLand = true;
+            StartCoroutine(GameManager.Instance.ShowBoughtLand("carrot"));
+            UI_Manager.Instance.carrotlandBuyBT.interactable = false;
+
+        }
+        else
+        {
+            UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
+            //Debug.Log("You didn't have enough money");
+        }
+    }
     #endregion
 }
 public enum SeedName

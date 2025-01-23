@@ -101,12 +101,7 @@ public class CharacterMovements : MonoBehaviour
             case "water_Stop":
                 UI_Manager.Instance.waterEffect.SetActive(false);
                 break;
-            case "refill_Mag1":
-                //RefillMag();
-                break;
-            case "attach_Mag1":
-                // AttachMag();
-                break;
+
         }
     }
     private void GroundedCheck()
