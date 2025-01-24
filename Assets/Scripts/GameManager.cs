@@ -153,7 +153,7 @@ public class GameManager : MonoBehaviour
                 // Debug.Log("Cleaning");
                 break;
             case PlayerAction.Seed:
-                if (!HasEnoughLandHealth(5)) return;
+             /*   if (!HasEnoughLandHealth(5)) return;*/
                 if (!HasEnoughPoints(5, 0)) return;
                 if (!HasNotEnoughSeed(1)) return;
                 ToDecreaseTHElandHealth(UI_Manager.Instance.FieldManager.CurrentFieldID, 5);
@@ -533,9 +533,9 @@ public class GameManager : MonoBehaviour
         }
         return true;
     }
-    public bool HasEnoughLandHealth(int lhRequired)
+  /*  public bool HasEnoughLandHealth(int lhRequired)
     {
-       /* if (UI_Manager.Instance.LandHealth.CurrentLandHealth < lhRequired)
+       *//* if (UI_Manager.Instance.LandHealth.CurrentLandHealth < lhRequired)
         {
             UI_Manager.Instance.warningPasticidePopUpPanel.SetActive(true);
             PanelManager.RegisterPanel(UI_Manager.Instance.warningPasticidePopUpPanel);
@@ -543,8 +543,8 @@ public class GameManager : MonoBehaviour
             StopCurrentAction();
             return false;
         }
-        return true;*/
-    }
+        return true;*//*
+    }*/
     internal void ToIncreaseLandHealthUsePasticide()
     {
         UI_Manager.Instance.LandHealth.LandHealthIncrease(100);
