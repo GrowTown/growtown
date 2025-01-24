@@ -26,7 +26,7 @@ public class WaterCollision : MonoBehaviour
                 }
 
                 UI_Manager.Instance.FieldGrid.AddCoveredTile(tile.gameObject);
-                tile.ChangeColor(hitColor); // Change the tile color;
+          
                 if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
                 {
                     UI_Manager.Instance.FieldGrid.StopCoverageTracking();

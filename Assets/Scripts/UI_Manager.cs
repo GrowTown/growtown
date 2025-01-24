@@ -39,7 +39,7 @@ public class UI_Manager : MonoBehaviour
     public GameObject carrotFieldArea;
 
     [Header("Transforms")]
-    public RectTransform lhHolderTransform;
+    public Transform lhHolderTransform;
 
     [Header("Effects")]
     public GameObject waterEffect;
@@ -596,12 +596,12 @@ public class UI_Manager : MonoBehaviour
         {
             isSpawned = true;
             var go = Instantiate(LandHealthBarImg, lhHolderTransform);
-            var rectTransform = go.GetComponent<RectTransform>();
-
+            /*var rectTransform = go.GetComponent<RectTransform>();
+            rectTransform.position = new Vector3(80, 0, 0);
             rectTransform.localScale = Vector3.one;
-            rectTransform.anchoredPosition = new Vector2(80, 0); 
+            rectTransform.anchoredPosition = Vector2.zero;
             rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;*/
 
             go.GetComponent<LandHealth>().CurrentLandName = landName;
         }
@@ -617,6 +617,7 @@ public class UI_Manager : MonoBehaviour
         else if (fieldID == 1)
         {
             lhHolderTransform.GetChild(1).gameObject.SetActive(true);
+
         }
         else
         {
@@ -628,7 +629,7 @@ public class UI_Manager : MonoBehaviour
     {
         for (int i = 0; i < lhHolderTransform.childCount; i++)
         {
-            lhHolderTransform.GetChild(i).gameObject.SetActive(true);
+            lhHolderTransform.GetChild(i).gameObject.SetActive(false);
         }
     }
 

@@ -48,10 +48,15 @@ public class FieldGrid : MonoBehaviour
             if (IsCoverageComplete())
                 coveredtiles.Clear();
         }
-        else
+        else if(UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
         {
             if (IsCoverageComplete())
                 coveredtiles1.Clear();
+        }
+        else
+        {
+            if (IsCoverageComplete())
+                coveredtiles2.Clear();
         }
         
         currentAction = action;
@@ -102,6 +107,14 @@ public class FieldGrid : MonoBehaviour
                TochangetheTileColor(tileGo);
             }
         }
+        else
+        {
+            if (!coveredtiles2.Contains(tileGo))
+            {
+                coveredtiles2.Add(tileGo);
+                TochangetheTileColor(tileGo);
+            }
+        }
     }
 
     void TochangetheTileColor(GameObject tileGo)
@@ -109,22 +122,22 @@ public class FieldGrid : MonoBehaviour
         switch (currentAction)
         {
             case PlayerAction.Clean:
-                tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(1f, 0.9188f, 0.9188f, 1f));
+                tileGo.GetComponent<TileInfo>().ChangeColor( new Color(1f, 0.9188f, 0.9188f, 1f));
                 Debug.Log("Cleanig");
                 break;
             case PlayerAction.Seed:
                 if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed)
                 {
-                    tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7095f, 0.7095f, 0.7095f, 1f));
+                    tileGo.GetComponent<TileInfo>().ChangeColor(new Color(0.7095f, 0.7095f, 0.7095f, 1f));
                     UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
                 }
                 // Debug.Log("Seeding");
                 break;
             case PlayerAction.Water:
-                tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.9098039f, 0.6431373f, 0.6431373f, 1f));
+                tileGo.GetComponent<TileInfo>().ChangeColor(new Color(0.9098039f, 0.6431373f, 0.6431373f, 1f));
                 break;
             case PlayerAction.Harvest:
-                tileGo.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(1f, 1f, 1f, 1f));
+                tileGo.GetComponent<TileInfo>().ChangeColor(new Color(1f, 1f, 1f, 1f));
                 break;
         }
     } 
@@ -139,9 +152,13 @@ public class FieldGrid : MonoBehaviour
         {
              return coveredtiles.Count >= rows * columns;
         }
-        else
+        else if(UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
         {
             return coveredtiles1.Count >= rows * columns;
+        }
+        else
+        {
+            return coveredtiles2.Count >= rows * columns;
         }
         
     }

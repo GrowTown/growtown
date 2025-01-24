@@ -53,7 +53,7 @@ public class TileInfo : MonoBehaviour
 
      }*/
 
-    internal void SpawnPlant(GameObject tilego) 
+    internal void SpawnPlant(GameObject tilego)
     {
         if (!plantSpawned)
         {
@@ -65,10 +65,10 @@ public class TileInfo : MonoBehaviour
             // Define unique rotations for the plants
             Quaternion[] rotations = new Quaternion[]
             {
-            Quaternion.Euler(0, 0, 0),    // Default rotation
-            Quaternion.Euler(0, 45, 0),  // Rotated 90 degrees on the Y axis
-            Quaternion.Euler(0, 90, 0), // Rotated 180 degrees on the Y axis
-            Quaternion.Euler(0, 270, 0)  // Rotated 270 degrees on the Y axis
+            Quaternion.Euler(0, 0, 0), 
+            Quaternion.Euler(0, 45, 0), 
+            Quaternion.Euler(0, 90, 0),
+            Quaternion.Euler(0, 270, 0) 
             };
 
             int index = 0;
@@ -101,7 +101,7 @@ public class TileInfo : MonoBehaviour
 
     public void ChangeColor(Color newColor)
     {
-         if (_renderer != null)
+        if (_renderer != null)
         {
             StartCoroutine(ChangeColorOverTime(newColor));
         }

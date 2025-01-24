@@ -2,10 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Device;
-using UnityEngine.SocialPlatforms.Impl;
-using static UnityEngine.EventSystems.EventTrigger;
-using static UnityEngine.Rendering.DebugUI;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -285,7 +282,7 @@ public class GameManager : MonoBehaviour
                         {
                             pg._initialGrowTimer.StopTimer();
                             StopCoroutine(pg.InitialCoroutine);
-                            Destroy(pg._initialGrowTimer); // Cleanup the old timer
+                            Destroy(pg._initialGrowTimer);
                         }
 
                         pg.AfterWateredCoroutine = StartCoroutine(pg.AfterWateredTileGrowth(pg.CurrentTimer));
@@ -535,7 +532,7 @@ public class GameManager : MonoBehaviour
     }
   /*  public bool HasEnoughLandHealth(int lhRequired)
     {
-       *//* if (UI_Manager.Instance.LandHealth.CurrentLandHealth < lhRequired)
+       if (UI_Manager.Instance.LandHealth.CurrentLandHealth < lhRequired)
         {
             UI_Manager.Instance.warningPasticidePopUpPanel.SetActive(true);
             PanelManager.RegisterPanel(UI_Manager.Instance.warningPasticidePopUpPanel);
@@ -543,7 +540,7 @@ public class GameManager : MonoBehaviour
             StopCurrentAction();
             return false;
         }
-        return true;*//*
+        return true;
     }*/
     internal void ToIncreaseLandHealthUsePasticide()
     {
