@@ -20,25 +20,13 @@ public class RewardsForLevel : MonoBehaviour
         _levelRewards = new Dictionary<string, LevelReward>
         {
             {
-                "level1", new LevelReward
+                "level2", new LevelReward
                 {
                     Rewards = new List<Reward>
                     {
                         new Reward { RewardType = "Item", Name = "Pesticide", Value = 1 },
                         new Reward { RewardType = "Energy", Value = 50 },
                         new Reward { RewardType = "Water", Value = 100 },
-                        new Reward { RewardType = "Seed", Name = "Wheat", Value = 50 },
-
-                    }
-                }
-            },
-            {
-                "level2", new LevelReward
-                {
-                    Rewards = new List<Reward>
-                    {
-                       new Reward { RewardType = "Unlock", Name = "WheatLand" },
-                       new Reward {RewardType="Unlock",Name="SuperXp"}
                     }
                 }
             },
@@ -47,7 +35,9 @@ public class RewardsForLevel : MonoBehaviour
                 {
                     Rewards = new List<Reward>
                     {
-                        new Reward { RewardType = "Debug", Name = "Level3 placeholder rewards" }
+                       new Reward { RewardType = "Unlock", Name = "WheatLand" },
+                       new Reward { RewardType = "Seed", Name = "Wheat", Value = 50 },
+                       new Reward {RewardType="Unlock",Name="SuperXp"}
                     }
                 }
             },
@@ -56,7 +46,9 @@ public class RewardsForLevel : MonoBehaviour
                 {
                     Rewards = new List<Reward>
                     {
-                        new Reward { RewardType = "Debug", Name = "Level4 placeholder rewards" }
+                       new Reward { RewardType = "Item", Name = "Pesticide", Value = 1 },
+                        new Reward { RewardType = "Energy", Value = 50 },
+                        new Reward { RewardType = "Water", Value = 100 },
                     }
                 }
             },
@@ -164,7 +156,7 @@ public class RewardsForLevel : MonoBehaviour
         {
             Debug.LogWarning($"No rewards configured for level {level}");
         }
-    } 
+    }
     private void AddItemToInventory(string itemName, int quantity)
     {
         switch (itemName)
@@ -193,14 +185,12 @@ public class RewardsForLevel : MonoBehaviour
        }*/
     private void GainEnergy(int energyAmount)
     {
-        if (GameManager.Instance.CurrentEnergyCount < 500)
-            GameManager.Instance.CurrentEnergyCount += energyAmount;
+        GameManager.Instance.CurrentEnergyCount = Mathf.Min(GameManager.Instance.CurrentEnergyCount + energyAmount,500);
     }
 
     private void GainWater(int waterAmount)
     {
-        if (GameManager.Instance.CurrentWaterCount < 500)
-            GameManager.Instance.CurrentWaterCount += waterAmount;
+       GameManager.Instance.CurrentWaterCount = Mathf.Min(GameManager.Instance.CurrentWaterCount + waterAmount, 500);
     }
 
     private void AddSeedToInventory(string seedName, int quantity)
@@ -229,9 +219,11 @@ public class RewardsForLevel : MonoBehaviour
         {
             case "WheatLand":
                 UI_Manager.Instance.lockImageForWheatLand.SetActive(false);
+                UI_Manager.Instance.lockImageForWheatSeed.SetActive(false);
                 break;
             case "CarrotLand":
                 UI_Manager.Instance.lockImageForCarrotLand.SetActive(false);
+                UI_Manager.Instance.lockImageForCarrotSeed.SetActive(false);
                 break;
             case "SuperXp":
                 UI_Manager.Instance.lockImageForSuperXp.SetActive(false);

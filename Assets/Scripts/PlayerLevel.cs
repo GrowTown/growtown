@@ -32,9 +32,9 @@ public class PlayerLevel : MonoBehaviour
 
     private void InitializeLevelThresholds()
     {
-        for (int level = 1; level <= 10; level++)
+        for (int level = 2; level <= 10; level++)
         {
-            _levelThresholds[level] = level * 100; 
+            _levelThresholds[level] = level * 50; 
         }
     }
 

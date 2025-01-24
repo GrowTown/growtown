@@ -27,6 +27,7 @@ public class PlayerInteraction : MonoBehaviour
         if (GameManager.Instance.isCutting)
         {
             GameManager.Instance.ResetValues();
+            UI_Manager.Instance.TriggerZoneCallBacks.CompleteAction();
         }
     }
     void OnPlayerInteraction(RaycastHit hit)

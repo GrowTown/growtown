@@ -95,8 +95,8 @@ public class GameManager : MonoBehaviour
         get => _currentEnergyCount;
         set
         {
-            UI_Manager.Instance.energyText.text = value.ToString();
             _currentEnergyCount = value;
+            UI_Manager.Instance.energyText.text = value.ToString();
         }
     }
     public int CurrentWaterCount
@@ -104,8 +104,8 @@ public class GameManager : MonoBehaviour
         get => _currentWaterCount;
         set
         {
-            UI_Manager.Instance.waterText.text = value.ToString();
             _currentWaterCount = value;
+            UI_Manager.Instance.waterText.text = value.ToString();
         }
     }
     public int CurrentPasticideCount
@@ -490,8 +490,8 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.GrowthStartedOnThisTile.Clear();
         UI_Manager.Instance.spawnPlantsForGrowth.Clear();
         UI_Manager.Instance.oldcurrentStep = -1;
-        //UI_Manager.Instance.TriggerZoneCallBacks.currentStep = 0;
-        UI_Manager.Instance.FieldManager.fieldSteps.Remove(CurrentFieldID);
+        UI_Manager.Instance.FieldManager.CurrentStepID=-1;
+        UI_Manager.Instance.FieldManager.fieldSteps[CurrentFieldID].Clear();
         isCutting = false;
         //isResetetValues = true;
         foreach (var item in UI_Manager.Instance.PopupImg)
@@ -535,7 +535,7 @@ public class GameManager : MonoBehaviour
     }
     public bool HasEnoughLandHealth(int lhRequired)
     {
-        if (UI_Manager.Instance.LandHealth.CurrentLandHealth < lhRequired)
+       /* if (UI_Manager.Instance.LandHealth.CurrentLandHealth < lhRequired)
         {
             UI_Manager.Instance.warningPasticidePopUpPanel.SetActive(true);
             PanelManager.RegisterPanel(UI_Manager.Instance.warningPasticidePopUpPanel);
@@ -543,7 +543,7 @@ public class GameManager : MonoBehaviour
             StopCurrentAction();
             return false;
         }
-        return true;
+        return true;*/
     }
     internal void ToIncreaseLandHealthUsePasticide()
     {

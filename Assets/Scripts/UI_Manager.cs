@@ -31,7 +31,9 @@ public class UI_Manager : MonoBehaviour
     public GameObject warningPasticidePopUpPanel;
     public GameObject LandHealthBarImg;
     public GameObject lockImageForWheatLand;
+    public GameObject lockImageForWheatSeed;
     public GameObject lockImageForCarrotLand;
+    public GameObject lockImageForCarrotSeed;
     public GameObject lockImageForSuperXp;
     public GameObject wheatFieldArea;
     public GameObject carrotFieldArea;
@@ -472,9 +474,9 @@ public class UI_Manager : MonoBehaviour
     }
     internal void HideFieldPopup()
     {
-        if (FieldManager.CurrentStepID <= PopupImg.Length - 1)
+        for (int i = 0; i < PopupImg.Length; i++)
         {
-            PopupImg[FieldManager.CurrentStepID].SetActive(false);
+            PopupImg[i].SetActive(false);
         }
         sickleWeapon.SetActive(false);
         wateringTool.SetActive(false);
@@ -536,7 +538,7 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
-    internal void ToInstantiateLandHealthbar(int fieldID)
+   /* internal void ToInstantiateLandHealthbar(int fieldID)
     {
         if (fieldID == 0)
         {
@@ -565,6 +567,45 @@ public class UI_Manager : MonoBehaviour
                 go.GetComponent<LandHealth>().CurrentLandName = "TomatoField";
             }
         }
+    }*/
+    internal void ToInstantiateLandHealthbar(int fieldID)
+    {
+        string landName = "";
+        ref bool isSpawned = ref isCarrotHealthBarspawn;
+
+        switch (fieldID)
+        {
+            case 0:
+                landName = "CarrotField";
+                isSpawned = ref isCarrotHealthBarspawn;
+                break;
+            case 1:
+                landName = "WheatField";
+                isSpawned = ref isWheatHealthBarspawn;
+                break;
+            case 2:
+                landName = "TomatoField";
+                isSpawned = ref isTomatoHealthBarspawn;
+                break;
+            default:
+                Debug.LogWarning("Invalid fieldID");
+                return;
+        }
+
+        if (!isSpawned)
+        {
+            isSpawned = true;
+            var go = Instantiate(LandHealthBarImg, lhHolderTransform);
+            var rectTransform = go.GetComponent<RectTransform>();
+
+            rectTransform.localScale = Vector3.one;
+            rectTransform.anchoredPosition = new Vector2(80, 0); 
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+
+            go.GetComponent<LandHealth>().CurrentLandName = landName;
+        }
+
     }
 
     internal void ShowLandHealthBar(int fieldID)
