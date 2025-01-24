@@ -76,7 +76,45 @@ public class LandHealth : MonoBehaviour
         }
     }
 
-
+    internal void ShowPasticidePop()
+    {
+        if (!UI_Manager.Instance.ShopManager.isPasticidsBought)
+        {
+            UI_Manager.Instance.contentOfPasticidePanel.SetActive(false);
+            UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(true);
+            if (CurrentLandHealth <= 70)
+            {
+                UI_Manager.Instance.pasticideMsgTxt.text = "your land is not good enough to Harvest and you didn't bought pasticide";
+                UI_Manager.Instance.pasticideMsgTxt.color = Color.red;
+            }
+            else
+            {
+                UI_Manager.Instance.pasticideMsgTxt.text = "your land is good enough to Harvest";
+            }
+        }
+        else
+        {
+            if (CurrentLandHealth >= 70)
+            {
+                UI_Manager.Instance.pasticideMsgTxt.text = "your land is good enough to Harvest";
+            }
+            else
+            {
+                if (GameManager.Instance.CurrentPasticideCount > 0)
+                {
+                    UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(false);
+                    UI_Manager.Instance.contentOfPasticidePanel.SetActive(true);
+                }
+                else
+                {
+                    UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(true);
+                    UI_Manager.Instance.contentOfPasticidePanel.SetActive(false);
+                    UI_Manager.Instance.pasticideMsgTxt.text = "you have to buy pasticide";
+                    UI_Manager.Instance.pasticideMsgTxt.color = Color.red;
+                }
+            }
+        }
+    }  
 }
 
  

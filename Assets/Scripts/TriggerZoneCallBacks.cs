@@ -39,7 +39,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
 
                         }
-                        if (fieldID == 1)
+                        else if (fieldID == 1)
                         {
                             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(3);
                             

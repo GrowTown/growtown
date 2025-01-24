@@ -16,7 +16,7 @@ public class ShowPopUpForPasticide : MonoBehaviour, IPointerDownHandler
         if (!clicked)
         {
             PopUpPanel.SetActive(true);
-            UI_Manager.Instance.ShowPasticidePop();
+            this.gameObject.GetComponent<LandHealth>().ShowPasticidePop();
             clicked = true;
         }
         else

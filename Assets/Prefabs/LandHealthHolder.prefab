@@ -198,6 +198,7 @@ GameObject:
   - component: {fileID: 5684608991165655374}
   - component: {fileID: 4499535398716089495}
   - component: {fileID: 6249255020883096084}
+  - component: {fileID: -4660855702642904823}
   m_Layer: 5
   m_Name: LandHealthHolder
   m_TagString: Untagged
@@ -278,6 +279,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PopUpPanel: {fileID: 0}
+--- !u!114 &-4660855702642904823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4466382458245528122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b19735a018c1a78409718522ef58507a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _landHealthBar: {fileID: 2283410333637247049}
+  _landHealth: 100
+  _landHealthTxt: {fileID: 5246629319093804656}
+  _landNameTxt: {fileID: 591420417585191666}
+  _landHealthBarFill: {fileID: 3273992879085112476}
+  _landName: 
 --- !u!1 &6317804870140416407
 GameObject:
   m_ObjectHideFlags: 0

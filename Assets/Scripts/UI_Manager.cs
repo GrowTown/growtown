@@ -37,7 +37,7 @@ public class UI_Manager : MonoBehaviour
     public GameObject carrotFieldArea;
 
     [Header("Transforms")]
-    public Transform lhHolderTransform;
+    public RectTransform lhHolderTransform;
 
     [Header("Effects")]
     public GameObject waterEffect;
