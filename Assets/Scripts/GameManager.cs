@@ -332,7 +332,7 @@ public class GameManager : MonoBehaviour
         {
             CurrentScore += 100;
         }
-        else if (grownPlantCount >= 15)
+        else if (grownPlantCount >= 15) 
         {
             CurrentScore += 50;
         }
