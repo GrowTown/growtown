@@ -318,30 +318,29 @@ public class GameManager : MonoBehaviour
 
         if (grownPlantCount == 100)
         {
-            UI_Manager.Instance.scoreIn += 250;
+            CurrentScore += 250;
         }
         else if (grownPlantCount > 75)
         {
-            UI_Manager.Instance.scoreIn += 200;
+            CurrentScore += 200;
         }
         else if (grownPlantCount > 50)
         {
-            UI_Manager.Instance.scoreIn += 150;
+            CurrentScore += 150;
         }
         else if (grownPlantCount > 25)
         {
-            UI_Manager.Instance.scoreIn += 100;
+            CurrentScore += 100;
         }
         else if (grownPlantCount >= 15)
         {
-            UI_Manager.Instance.scoreIn += 50;
+            CurrentScore += 50;
         }
         else
         {
-            UI_Manager.Instance.scoreIn += 0;
+            CurrentScore += 0;
         }
 
-        UI_Manager.Instance.score.text = UI_Manager.Instance.scoreIn.ToString();
     }
     bool IsHarvestCount;
     public void HarvestDeductEnergy(GameObject tilego)
