@@ -596,12 +596,12 @@ public class UI_Manager : MonoBehaviour
         {
             isSpawned = true;
             var go = Instantiate(LandHealthBarImg, lhHolderTransform);
-            /*var rectTransform = go.GetComponent<RectTransform>();
+            var rectTransform = go.GetComponent<RectTransform>();
             rectTransform.position = new Vector3(80, 0, 0);
             rectTransform.localScale = Vector3.one;
-            rectTransform.anchoredPosition = Vector2.zero;
+            rectTransform.anchoredPosition = Vector2.zero; 
             rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;*/
+            rectTransform.offsetMax = Vector2.zero;
 
             go.GetComponent<LandHealth>().CurrentLandName = landName;
         }

@@ -229,7 +229,7 @@ public class CharacterMovements : MonoBehaviour
 
         // Updating the dog behavior
         // UpdateDogBehavior(inputDirection.magnitude > 0 ? (isRunning ? 2 : 1) : 0);
-        UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, GameManager.Instance.checkPlayerInZone);
+        UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, UI_Manager.Instance.IsPlayerInSecondZone);
     }
 
 
