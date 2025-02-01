@@ -7,14 +7,9 @@ public class WaterCollision : MonoBehaviour
     [SerializeField]
     private ParticleSystem _particleSystem;
 
-    private void Start()
-    {
-        //_particleSystem = GetComponent<ParticleSystem>();
-    }
-
     private void OnParticleCollision(GameObject other)
     {
-        // Check if the object has the Tile script
+
         TileInfo tile = other.GetComponent<TileInfo>();
         if (tile != null)
         {

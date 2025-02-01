@@ -64,6 +64,10 @@ public class UI_Manager : MonoBehaviour
     public Button wheatlandBuyBT;
     public Button carrotlandBuyBT;
 
+    [Header("Slider")]
+    public Slider waterSlider;
+    public Slider energySlider;
+
     [Header("Text")]
     public TextMeshProUGUI score;
     public TextMeshProUGUI notEnoughMoneyText;
@@ -101,6 +105,8 @@ public class UI_Manager : MonoBehaviour
     private SliderControls _sliderControls;
     [SerializeField]
     private RewardsForLevel _rewardsForLevel;
+    [SerializeField]
+    private TabGroup _tabGroup;
 
     private PlayerLevel _playerLevel;
 
@@ -136,6 +142,11 @@ public class UI_Manager : MonoBehaviour
     #endregion
 
     #region Properties
+    public TabGroup TabGroup
+    {
+        get=>_tabGroup; 
+         set => _tabGroup = value;
+    }
 
     public RewardsForLevel RewardsForLevel
     {
@@ -538,36 +549,36 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
-   /* internal void ToInstantiateLandHealthbar(int fieldID)
-    {
-        if (fieldID == 0)
-        {
-            if (!isCarrotHealthBarspawn)
-            {
-                isCarrotHealthBarspawn = true;
-                var go = Instantiate(LandHealthBarImg, lhHolderTransform);
-                go.GetComponent<LandHealth>().CurrentLandName = "CarrotField";
-            }
-        }
-        else if (fieldID == 1)
-        {
-            if (!isWheatHealthBarspawn)
-            {
-                isWheatHealthBarspawn = true;
-                var go = Instantiate(LandHealthBarImg, lhHolderTransform);
-                go.GetComponent<LandHealth>().CurrentLandName = "WheatField";
-            }
-        }
-        else
-        {
-            if (!isTomatoHealthBarspawn)
-            {
-                isTomatoHealthBarspawn = true;
-                var go = Instantiate(LandHealthBarImg, lhHolderTransform);
-                go.GetComponent<LandHealth>().CurrentLandName = "TomatoField";
-            }
-        }
-    }*/
+    /* internal void ToInstantiateLandHealthbar(int fieldID)
+     {
+         if (fieldID == 0)
+         {
+             if (!isCarrotHealthBarspawn)
+             {
+                 isCarrotHealthBarspawn = true;
+                 var go = Instantiate(LandHealthBarImg, lhHolderTransform);
+                 go.GetComponent<LandHealth>().CurrentLandName = "CarrotField";
+             }
+         }
+         else if (fieldID == 1)
+         {
+             if (!isWheatHealthBarspawn)
+             {
+                 isWheatHealthBarspawn = true;
+                 var go = Instantiate(LandHealthBarImg, lhHolderTransform);
+                 go.GetComponent<LandHealth>().CurrentLandName = "WheatField";
+             }
+         }
+         else
+         {
+             if (!isTomatoHealthBarspawn)
+             {
+                 isTomatoHealthBarspawn = true;
+                 var go = Instantiate(LandHealthBarImg, lhHolderTransform);
+                 go.GetComponent<LandHealth>().CurrentLandName = "TomatoField";
+             }
+         }
+     }*/
     internal void ToInstantiateLandHealthbar(int fieldID)
     {
         string landName = "";
@@ -599,7 +610,7 @@ public class UI_Manager : MonoBehaviour
             var rectTransform = go.GetComponent<RectTransform>();
             rectTransform.position = new Vector3(80, 0, 0);
             rectTransform.localScale = Vector3.one;
-            rectTransform.anchoredPosition = Vector2.zero; 
+            rectTransform.anchoredPosition = Vector2.zero;
             rectTransform.offsetMin = Vector2.zero;
             rectTransform.offsetMax = Vector2.zero;
 
