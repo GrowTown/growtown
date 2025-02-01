@@ -56,13 +56,13 @@ public class UI_Manager : MonoBehaviour
     public Button buyInventoryBT;
     public Button sellInventoryBT;
     public Button starterPackBuyBT;
-    public Button energyBuyBT;
-    public Button waterBuyBT;
     public Button pasticideUseBT;
     public Button pasticideBuyBT;
-    public Button superXpBuyBT;
     public Button wheatlandBuyBT;
     public Button carrotlandBuyBT;
+    internal Button waterBuyBT;
+    internal Button superXpBuyBT;
+    internal Button energyBuyBT;
 
     [Header("Slider")]
     public Slider waterSlider;
@@ -123,6 +123,7 @@ public class UI_Manager : MonoBehaviour
     internal bool isTomatoHealthBarspawn = false;
     internal bool isWheatHealthBarspawn = false;
     internal bool isCarrotHealthBarspawn = false;
+    internal bool isButtonsInitialized = false;
 
     internal bool IsPlayerInSecondZone = false;
     internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
@@ -137,6 +138,7 @@ public class UI_Manager : MonoBehaviour
     [SerializeField]
     internal List<ShopItem> shopItems = new List<ShopItem>();
 
+
     #region Fields
     internal int scoreIn = 500;
     #endregion
@@ -144,8 +146,8 @@ public class UI_Manager : MonoBehaviour
     #region Properties
     public TabGroup TabGroup
     {
-        get=>_tabGroup; 
-         set => _tabGroup = value;
+        get => _tabGroup;
+        set => _tabGroup = value;
     }
 
     public RewardsForLevel RewardsForLevel
@@ -266,29 +268,33 @@ public class UI_Manager : MonoBehaviour
 
     void MakeButtonsInteractable()
     {
-        if (GameManager.Instance.CurrentEnergyCount == 500)
+
+            if (GameManager.Instance.CurrentEnergyCount == 500)
+            {
+                energyBuyBT.interactable = false;
+            }
+            else
+            {
+                energyBuyBT.interactable = true;
+            }
+            if (GameManager.Instance.CurrentWaterCount == 500)
+            {
+                waterBuyBT.interactable = false;
+            }
+            else
+            {
+                waterBuyBT.interactable = true;
+            }
+        if (isButtonsInitialized)
         {
-            energyBuyBT.interactable = false;
-        }
-        else
-        {
-            energyBuyBT.interactable = true;
-        }
-        if (GameManager.Instance.CurrentWaterCount == 500)
-        {
-            waterBuyBT.interactable = false;
-        }
-        else
-        {
-            waterBuyBT.interactable = true;
-        }
-        if (SliderControls.gameObject.activeSelf)
-        {
-            superXpBuyBT.interactable = false;
-        }
-        else
-        {
-            superXpBuyBT.interactable = true;
+            if (SliderControls.gameObject.activeSelf)
+            {
+                superXpBuyBT.interactable = false;
+            }
+            else
+            {
+                superXpBuyBT.interactable = true;
+            }
         }
     }
 
@@ -393,12 +399,12 @@ public class UI_Manager : MonoBehaviour
             }
         });
         starterPackBuyBT.onClick.AddListener(() => { GameManager.Instance.StartPackToBuy(); });
-        energyBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyEnergyPoints(); });
+        /*energyBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyEnergyPoints(); });
         waterBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyWaterPoints(); });
         superXpBuyBT.onClick.AddListener(() =>
         {
             ShopManager.ToBuySuperXp();
-        });
+        });*/
         wheatlandBuyBT.onClick.AddListener(() =>
         {
             ShopManager.ToBuyWheatField();

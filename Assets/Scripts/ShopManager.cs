@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEditor.Rendering;
 
 
 public class ShopManager : MonoBehaviour
@@ -44,13 +45,30 @@ public class ShopManager : MonoBehaviour
             {
                 ///todo
                 GameObject itemObject = Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
-                itemObject.GetComponent<ShopItemHolder>().Initialize(item);
-                buttons.Add(item.itemName, itemObject.GetComponent<ShopItemHolder>().buyBT);
+                var shopIH=itemObject.GetComponent<ShopItemHolder>();
+                shopIH.Initialize(item);
+                if (item.level == 1) buttons.Add(item.itemName, shopIH.buyBT); 
             }
-
         }
-    }
+       
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+               Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
+            }
+        }
 
+        if (buttons.ContainsKey("EnergyPoints"))
+        {
+            UI_Manager.Instance.energyBuyBT = buttons["EnergyPoints"];
+        }
+        if (buttons.ContainsKey("WaterPoints"))
+        {
+            UI_Manager.Instance.waterBuyBT = buttons["WaterPoints"];
+        }
+        
+    }
     private void InitializeButtonActions()
     {
         buttonActions = new Dictionary<string, Action>
@@ -89,8 +107,7 @@ public class ShopManager : MonoBehaviour
 
 
     }
-
-    private void OnLevelChanged(PlayerLevel info)
+    internal void OnLevelChanged(int LVinfo)
     {
         for (int i = 0; i < shopItems.Keys.Count; i++)
         {
@@ -98,14 +115,20 @@ public class ShopManager : MonoBehaviour
             for (int j = 0; j < shopItems[key].Count; j++)
             {
                 ShopItem item = shopItems[key][j];
-                if (item.level == info.CurrentPlayerLevel)
+                if (item.level == LVinfo)
                 {
-                    ///to do
-                    
-
+                    var spItem =UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0).GetChild(j).GetComponent<ShopItemHolder>();
+                    spItem.UnlockItem();
+                    buttons.Add(item.itemName, spItem.buyBT);
+                    if (buttons.ContainsKey("SuperXp")&&!UI_Manager.Instance.isButtonsInitialized)
+                    {
+                        UI_Manager.Instance.superXpBuyBT = buttons["SuperXp"];
+                        UI_Manager.Instance.isButtonsInitialized = true;
+                    }
                 }
             }
         }
+       
     }
     public void ToBuyWheat()
     {

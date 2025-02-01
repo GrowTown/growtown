@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class ShopItemHolder : MonoBehaviour
 {
-    private ShopItem Item;
+    internal ShopItem Item;
 
     //[SerializeField] private TextMeshProUGUI nameText;
     //[SerializeField] private TextMeshProUGUI amountText;
@@ -16,19 +16,15 @@ public class ShopItemHolder : MonoBehaviour
 
     public void Initialize(ShopItem item)
     {
-        Item = item;
-        iconImage.sprite=Item.icon;
-        priceText.text=Item.price.ToString();
-        if (Item.level >= GameManager.Instance.CurrentScore)
-        {
-            UnlockItem();
-        }
-
+        Item = item; 
+        priceText.text=Item.price.ToString()+"GRC";
+        if(Item.level== 1) iconImage.sprite = Item.icon;
+       
     }
 
 
     public void UnlockItem()
     {
-        ///
+        iconImage.sprite = Item.icon;
     }
 }

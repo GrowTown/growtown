@@ -9,7 +9,7 @@ public class TabGroup : MonoBehaviour
     public Tab_Button selectedTab;
     public float selectedScaleForBT = 1.5f; 
     public float normalScale = 1f;
-    public float scaleDuration = 0.2f; 
+    public float scaleDuration = 0.01f; 
 
     private void Start()
     {
