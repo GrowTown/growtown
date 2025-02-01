@@ -13,8 +13,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
     public Action<TriggerZoneCallBacks> onPlayerEnter;
     public Action<TriggerZoneCallBacks> onPlayerExit;
 
-    private FieldGrid fieldGrid; // Reference to FieldGrid for tile tracking
-
+    private FieldGrid fieldGrid;
     private void Start()
     {
         fieldGrid = FindObjectOfType<FieldGrid>();
@@ -163,7 +162,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                 GameManager.Instance.isPlantStartGrowing = true; 
             }
 
-            currentStep++; // Move to the next step
+            currentStep++;
             UI_Manager.Instance.FieldManager.SaveFieldStep(fieldID, currentStep); 
             UI_Manager.Instance.FieldManager.CurrentStepID = currentStep; 
             UI_Manager.Instance.oldcurrentStep = currentStep; 
@@ -173,12 +172,12 @@ public class TriggerZoneCallBacks : MonoBehaviour
               
                 if (GameManager.Instance.checkPlayerInZone)
                 {
-                    GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]); // Show popup if player is in the zone
+                    GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
                 }
             }
             else
             {
-                GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]); // Show popup for other steps
+                GameManager.Instance.ShowFieldPopup(actionSequence[currentStep]);
             }
         }
     }

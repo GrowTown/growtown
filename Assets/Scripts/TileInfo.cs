@@ -62,7 +62,6 @@ public class TileInfo : MonoBehaviour
                 UI_Manager.Instance.spawnPlantsForGrowth[tilego] = new List<GameObject>();
             }
 
-            // Define unique rotations for the plants
             Quaternion[] rotations = new Quaternion[]
             {
             Quaternion.Euler(0, 0, 0), 

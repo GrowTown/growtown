@@ -92,8 +92,9 @@ public class GameManager : MonoBehaviour
         get => _currentEnergyCount;
         set
         {
-            _currentEnergyCount = value;
+            _currentEnergyCount = Mathf.Clamp(value, 0, 500);
             UI_Manager.Instance.energyText.text = value.ToString();
+            UI_Manager.Instance.energySlider.value = _currentEnergyCount / (float)500;
         }
     }
     public int CurrentWaterCount
@@ -101,8 +102,9 @@ public class GameManager : MonoBehaviour
         get => _currentWaterCount;
         set
         {
-            _currentWaterCount = value;
+             _currentWaterCount = Mathf.Clamp(value, 0, 500);
             UI_Manager.Instance.waterText.text = value.ToString();
+            UI_Manager.Instance.waterSlider.value= _currentWaterCount/(float)500;
         }
     }
     public int CurrentPasticideCount

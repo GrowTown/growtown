@@ -6,7 +6,7 @@ public class WaveManager : MonoBehaviour
 {
      public EnemyPool enemyPool;
     public Transform[] spawnPoints;
-    public Transform[] fieldAreas; // Array of field areas for enemy targets
+    public Transform[] fieldAreas; 
     public int waveSize = 5;
     public float spawnInterval = 1f;
 

@@ -18,6 +18,7 @@ public class PlayerLevel : MonoBehaviour
         {
             _levelOfPlayer = value;
             UI_Manager.Instance.currentplayerLevelTxt.text=_levelOfPlayer.ToString();
+            UI_Manager.Instance.ShopManager.OnLevelChanged(_levelOfPlayer);
         }
 
     }
