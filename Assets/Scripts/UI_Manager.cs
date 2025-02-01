@@ -37,6 +37,9 @@ public class UI_Manager : MonoBehaviour
     public GameObject lockImageForSuperXp;
     public GameObject wheatFieldArea;
     public GameObject carrotFieldArea;
+    public GameObject shotGun;
+    public GameObject shotGunSpawnPoint;
+
 
     [Header("Transforms")]
     public Transform lhHolderTransform;

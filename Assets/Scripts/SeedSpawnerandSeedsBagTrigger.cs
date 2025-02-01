@@ -6,7 +6,8 @@ using UnityEngine;
 public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
 {
     private bool isHandInBag = false; 
-    internal bool isTileHasSeed = false; 
+    internal bool isTileHasSeed = false;
+    private bool isShotGunInHand = false;
     GameObject spawnObject;
   
    // internal GameObject CoveredTile;
@@ -16,6 +17,28 @@ public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
     {
         isHandInBag = true;
         SpawnSeedInHand();
+    }
+
+
+    public void OnGunInHand()
+    {
+        SpawnShotGunInHand();
+    }
+    private void SpawnShotGunInHand()
+    {
+        if (!isShotGunInHand && UI_Manager.Instance.shotGun != null)
+        {
+            // Instantiate shotGun at hand position
+            spawnObject = Instantiate(UI_Manager.Instance.shotGun, UI_Manager.Instance.shotGunSpawnPoint.transform.position,
+                                        UI_Manager.Instance.shotGunSpawnPoint.transform.rotation, UI_Manager.Instance.shotGunSpawnPoint.transform);
+            isShotGunInHand = true;
+            Debug.Log("ShotGun spawned in hand");
+        }
+        else
+        {
+            Destroy(spawnObject);
+            isShotGunInHand = false;
+        }
     }
 
     private void SpawnSeedInHand()

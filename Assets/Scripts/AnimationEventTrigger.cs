@@ -50,11 +50,16 @@ public class AnimationEventTrigger : MonoBehaviour
         //UI_Manager.Instance.wateringTool.GetComponent<PourDetector>().StartPour();
     }
 
-/*    public void TriggerWaterStop()
+    public void TriggerShotGunAnimationEvent()
     {
+        UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnGunInHand();
+    }
 
-        UI_Manager.Instance.waterEffect.SetActive(false);
-        //UI_Manager.Instance.wateringTool.GetComponent<PourDetector>().EndPour();
-    }*/
+    /*    public void TriggerWaterStop()
+        {
+
+            UI_Manager.Instance.waterEffect.SetActive(false);
+            //UI_Manager.Instance.wateringTool.GetComponent<PourDetector>().EndPour();
+        }*/
 
 }
