@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Shotgun : MonoBehaviour
 {
@@ -22,12 +23,14 @@ public class Shotgun : MonoBehaviour
     {
         canShoot = false;
 
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        // Instantiate bullet and make it a child of firePoint
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation, firePoint);
 
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.AddForce(firePoint.forward * bulletForce);
+        rb.AddForce(firePoint.forward * bulletForce, ForceMode.Impulse);
 
         yield return new WaitForSeconds(fireRate);
         canShoot = true;
     }
+
 }

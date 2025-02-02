@@ -288,6 +288,7 @@ public class GameManager : MonoBehaviour
                         }
 
                         pg.AfterWateredCoroutine = StartCoroutine(pg.AfterWateredTileGrowth(pg.CurrentTimer));
+                        WaveManager.Instance.StartEnemyWaves();
                         if (!UI_Manager.Instance.GrowthStartedPlants.Contains(item))
                         {
                             UI_Manager.Instance.GrowthStartedPlants.Add(item);

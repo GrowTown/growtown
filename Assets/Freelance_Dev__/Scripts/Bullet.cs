@@ -4,6 +4,7 @@ public class Bullet : MonoBehaviour
 {
     public float speed = 50f;
     public float lifetime = 3f;
+    public float damageRate = 0.5f;
 
     void Start()
     {
@@ -14,13 +15,17 @@ public class Bullet : MonoBehaviour
     {
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
     }
-
-    void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.CompareTag("Enemy"))
+        if (collision.gameObject.CompareTag("enemy"))
         {
-            Destroy(other.gameObject);
-            Destroy(gameObject);
+            collision.gameObject.SetActive(false); // Deactivate the enemy
+            Destroy(gameObject); // Destroy this object
+        }
+        else if (collision.gameObject.CompareTag("bossEnemy"))
+        {
+            collision.gameObject.GetComponent<Enemy>().TakeDamage(damageRate); // Deactivate the bossEnemy
+            Destroy(gameObject); // Destroy this object
         }
     }
 }
