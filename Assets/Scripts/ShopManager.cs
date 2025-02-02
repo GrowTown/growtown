@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-using UnityEditor.Rendering;
+
 
 
 public class ShopManager : MonoBehaviour
@@ -117,9 +117,25 @@ public class ShopManager : MonoBehaviour
                 ShopItem item = shopItems[key][j];
                 if (item.level == LVinfo)
                 {
-                    var spItem =UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0).GetChild(j).GetComponent<ShopItemHolder>();
-                    spItem.UnlockItem();
-                    buttons.Add(item.itemName, spItem.buyBT);
+                    var spItemParent = UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0);
+                    List<ShopItemHolder> spItemList = new List<ShopItemHolder>();
+                    for (int k = 0; k < spItemParent.childCount; k++)
+                    {
+                        var shopItem = spItemParent.GetChild(k).gameObject.GetComponent<ShopItemHolder>();
+                        if (shopItem != null)
+                        {
+                            spItemList.Add(shopItem);
+                        }
+                    }
+
+                    var existingItem = spItemList.Find(x => x.Item.itemName == item.itemName);
+                    if (existingItem != null)
+                    {
+                        existingItem.UnlockItem();
+                        buttons.Add(item.itemName, existingItem.buyBT);
+                    }
+
+
                     if (buttons.ContainsKey("SuperXp")&&!UI_Manager.Instance.isButtonsInitialized)
                     {
                         UI_Manager.Instance.superXpBuyBT = buttons["SuperXp"];

@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
+    path: Assets/Scenes/LoginScene.unity
+    guid: 17e2cae54a6cc85498ebcd2f54409b9b
+  - enabled: 1
     path: Assets/Scenes/GrowTownGameScene.unity
     guid: f7589f5bf4c642d4191e8f7162f74cf9
   m_configObjects: {}
