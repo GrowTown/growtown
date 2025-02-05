@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 
 
 
@@ -11,7 +11,7 @@ public class ShopManager : MonoBehaviour
 
     private Dictionary<ItemType, List<ShopItem>> shopItems = new Dictionary<ItemType, List<ShopItem>>();
     Dictionary<string, Action> buttonActions;
-    public Dictionary<string,Button>buttons = new Dictionary<string, Button>();
+    public Dictionary<string, Button> buttons = new Dictionary<string, Button>();
     [SerializeField] private GameObject itemPrefab;
 
     private void Start()
@@ -45,17 +45,17 @@ public class ShopManager : MonoBehaviour
             {
                 ///todo
                 GameObject itemObject = Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
-                var shopIH=itemObject.GetComponent<ShopItemHolder>();
+                var shopIH = itemObject.GetComponent<ShopItemHolder>();
                 shopIH.Initialize(item);
-                if (item.level == 1) buttons.Add(item.itemName, shopIH.buyBT); 
+                if (item.level == 1) buttons.Add(item.itemName, shopIH.buyBT);
             }
         }
-       
+
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 10; j++)
             {
-               Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
+                Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
             }
         }
 
@@ -67,7 +67,7 @@ public class ShopManager : MonoBehaviour
         {
             UI_Manager.Instance.waterBuyBT = buttons["WaterPoints"];
         }
-        
+
     }
     private void InitializeButtonActions()
     {
@@ -90,7 +90,7 @@ public class ShopManager : MonoBehaviour
             { "F2", () => Debug.Log("Third Button Pressed") },
         };
 
-        foreach (var pair in buttons)  
+        foreach (var pair in buttons)
         {
             string itemName = pair.Key;
             Button button = pair.Value;
@@ -111,14 +111,14 @@ public class ShopManager : MonoBehaviour
     {
         for (int i = 0; i < shopItems.Keys.Count; i++)
         {
+            var spItemParent = UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0);
+            List<ShopItemHolder> spItemList = new List<ShopItemHolder>();
             ItemType key = shopItems.Keys.ToArray()[i];
             for (int j = 0; j < shopItems[key].Count; j++)
             {
                 ShopItem item = shopItems[key][j];
                 if (item.level == LVinfo)
                 {
-                    var spItemParent = UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0);
-                    List<ShopItemHolder> spItemList = new List<ShopItemHolder>();
                     for (int k = 0; k < spItemParent.childCount; k++)
                     {
                         var shopItem = spItemParent.GetChild(k).gameObject.GetComponent<ShopItemHolder>();
@@ -135,8 +135,8 @@ public class ShopManager : MonoBehaviour
                         buttons.Add(item.itemName, existingItem.buyBT);
                     }
 
-
-                    if (buttons.ContainsKey("SuperXp")&&!UI_Manager.Instance.isButtonsInitialized)
+                    spItemList.Clear();
+                    if (buttons.ContainsKey("SuperXp") && !UI_Manager.Instance.isButtonsInitialized)
                     {
                         UI_Manager.Instance.superXpBuyBT = buttons["SuperXp"];
                         UI_Manager.Instance.isButtonsInitialized = true;
@@ -144,7 +144,7 @@ public class ShopManager : MonoBehaviour
                 }
             }
         }
-       
+
     }
     public void ToBuyWheat()
     {

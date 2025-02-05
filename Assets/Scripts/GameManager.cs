@@ -345,7 +345,7 @@ public class GameManager : MonoBehaviour
 
     }
     bool IsHarvestCount;
-    public void HarvestDeductEnergy(GameObject tilego)
+     public void HarvestDeductEnergy(GameObject tilego)
     {
         if (!HasEnoughPoints(3, 0)) return;
         var tileInfo = tilego.GetComponent<TileInfo>();
