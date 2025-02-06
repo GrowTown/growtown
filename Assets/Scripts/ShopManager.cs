@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 
 
+
 public class ShopManager : MonoBehaviour
 {
 
@@ -13,6 +14,8 @@ public class ShopManager : MonoBehaviour
     Dictionary<string, Action> buttonActions;
     public Dictionary<string, Button> buttons = new Dictionary<string, Button>();
     [SerializeField] private GameObject itemPrefab;
+    [SerializeField] private RectTransform invetoryBagPos;
+    [SerializeField] private Sprite animICON;
 
     private void Start()
     {
@@ -27,8 +30,8 @@ public class ShopManager : MonoBehaviour
         ShopItem[] items = Resources.LoadAll<ShopItem>("Shop");
         shopItems.Add(ItemType.Seeds, new List<ShopItem>());
         shopItems.Add(ItemType.Tools, new List<ShopItem>());
-        shopItems.Add(ItemType.NFTS, new List<ShopItem>());
-        shopItems.Add(ItemType.Sell, new List<ShopItem>());
+        shopItems.Add(ItemType.PowerUps, new List<ShopItem>());
+        shopItems.Add(ItemType.NFTs , new List<ShopItem>());
 
         foreach (var item in items)
         {
@@ -43,7 +46,6 @@ public class ShopManager : MonoBehaviour
         {
             foreach (var item in shopItems[(ItemType)i])
             {
-                ///todo
                 GameObject itemObject = Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
                 var shopIH = itemObject.GetComponent<ShopItemHolder>();
                 shopIH.Initialize(item);
@@ -55,7 +57,7 @@ public class ShopManager : MonoBehaviour
         {
             for (int j = 0; j < 10; j++)
             {
-                Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
+                GameObject itemObject = Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
             }
         }
 
@@ -66,7 +68,10 @@ public class ShopManager : MonoBehaviour
         if (buttons.ContainsKey("WaterPoints"))
         {
             UI_Manager.Instance.waterBuyBT = buttons["WaterPoints"];
-        }
+        } 
+        if(buttons.ContainsKey("CleaningTool")) UI_Manager.Instance.cleaningWeaponBT = buttons["CleaningTool"];
+        if (buttons.ContainsKey("CuttingTool")) UI_Manager.Instance.sickleWeaponBT = buttons["CuttingTool"];
+        if (buttons.ContainsKey("WateringTool")) UI_Manager.Instance.wateringWeaponBT = buttons["WateringTool"];
 
     }
     private void InitializeButtonActions()
@@ -97,16 +102,47 @@ public class ShopManager : MonoBehaviour
 
             if (buttonActions.ContainsKey(itemName))
             {
-                button.onClick.AddListener(() => buttonActions[itemName]());
+                button.onClick.AddListener(() =>
+                {
+                    buttonActions[itemName]();
+                    var shopItemHolder = FindShopItemHolder(itemName);
+                    UI_Manager.Instance.UIAnimationM.PlayMoveToInventoryAnimation(animICON, shopItemHolder.GetComponent<RectTransform>(), invetoryBagPos);
+    
+                    if (shopItemHolder != null)
+                    {
+                        UI_Manager.Instance.InventoryManager.AddToInventory(shopItemHolder);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"No ShopItemHolder found for item: {itemName}");
+                    }
+                });
             }
             else
             {
                 Debug.LogWarning($"No action found for item: {itemName}");
             }
         }
-
-
     }
+
+    internal ShopItemHolder FindShopItemHolder(string itemName)
+    {
+        foreach (var tab in UI_Manager.Instance.TabGroup.objectsToSwap)
+        {
+            Transform content = tab.transform.GetChild(0).GetChild(0);
+            foreach (Transform child in content)
+            {
+                ShopItemHolder holder = child.GetComponent<ShopItemHolder>();
+                if (holder != null && holder.Item!=null)
+                {
+                     if(holder.Item.itemName == itemName)
+                    return holder;
+                }
+            }
+        }
+        return null;
+    }
+
     internal void OnLevelChanged(int LVinfo)
     {
         for (int i = 0; i < shopItems.Keys.Count; i++)

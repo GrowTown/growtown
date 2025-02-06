@@ -66,7 +66,11 @@ public class GameManager : MonoBehaviour
         set 
          {
             _currentStrawberriesSeedCount = value;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(2).gameObject.GetComponent<SelectionFunctionality>().productCount.text = _currentStrawberriesSeedCount.ToString();
+            if (UI_Manager.Instance.InventoryManager.inventoryItems.ContainsKey("BeansSeed"))
+            {
+                var item = UI_Manager.Instance.InventoryManager.inventoryItems["BeansSeed"];
+                item.Itemcount = _currentTomatoSeedCount;
+            }
         }
     }
     public int CurrentWheatSeedCount
@@ -75,7 +79,11 @@ public class GameManager : MonoBehaviour
         set
         {
             _currentWheatSeedCount = value;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(1).gameObject.GetComponent<SelectionFunctionality>().productCount.text = _currentWheatSeedCount.ToString();
+            if (UI_Manager.Instance.InventoryManager.inventoryItems.ContainsKey("WheatSeed"))
+            {
+                var item = UI_Manager.Instance.InventoryManager.inventoryItems["WheatSeed"];
+                item.Itemcount = _currentTomatoSeedCount;
+            }
         }
     }
     public int CurrentTomatoSeedCount
@@ -84,7 +92,12 @@ public class GameManager : MonoBehaviour
         set
         {
             _currentTomatoSeedCount = value;
-            UI_Manager.Instance.inventoryPanel.transform.GetChild(0).gameObject.GetComponent<SelectionFunctionality>().productCount.text = _currentTomatoSeedCount.ToString();
+            if (UI_Manager.Instance.InventoryManager.inventoryItems.ContainsKey("TomatoSeed"))
+            {
+                   var item=UI_Manager.Instance.InventoryManager.inventoryItems["TomatoSeed"];
+                   item.Itemcount = _currentTomatoSeedCount;
+            }
+              
         }
     }
     public int CurrentEnergyCount
@@ -371,6 +384,7 @@ public class GameManager : MonoBehaviour
             IsHarvestCount = true;
         }
     }
+    List<string>startPackName= new List<string>() { "CleaningTool", "WateringTool", "CuttingTool", "TomatoSeed" };
     public void StartPackToBuy()
     {
         UI_Manager.Instance.ShopManager.ToBuyTomato();
@@ -378,9 +392,18 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.ShopManager.ToBuyWateringTool();
         UI_Manager.Instance.ShopManager.ToBuyCuttingTool();
         UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
+        foreach (var item in startPackName)
+        {
+            var shopItemHolder = UI_Manager.Instance.ShopManager.FindShopItemHolder(item);
+            if (shopItemHolder != null)
+            {
+                UI_Manager.Instance.InventoryManager.AddToInventory(shopItemHolder);
+            }
+        }
         UI_Manager.Instance.sickleWeaponBT.interactable = false;
         UI_Manager.Instance.wateringWeaponBT.interactable = false;
         UI_Manager.Instance.cleaningWeaponBT.interactable = false;
+        
     }
 
     bool isWaterPointDecreased;

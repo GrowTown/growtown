@@ -10,8 +10,8 @@ public class ShopItemHolder : MonoBehaviour
 
     //[SerializeField] private TextMeshProUGUI nameText;
     //[SerializeField] private TextMeshProUGUI amountText;
-    [SerializeField] private Image iconImage;
-    [SerializeField] private TextMeshProUGUI priceText;
+    [SerializeField] internal Image iconImage;
+    [SerializeField] internal TextMeshProUGUI priceText;
     [SerializeField] internal Button buyBT;
 
     public void Initialize(ShopItem item)

@@ -53,9 +53,6 @@ public class UI_Manager : MonoBehaviour
     public Button tomatoSeedBT;
     public Button wheatSeedBT;
     public Button strawberriesSeedBT;
-    public Button cleaningWeaponBT;
-    public Button wateringWeaponBT;
-    public Button sickleWeaponBT;
     public Button buyInventoryBT;
     public Button sellInventoryBT;
     public Button starterPackBuyBT;
@@ -63,13 +60,20 @@ public class UI_Manager : MonoBehaviour
     public Button pasticideBuyBT;
     public Button wheatlandBuyBT;
     public Button carrotlandBuyBT;
+    internal Button cleaningWeaponBT;
+    internal Button wateringWeaponBT;
+    internal Button sickleWeaponBT;
     internal Button waterBuyBT;
     internal Button superXpBuyBT;
     internal Button energyBuyBT;
 
-    [Header("Slider")]
+
+    [Header("Sliders")]
     public Slider waterSlider;
     public Slider energySlider;
+
+    [Header("List")]
+    public List<GameObject> inventoryTabsList;
 
     [Header("Text")]
     public TextMeshProUGUI score;
@@ -110,11 +114,14 @@ public class UI_Manager : MonoBehaviour
     private RewardsForLevel _rewardsForLevel;
     [SerializeField]
     private TabGroup _tabGroup;
+    [SerializeField]
+    private InventoryManager _inventoryManager;
+    [SerializeField]
+    private UIAnimationM _uIAnimationM;
 
     private PlayerLevel _playerLevel;
 
     internal int oldcurrentStep = -1;
-    InventoryNames[] inventoryNames;
     public int currentIndex;
     public bool isPlanted;
     public bool waveStarted;
@@ -147,6 +154,17 @@ public class UI_Manager : MonoBehaviour
     #endregion
 
     #region Properties
+
+    public UIAnimationM UIAnimationM
+    {
+        get => _uIAnimationM;
+        set => _uIAnimationM = value;
+    }
+    public InventoryManager InventoryManager
+    {
+        get=>_inventoryManager; 
+        set=>_inventoryManager = value;
+    }
     public TabGroup TabGroup
     {
         get => _tabGroup;
@@ -353,17 +371,8 @@ public class UI_Manager : MonoBehaviour
         });
         sellInventoryBT.onClick.AddListener(() =>
         {
-            foreach (var item in ListOfHarvestCount)
-            {
-                GameManager.Instance.CounttheHarvest(item.Value.Count);
-            }
+            sellPopupPanel.SetActive(true);
 
-            sellPopupPanel.SetActive(false);
-            marketPopUp.SetActive(true);
-            GameManager.Instance.isHarvestCompleted = false;
-            ListOfHarvestCount.Clear();
-            GameManager.Instance.HarvestCount = 0;
-            GrowthStartedPlants.Clear();
 
         });
         wheatSeedBT.onClick.AddListener(() =>
@@ -376,7 +385,8 @@ public class UI_Manager : MonoBehaviour
             seedBought = true;
         });
         strawberriesSeedBT.onClick.AddListener(() => { ShopManager.ToBuyStrawberries(); });
-        cleaningWeaponBT.onClick.AddListener(() =>
+        starterPackBuyBT.onClick.AddListener(() => { GameManager.Instance.StartPackToBuy(); });
+       /* cleaningWeaponBT.onClick.AddListener(() =>
         {
             if (!ShopManager.isCleningToolBought)
             {
@@ -400,8 +410,7 @@ public class UI_Manager : MonoBehaviour
                 ShopManager.ToBuyCuttingTool();
                 sickleWeaponBT.interactable = false;
             }
-        });
-        starterPackBuyBT.onClick.AddListener(() => { GameManager.Instance.StartPackToBuy(); });
+        });*/
         /*energyBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyEnergyPoints(); });
         waterBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyWaterPoints(); });
         superXpBuyBT.onClick.AddListener(() =>
@@ -416,6 +425,7 @@ public class UI_Manager : MonoBehaviour
         {
             ShopManager.ToBuyCarrotField();
         });
+        
     }
 
     POPSelectionFunctionality currentSelectedPopUp;
@@ -653,6 +663,20 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
+    internal void SellHarvest()
+    {
+        foreach (var item in ListOfHarvestCount)
+        {
+            GameManager.Instance.CounttheHarvest(item.Value.Count);
+        }
+
+        sellPopupPanel.SetActive(false);
+        marketPopUp.SetActive(true);
+        GameManager.Instance.isHarvestCompleted = false;
+        ListOfHarvestCount.Clear();
+        GameManager.Instance.HarvestCount = 0;
+        GrowthStartedPlants.Clear();
+    }
     #endregion
 
 }
