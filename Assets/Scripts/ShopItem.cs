@@ -4,7 +4,7 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "NewShopItem", menuName = "Item/ShopItem",order =0)]
 public class ShopItem : ScriptableObject
 {
-    public string itemName;
+    public string itemName=string.Empty;
     public Sprite icon;
     public int price;
     public int level;
@@ -17,8 +17,8 @@ public enum ItemType
 {
     Seeds,
     Tools,
-    NFTS,
-    Sell
+    PowerUps,
+    NFTs
 }
 
 

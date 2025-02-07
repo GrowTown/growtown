@@ -28,8 +28,8 @@ public class CharacterMovements : MonoBehaviour
     internal bool isPlayerEnterZone = false;
 
     //Walk,Run variables
-    public float walkSpeed = 3f;
-    public float runSpeed = 6f;
+    public float walkSpeed = 2f;
+    public float runSpeed = 4f;
     public float turnSpeed = 7f;
     public float turnSpeedVelocity = 0.1f;
     public float _charGroundPos = 3f;
