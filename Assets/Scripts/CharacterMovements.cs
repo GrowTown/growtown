@@ -1,6 +1,8 @@
 using Cinemachine;
+using DG.Tweening;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterMovements : MonoBehaviour
@@ -12,7 +14,7 @@ public class CharacterMovements : MonoBehaviour
     Animator _dogAnimator;
     [SerializeField]
     GameObject _dog;
-    [SerializeField] private float followDistance = 2.0f;
+    [SerializeField] private float followDistance = 2.0f; 
     [SerializeField] private float followSpeed = 5.0f;
     [SerializeField] private float followRunSpeed = 6.0f;
     [SerializeField] private float followTurnSpeed = 5.0f;
@@ -34,7 +36,7 @@ public class CharacterMovements : MonoBehaviour
     public float SpeedChangeRate = 10.0f;
     private float _speed;
     private float _animationBlend;
-    public float backwardWalkSpeed = 3f;
+    public float backwardWalkSpeed = 3f; 
     public float backwardRunSpeed = 6f;
 
     // Variables for jump logic
@@ -45,7 +47,8 @@ public class CharacterMovements : MonoBehaviour
     private float _verticalVelocity;
     private bool _canJump = true;
 
-
+    public float reloadTime = 2.5f;
+    public float shootCooldown = 0.3f;
 
     // Ground Check variables
     [Header("Player Grounded")]
@@ -65,10 +68,16 @@ public class CharacterMovements : MonoBehaviour
     [Header("CropCycleAnimationEvents")]
     public AnimationEventTrigger animationEvents;
 
-    [SerializeField] private Transform fieldTransform;
+    [SerializeField] private Transform fieldTransform; 
     [SerializeField] private Collider fieldCollider;
+    [SerializeField] private SkinnedMeshRenderer shotGunSkinnedMesh;
 
-
+    // Variables for shoot logic
+    private bool isTakeGun = false;
+    private bool isReloading = false;
+    private bool isShooting = false;
+    private bool _canShoot = true;
+    private bool _canReload = true;
 
 
 
@@ -88,6 +97,7 @@ public class CharacterMovements : MonoBehaviour
             AdjustHeightofPlayer();
         //UpdateVirtualCamera();
 
+        HandleShoot();
     }
     void AdjustHeightofPlayer()
     {
@@ -108,20 +118,33 @@ public class CharacterMovements : MonoBehaviour
                 UI_Manager.Instance.waterEffect.SetActive(false);
                 break;
             case "ReloadStarted":
-                WeaponHandler.instance.OnWeaponAvtive(.2f, eventName);
+                StartCoroutine(WaitingForShotGunAnimation(.2f, eventName));
                 break;
 
             case "ReloadStop":
                 break;
 
             case "ReloadReset":
-                WeaponHandler.instance.OnWeaponAvtive(.2f, eventName);
+                StartCoroutine(WaitingForShotGunAnimation(.2f, eventName));
                 break;
 
         }
     }
 
+    IEnumerator WaitingForShotGunAnimation(float delay, string gunState)
+    {
+        if (gunState == "ReloadStarted")
+        {
 
+            shotGunSkinnedMesh.SetBlendShapeWeight(0, 100);
+        }
+        else
+        {
+            shotGunSkinnedMesh.SetBlendShapeWeight(0, 0);
+        }
+        yield return new WaitForSeconds(delay);
+
+    }
 
 
     private void GroundedCheck()
@@ -231,7 +254,7 @@ public class CharacterMovements : MonoBehaviour
 
         if (animator != null)
         {
-            animator.SetFloat("Speed", _animationBlend);
+            animator.SetFloat("Speed", _animationBlend); 
             animator.SetFloat("MotionSpeed", inputDirection.magnitude);
         }
 
@@ -290,7 +313,7 @@ public class CharacterMovements : MonoBehaviour
         }
     }
 
-
+    
     private void SetDogAnimation(string state)
     {
         switch (state)
@@ -319,6 +342,56 @@ public class CharacterMovements : MonoBehaviour
         _dogAnimator.SetInteger(name, value);
 
     }
+
+    #region ---- Handle Shooting ----
+
+    private void HandleShoot()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            shotGunSkinnedMesh.gameObject.SetActive(true);
+            animator.SetLayerWeight(1, 1);
+            isTakeGun = !isTakeGun;
+            animator.SetBool("IsHoldingGun", isTakeGun);
+            animationEvents.TriggerShotGunAnimationEvent();
+        }
+        else if (Input.GetKeyDown(KeyCode.R) && _canReload && !isShooting && isTakeGun)
+        {
+            StartCoroutine(PerformReload());
+        }
+        else if (Input.GetKey(KeyCode.F) && _canShoot && !isReloading && isTakeGun)
+        {
+            StartCoroutine(PerformShoot());
+        }
+        else if (Input.GetKeyDown(KeyCode.H))
+        {
+            shotGunSkinnedMesh.gameObject.SetActive(false);
+            animator.SetLayerWeight(1, 0);
+        }
+    }
+
+    private IEnumerator PerformReload()
+    {
+        _canReload = false;
+        isReloading = true;
+        animator.SetTrigger("IsReloading");
+        yield return new WaitForSeconds(reloadTime);
+        isReloading = false;
+        animator.SetBool("IsReloading", isReloading);
+        _canReload = true;
+    }
+
+    private IEnumerator PerformShoot()
+    {
+        _canShoot = false;
+        isShooting = true;
+        animator.SetTrigger("IsShooting");
+        yield return new WaitForSeconds(shootCooldown);
+        isShooting = false;
+        animator.SetBool("IsShooting", isShooting);
+        _canShoot = true;
+    }
+    #endregion ---- Handle Shooting ----
 
 
 }
