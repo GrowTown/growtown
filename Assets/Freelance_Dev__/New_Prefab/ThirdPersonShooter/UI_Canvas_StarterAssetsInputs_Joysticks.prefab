@@ -87,15 +87,15 @@ GameObject:
   - component: {fileID: 5646354333385180893}
   - component: {fileID: 5105417160101734354}
   - component: {fileID: 1390574223019519225}
-  - component: {fileID: 8216282552195318358}
-  - component: {fileID: 6923691621231304519}
+  - component: {fileID: 8100003224929496030}
+  - component: {fileID: 1790649101212696685}
   m_Layer: 5
   m_Name: UI_Canvas_StarterAssetsInputs_Joysticks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1363804155836496122
 RectTransform:
   m_ObjectHideFlags: 0
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &8216282552195318358
+--- !u!114 &8100003224929496030
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -191,22 +191,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 383949351178502064}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a300d010f57451488aa99000126fbd5, type: 3}
+  m_Script: {fileID: 11500000, guid: e7b4983e954f64a43b4ef0171a29a335, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1790649101212696685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383949351178502064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 561f903d375cbbc409384f33fd490a24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   starterAssetsInputs: {fileID: 0}
---- !u!114 &6923691621231304519
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 383949351178502064}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 901182334643ba1438a25accc6bd0c79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1480779887054518099
 GameObject:
   m_ObjectHideFlags: 0
@@ -451,7 +451,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4675390010550312720
 RectTransform:
   m_ObjectHideFlags: 0
@@ -531,7 +531,7 @@ MonoBehaviour:
   joystickOutputEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8216282552195318358}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: StarterAssets.UICanvasControllerInput, Assembly-CSharp
         m_MethodName: VirtualLookInput
         m_Mode: 0
@@ -562,7 +562,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5102819458220203997
 RectTransform:
   m_ObjectHideFlags: 0
@@ -680,7 +680,7 @@ MonoBehaviour:
   buttonStateOutputEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8216282552195318358}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: StarterAssets.UICanvasControllerInput, Assembly-CSharp
         m_MethodName: VirtualJumpInput
         m_Mode: 0
@@ -832,7 +832,7 @@ MonoBehaviour:
   buttonStateOutputEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8216282552195318358}
+      - m_Target: {fileID: 1790649101212696685}
         m_TargetAssemblyTypeName: StarterAssets.UICanvasControllerInput, Assembly-CSharp
         m_MethodName: VirtualSprintInput
         m_Mode: 0
@@ -858,7 +858,7 @@ GameObject:
   - component: {fileID: 129675003786995939}
   - component: {fileID: 4160587512217210839}
   - component: {fileID: 1594056959051245515}
-  - component: {fileID: 1842115151813077418}
+  - component: {fileID: 8937569191499965847}
   m_Layer: 5
   m_Name: UI_Virtual_Joystick_Move
   m_TagString: Untagged
@@ -924,7 +924,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1842115151813077418
+--- !u!114 &8937569191499965847
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -937,15 +937,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   containerRect: {fileID: 129675003786995939}
-  handleRect: {fileID: 3129912850886189145}
-  joystickRange: 100
+  handleRect: {fileID: 0}
+  joystickRange: 50
   magnitudeMultiplier: 1
   invertXOutputValue: 0
   invertYOutputValue: 0
   joystickOutputEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8216282552195318358}
+      - m_Target: {fileID: 1790649101212696685}
         m_TargetAssemblyTypeName: StarterAssets.UICanvasControllerInput, Assembly-CSharp
         m_MethodName: VirtualMoveInput
         m_Mode: 0
