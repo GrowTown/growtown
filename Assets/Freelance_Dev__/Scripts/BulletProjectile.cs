@@ -32,14 +32,14 @@ public class BulletProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Collide with some thing..." + other.transform.name);
 
         if (other.CompareTag("enemy"))
         {
             // Hit target
-            Instantiate(vfxHitGreen, transform.position, Quaternion.identity);
+           Debug.Log("Collide with some thing..." + other.transform.name);
             GameObject temp = other.transform.parent.gameObject;
             Destroy(temp.transform.parent.gameObject);
+            Instantiate(vfxHitGreen, transform.position, Quaternion.identity);
             Destroy(gameObject, lifetime);
 
         }
