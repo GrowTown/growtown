@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 
 
+
 public class ShopManager : MonoBehaviour
 {
 
@@ -169,6 +170,24 @@ public class ShopManager : MonoBehaviour
                     {
                         existingItem.UnlockItem();
                         buttons.Add(item.itemName, existingItem.buyBT);
+                        if (buttonActions.ContainsKey(item.itemName))
+                        {
+                            buttons[item.itemName].onClick.AddListener(() =>
+                            {
+                                buttonActions[item.itemName]();
+                                var shopItemHolder = FindShopItemHolder(item.itemName);
+                                UI_Manager.Instance.UIAnimationM.PlayMoveToInventoryAnimation(animICON, shopItemHolder.GetComponent<RectTransform>(), invetoryBagPos);
+
+                                if (shopItemHolder != null)
+                                {
+                                    UI_Manager.Instance.InventoryManager.AddToInventory(shopItemHolder);
+                                }
+                                else
+                                {
+                                    Debug.LogWarning($"No ShopItemHolder found for item: {item.itemName}");
+                                }
+                            });
+                        }
                     }
 
                     spItemList.Clear();
@@ -273,14 +292,13 @@ public class ShopManager : MonoBehaviour
             //Debug.Log("You didn't have enough money");
         }
     }
-
+      
     public void ToBuyPasticide()
     {
         if (GameManager.Instance.CurrentScore >= 20)
         {
             GameManager.Instance.CurrentScore -= 20;
-            isPasticidsBought = true;
-            GameManager.Instance.CurrentPasticideCount += 1;
+            GameManager.Instance.PesticideboughtCount(UI_Manager.Instance.FieldManager.CurrentFieldID, true);
 
         }
         else

@@ -19,6 +19,8 @@ public class LandHealth : MonoBehaviour
     private Image _landHealthBarFill;
     [SerializeField]
     string _landName = "";
+    internal bool isPasticidsBought;
+    private int _pasticideCount = 0;
 
     public int CurrentLandHealth
     {
@@ -29,6 +31,11 @@ public class LandHealth : MonoBehaviour
             _landHealthTxt.text = _landHealth.ToString() + "%";
             UpdateHealthBar();
         }
+    }
+    public int CurrentPasticideCount
+    {
+        get=> _pasticideCount;
+        set=>_pasticideCount=value;
     }
 
     public string CurrentLandName
@@ -68,7 +75,7 @@ public class LandHealth : MonoBehaviour
         }
         else if (_landHealth > 45)
         {
-            _landHealthBarFill.color = new Color(1f, 0.64f, 0f); // Orange
+            _landHealthBarFill.color = new Color(1f, 0.64f, 0f);
         }
         else
         {
@@ -78,39 +85,68 @@ public class LandHealth : MonoBehaviour
 
     internal void ShowPasticidePop()
     {
-        if (!UI_Manager.Instance.ShopManager.isPasticidsBought)
+        if (!isPasticidsBought)
         {
-            UI_Manager.Instance.contentOfPasticidePanel.SetActive(false);
-            UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(true);
             if (CurrentLandHealth <= 70)
             {
-                UI_Manager.Instance.pasticideMsgTxt.text = "your land is not good enough to Harvest and you didn't bought pasticide";
-                UI_Manager.Instance.pasticideMsgTxt.color = Color.red;
+                 UI_Manager.Instance.contentOfPasticidePanel.SetActive(false);
+                UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(false);
+                UI_Manager.Instance.contentOfNotBuyPasticedMsgPanel.SetActive(true);
+                UI_Manager.Instance.contentOfNotBuyPasticedMsgTxt.text = "your land is not good enough to Harvest and you didn't bought pasticide,go market area buy them";
+                UI_Manager.Instance.pasticideNotBoughtBT.gameObject.SetActive(false);
+                UI_Manager.Instance.pasticideNotBoughNormalHealthtBT.gameObject.SetActive(true);
+
+            }
+            else if(CurrentLandHealth == 0)
+            {
+                UI_Manager.Instance.contentOfPasticidePanel.SetActive(false);
+                UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(false);
+                UI_Manager.Instance.contentOfNotBuyPasticedMsgPanel.SetActive(true);
+                UI_Manager.Instance.contentOfNotBuyPasticedMsgTxt.text = "your land is not good enough to Harvest and you didn't bought pasticide,go market area buy them";
+                UI_Manager.Instance.pasticideNotBoughtBT.gameObject.SetActive(true);
+                UI_Manager.Instance.pasticideNotBoughNormalHealthtBT.gameObject.SetActive(false);
             }
             else
             {
-                UI_Manager.Instance.pasticideMsgTxt.text = "your land is good enough to Harvest";
+                 UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(true);
             }
         }
         else
         {
             if (CurrentLandHealth >= 70)
             {
-                UI_Manager.Instance.pasticideMsgTxt.text = "your land is good enough to Harvest";
+                UI_Manager.Instance.contentOfPasticidePanel.SetActive(false);
+                UI_Manager.Instance.contentOfNotBuyPasticedMsgPanel.SetActive(false);
+                UI_Manager.Instance.contentOfPasticideNormalHealthPanel.SetActive(false);
+                UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(true);
             }
             else
             {
-                if (GameManager.Instance.CurrentPasticideCount > 0)
+
+                if (CurrentPasticideCount > 0)
                 {
-                    UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(false);
-                    UI_Manager.Instance.contentOfPasticidePanel.SetActive(true);
+                    if (CurrentLandHealth <= 45)
+                    {
+                        UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(false);
+                        UI_Manager.Instance.contentOfNotBuyPasticedMsgPanel.SetActive(false);
+                        UI_Manager.Instance.contentOfPasticidePanel.SetActive(true);
+                        UI_Manager.Instance.contentOfPasticideNormalHealthPanel.SetActive(false);
+                    }
+                    else if(CurrentLandHealth <= 70)
+                    {
+                       UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(false);
+                       UI_Manager.Instance.contentOfNotBuyPasticedMsgPanel.SetActive(false);
+                       UI_Manager.Instance.contentOfPasticideNormalHealthPanel.SetActive(true);
+                       UI_Manager.Instance.contentOfPasticidePanel.SetActive(false);
+                    }
                 }
                 else
                 {
-                    UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(true);
+                    UI_Manager.Instance.contentOfNotBuyPasticedMsgPanel.SetActive(true);
+                    UI_Manager.Instance.contentOfPasticedMsgPanel.SetActive(false);
                     UI_Manager.Instance.contentOfPasticidePanel.SetActive(false);
-                    UI_Manager.Instance.pasticideMsgTxt.text = "you have to buy pasticide";
-                    UI_Manager.Instance.pasticideMsgTxt.color = Color.red;
+                    UI_Manager.Instance.contentOfPasticideNormalHealthPanel.SetActive(false);
+                    UI_Manager.Instance.contentOfNotBuyPasticedMsgTxt.text = "you have to buy pasticide,go market area buy them";
                 }
             }
         }

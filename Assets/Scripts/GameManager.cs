@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class GameManager : MonoBehaviour
@@ -566,9 +567,22 @@ public class GameManager : MonoBehaviour
         }
         return true;
     }*/
-    internal void ToIncreaseLandHealthUsePasticide()
+    public  void ToIncreaseLandHealthUsePasticide(int fieldID, int deduct)
     {
-        UI_Manager.Instance.LandHealth.LandHealthIncrease(100);
+
+        if (fieldID == 0)
+        {
+            UI_Manager.Instance.lhHolderTransform.GetChild(3).gameObject.GetComponent<LandHealth>().LandHealthIncrease(deduct);
+        }
+        else if (fieldID == 1)
+        {
+            UI_Manager.Instance.lhHolderTransform.GetChild(1).gameObject.GetComponent<LandHealth>().LandHealthIncrease(deduct);
+        }
+        else
+        {
+            UI_Manager.Instance.lhHolderTransform.GetChild(0).gameObject.GetComponent<LandHealth>().LandHealthIncrease(deduct);
+        }
+
         CurrentPasticideCount -= 1;
         Debug.Log("LAND is healing");
     }
@@ -577,6 +591,7 @@ public class GameManager : MonoBehaviour
     internal IEnumerator ShowBoughtLand(string landname)
     {
        var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
+            UI_Manager.Instance.marketPopUp.SetActive(false);
         if (landname == "wheat")
         {
             Cam.SwitchToCam(3);
@@ -589,9 +604,10 @@ public class GameManager : MonoBehaviour
         }
         
       
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(10f);
         //Cam.virtualCams[3].LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
         isShowingnewLand = false;
+        UI_Manager.Instance.marketPopUp.SetActive(true);
         Cam.SwitchToCam(2);
         Cam.activeCamera.LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
 
@@ -610,6 +626,25 @@ public class GameManager : MonoBehaviour
         else
         {
             UI_Manager.Instance.lhHolderTransform.GetChild(0).gameObject.GetComponent<LandHealth>().LandHealthDecrease(deduct);
+        }
+    }
+
+    public void PesticideboughtCount(int fieldID, bool check)
+    {
+        if (fieldID == 0)
+        {
+            UI_Manager.Instance.lhHolderTransform.GetChild(3).gameObject.GetComponent<LandHealth>().isPasticidsBought =check;
+            UI_Manager.Instance.lhHolderTransform.GetChild(0).gameObject.GetComponent<LandHealth>().CurrentPasticideCount += 1;
+        }
+        else if (fieldID == 1)
+        {
+            UI_Manager.Instance.lhHolderTransform.GetChild(1).gameObject.GetComponent<LandHealth>().isPasticidsBought = check;
+            UI_Manager.Instance.lhHolderTransform.GetChild(0).gameObject.GetComponent<LandHealth>().CurrentPasticideCount += 1;
+        }
+        else
+        {
+            UI_Manager.Instance.lhHolderTransform.GetChild(0).gameObject.GetComponent<LandHealth>().isPasticidsBought = check;
+            UI_Manager.Instance.lhHolderTransform.GetChild(0).gameObject.GetComponent<LandHealth>().CurrentPasticideCount +=1;
         }
     }
     #endregion
