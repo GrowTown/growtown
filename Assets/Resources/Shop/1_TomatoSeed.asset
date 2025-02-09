@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1_TomatoSeed
   m_EditorClassIdentifier: 
   itemName: TomatoSeed
-  icon: {fileID: 21300000, guid: c1db050ff6421034ba4d0e06f3366444, type: 3}
+  icon: {fileID: 21300000, guid: 77ac7b90756a96842b4176f28777c08d, type: 3}
   price: 8
   level: 1
   type: 0

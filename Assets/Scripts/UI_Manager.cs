@@ -27,6 +27,8 @@ public class UI_Manager : MonoBehaviour
     public GameObject warningPopupPanelSeed;
     public GameObject contentOfPasticidePanel;
     public GameObject contentOfPasticedMsgPanel;
+    public GameObject contentOfNotBuyPasticedMsgPanel;
+    public GameObject contentOfPasticideNormalHealthPanel;
     public GameObject pasticidePopUpPanel;
     public GameObject warningPasticidePopUpPanel;
     public GameObject LandHealthBarImg;
@@ -57,6 +59,9 @@ public class UI_Manager : MonoBehaviour
     public Button sellInventoryBT;
     public Button starterPackBuyBT;
     public Button pasticideUseBT;
+    public Button pasticideNormalHealthUseBT;
+    public Button pasticideNotBoughtBT;
+    public Button pasticideNotBoughNormalHealthtBT;
     public Button pasticideBuyBT;
     public Button wheatlandBuyBT;
     public Button carrotlandBuyBT;
@@ -84,7 +89,7 @@ public class UI_Manager : MonoBehaviour
     public TextMeshProUGUI warningTextForSeed;
     public TextMeshProUGUI playerXpTxt;
     public TextMeshProUGUI pasticideCount;
-    public TextMeshProUGUI pasticideMsgTxt;
+    public TextMeshProUGUI contentOfNotBuyPasticedMsgTxt;
     public TextMeshProUGUI currentplayerLevelTxt;
 
     [Header("References")]
@@ -344,24 +349,34 @@ public class UI_Manager : MonoBehaviour
     {
         TriggerZoneCallBacks.onPlayerEnter += (a) =>
         {
-            if (!GameManager.Instance.isHarvestCompleted)
-            {
-                marketPopUp.SetActive(true);
-            }
-            else
-            {
-                sellPopupPanel.SetActive(true);
-            }
+            /* if (!GameManager.Instance.isHarvestCompleted)
+             {
+                 marketPopUp.SetActive(true);
+             }
+             else
+             {
+                 sellPopupPanel.SetActive(true);
+             }*/
+            marketPopUp.SetActive(true);
         };
         TriggerZoneCallBacks.onPlayerExit += (e) =>
         {
             marketPopUp.SetActive(false);
             sellPopupPanel.SetActive(false);
         };
+        pasticideNotBoughtBT.onClick.AddListener(() =>
+        {
+            HideFieldPopup();
+            GameManager.Instance.StopCurrentAction();
+        });
+        pasticideNormalHealthUseBT.onClick.AddListener(() => {
+            GameManager.Instance.ToIncreaseLandHealthUsePasticide(UI_Manager.Instance.FieldManager.CurrentFieldID, 100);
+            pasticidePopUpPanel.SetActive(false);
+        });
         pasticideBuyBT.onClick.AddListener(() => { ShopManager.ToBuyPasticide(); });
         pasticideUseBT.onClick.AddListener(() =>
         {
-            GameManager.Instance.ToIncreaseLandHealthUsePasticide();
+            GameManager.Instance.ToIncreaseLandHealthUsePasticide(UI_Manager.Instance.FieldManager.CurrentFieldID,100);
             pasticidePopUpPanel.SetActive(false);
         });
         buyInventoryBT.onClick.AddListener(() =>
@@ -371,9 +386,8 @@ public class UI_Manager : MonoBehaviour
         });
         sellInventoryBT.onClick.AddListener(() =>
         {
-            sellPopupPanel.SetActive(true);
-
-
+            // sellPopupPanel.SetActive(true);
+            SellHarvest();
         });
         wheatSeedBT.onClick.AddListener(() =>
         {
@@ -536,19 +550,19 @@ public class UI_Manager : MonoBehaviour
             contentOfPasticedMsgPanel.SetActive(true);
             if (LandHealth.CurrentLandHealth <= 70)
             {
-                pasticideMsgTxt.text = "your land is not good enough to Harvest and you didn't bought pasticide";
-                pasticideMsgTxt.color = Color.red;
+                contentOfNotBuyPasticedMsgTxt.text = "your land is not good enough to Harvest and you didn't bought pasticide";
+                contentOfNotBuyPasticedMsgTxt.color = Color.red;
             }
             else
             {
-                pasticideMsgTxt.text = "your land is good enough to Harvest";
+                contentOfNotBuyPasticedMsgTxt.text = "your land is good enough to Harvest";
             }
         }
         else
         {
             if (LandHealth.CurrentLandHealth >= 70)
             {
-                pasticideMsgTxt.text = "your land is good enough to Harvest";
+                contentOfNotBuyPasticedMsgTxt.text = "your land is good enough to Harvest";
             }
             else
             {
@@ -561,43 +575,12 @@ public class UI_Manager : MonoBehaviour
                 {
                     contentOfPasticedMsgPanel.SetActive(true);
                     contentOfPasticidePanel.SetActive(false);
-                    pasticideMsgTxt.text = "you have to buy pasticide";
-                    pasticideMsgTxt.color = Color.red;
+                    contentOfNotBuyPasticedMsgTxt.text = "you have to buy pasticide";
+                    contentOfNotBuyPasticedMsgTxt.color = Color.red;
                 }
             }
         }
     }
-
-    /* internal void ToInstantiateLandHealthbar(int fieldID)
-     {
-         if (fieldID == 0)
-         {
-             if (!isCarrotHealthBarspawn)
-             {
-                 isCarrotHealthBarspawn = true;
-                 var go = Instantiate(LandHealthBarImg, lhHolderTransform);
-                 go.GetComponent<LandHealth>().CurrentLandName = "CarrotField";
-             }
-         }
-         else if (fieldID == 1)
-         {
-             if (!isWheatHealthBarspawn)
-             {
-                 isWheatHealthBarspawn = true;
-                 var go = Instantiate(LandHealthBarImg, lhHolderTransform);
-                 go.GetComponent<LandHealth>().CurrentLandName = "WheatField";
-             }
-         }
-         else
-         {
-             if (!isTomatoHealthBarspawn)
-             {
-                 isTomatoHealthBarspawn = true;
-                 var go = Instantiate(LandHealthBarImg, lhHolderTransform);
-                 go.GetComponent<LandHealth>().CurrentLandName = "TomatoField";
-             }
-         }
-     }*/
     internal void ToInstantiateLandHealthbar(int fieldID)
     {
         string landName = "";
@@ -637,7 +620,6 @@ public class UI_Manager : MonoBehaviour
         }
 
     }
-
     internal void ShowLandHealthBar(int fieldID)
     {
         if (fieldID == 0)
@@ -654,7 +636,6 @@ public class UI_Manager : MonoBehaviour
             lhHolderTransform.GetChild(0).gameObject.SetActive(true);
         }
     }
-
     internal void HideLandHealthBar()
     {
         for (int i = 0; i < lhHolderTransform.childCount; i++)
