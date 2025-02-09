@@ -63,8 +63,8 @@ public class GameManager : MonoBehaviour
     public int CurrentStrawberriesSeedCount
     {
         get => _currentStrawberriesSeedCount;
-        set 
-         {
+        set
+        {
             _currentStrawberriesSeedCount = value;
             if (UI_Manager.Instance.InventoryManager.inventoryItems.ContainsKey("BeansSeed"))
             {
@@ -94,10 +94,10 @@ public class GameManager : MonoBehaviour
             _currentTomatoSeedCount = value;
             if (UI_Manager.Instance.InventoryManager.inventoryItems.ContainsKey("TomatoSeed"))
             {
-                   var item=UI_Manager.Instance.InventoryManager.inventoryItems["TomatoSeed"];
-                   item.Itemcount = _currentTomatoSeedCount;
+                var item = UI_Manager.Instance.InventoryManager.inventoryItems["TomatoSeed"];
+                item.Itemcount = _currentTomatoSeedCount;
             }
-              
+
         }
     }
     public int CurrentEnergyCount
@@ -115,9 +115,9 @@ public class GameManager : MonoBehaviour
         get => _currentWaterCount;
         set
         {
-             _currentWaterCount = Mathf.Clamp(value, 0, 500);
+            _currentWaterCount = Mathf.Clamp(value, 0, 500);
             UI_Manager.Instance.waterText.text = value.ToString();
-            UI_Manager.Instance.waterSlider.value= _currentWaterCount/(float)500;
+            UI_Manager.Instance.waterSlider.value = _currentWaterCount / (float)500;
         }
     }
     public int CurrentPasticideCount
@@ -165,7 +165,7 @@ public class GameManager : MonoBehaviour
                 // Debug.Log("Cleaning");
                 break;
             case PlayerAction.Seed:
-             /*   if (!HasEnoughLandHealth(5)) return;*/
+                /*   if (!HasEnoughLandHealth(5)) return;*/
                 if (!HasEnoughPoints(5, 0)) return;
                 if (!HasNotEnoughSeed(1)) return;
                 ToDecreaseTHElandHealth(UI_Manager.Instance.FieldManager.CurrentFieldID, 5);
@@ -275,7 +275,7 @@ public class GameManager : MonoBehaviour
             instance.InitialCoroutine = StartCoroutine((instance.InitialGrowPlant()));
         }
     }
-    
+
     public void OnWaterTile(GameObject tilego)
     {
         if (!HasEnoughPoints(2, 10)) return;
@@ -290,7 +290,7 @@ public class GameManager : MonoBehaviour
                 foreach (var item in UI_Manager.Instance.spawnPlantsForGrowth[tilego])
                 {
                     var pg = item.GetComponent<PlantGrowth>();
-                   
+
                     if (!pg.isNotWateredDuringWithering)
                     {
                         if (pg._initialGrowTimer != null)
@@ -307,7 +307,11 @@ public class GameManager : MonoBehaviour
                             UI_Manager.Instance.GrowthStartedPlants.Add(item);
                         }
                     }
+
                 }
+
+               // WaveManager.instance.StartEnemyWave();
+
             }
             UI_Manager.Instance.GrowthStartedOnThisTile.Add(tilego);
         }
@@ -315,7 +319,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(item);
         }
-       
+
 
     }
     public void Withering()
@@ -348,7 +352,7 @@ public class GameManager : MonoBehaviour
         {
             CurrentScore += 100;
         }
-        else if (grownPlantCount >= 15) 
+        else if (grownPlantCount >= 15)
         {
             CurrentScore += 50;
         }
@@ -359,7 +363,7 @@ public class GameManager : MonoBehaviour
 
     }
     bool IsHarvestCount;
-     public void HarvestDeductEnergy(GameObject tilego)
+    public void HarvestDeductEnergy(GameObject tilego)
     {
         if (!HasEnoughPoints(3, 0)) return;
         var tileInfo = tilego.GetComponent<TileInfo>();
@@ -385,7 +389,7 @@ public class GameManager : MonoBehaviour
             IsHarvestCount = true;
         }
     }
-    List<string>startPackName= new List<string>() { "CleaningTool", "WateringTool", "CuttingTool", "TomatoSeed" };
+    List<string> startPackName = new List<string>() { "CleaningTool", "WateringTool", "CuttingTool", "TomatoSeed" };
     public void StartPackToBuy()
     {
         UI_Manager.Instance.ShopManager.ToBuyTomato();
@@ -404,7 +408,7 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.sickleWeaponBT.interactable = false;
         UI_Manager.Instance.wateringWeaponBT.interactable = false;
         UI_Manager.Instance.cleaningWeaponBT.interactable = false;
-        
+
     }
 
     bool isWaterPointDecreased;
@@ -453,7 +457,7 @@ public class GameManager : MonoBehaviour
                 UI_Manager.Instance.waterText.text = CurrentWaterCount.ToString();
             }
         }
-         else
+        else
         {
             Debug.Log("Not enough score to buy water points.");
         }
@@ -512,7 +516,7 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.GrowthStartedOnThisTile.Clear();
         UI_Manager.Instance.spawnPlantsForGrowth.Clear();
         UI_Manager.Instance.oldcurrentStep = -1;
-        UI_Manager.Instance.FieldManager.CurrentStepID=-1;
+        UI_Manager.Instance.FieldManager.CurrentStepID = -1;
         UI_Manager.Instance.FieldManager.fieldSteps[CurrentFieldID].Clear();
         isCutting = false;
         //isResetetValues = true;
@@ -555,29 +559,29 @@ public class GameManager : MonoBehaviour
         }
         return true;
     }
-  /*  public bool HasEnoughLandHealth(int lhRequired)
-    {
-       if (UI_Manager.Instance.LandHealth.CurrentLandHealth < lhRequired)
-        {
-            UI_Manager.Instance.warningPasticidePopUpPanel.SetActive(true);
-            PanelManager.RegisterPanel(UI_Manager.Instance.warningPasticidePopUpPanel);
-            HideFieldPopup();
-            StopCurrentAction();
-            return false;
-        }
-        return true;
-    }*/
+    /*  public bool HasEnoughLandHealth(int lhRequired)
+      {
+         if (UI_Manager.Instance.LandHealth.CurrentLandHealth < lhRequired)
+          {
+              UI_Manager.Instance.warningPasticidePopUpPanel.SetActive(true);
+              PanelManager.RegisterPanel(UI_Manager.Instance.warningPasticidePopUpPanel);
+              HideFieldPopup();
+              StopCurrentAction();
+              return false;
+          }
+          return true;
+      }*/
     internal void ToIncreaseLandHealthUsePasticide()
     {
         UI_Manager.Instance.LandHealth.LandHealthIncrease(100);
         CurrentPasticideCount -= 1;
         Debug.Log("LAND is healing");
     }
-   
-    internal bool isShowingnewLand=false;
+
+    internal bool isShowingnewLand = false;
     internal IEnumerator ShowBoughtLand(string landname)
     {
-       var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
+        var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
         if (landname == "wheat")
         {
             Cam.SwitchToCam(3);
@@ -588,8 +592,8 @@ public class GameManager : MonoBehaviour
             Cam.SwitchToCam(4);
             Cam.activeCamera.LookAt = UI_Manager.Instance.carrotFieldArea.transform;
         }
-        
-      
+
+
         yield return new WaitForSeconds(1f);
         //Cam.virtualCams[3].LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
         isShowingnewLand = false;
@@ -598,7 +602,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    internal void ToDecreaseTHElandHealth(int fieldID,int deduct)
+    internal void ToDecreaseTHElandHealth(int fieldID, int deduct)
     {
         if (fieldID == 0)
         {
