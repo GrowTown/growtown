@@ -1,44 +1,112 @@
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-     public EnemyPool enemyPool;
-    public Transform[] spawnPoints;
-    public Transform[] fieldAreas; 
-    public int waveSize = 5;
-    public float spawnInterval = 1f;
 
-    //private int currentWave = 1;
+    public static WaveManager instance;
 
-    public void StartWave()
+    [Header("Spawn Settings")]
+    public GameObject enemyPrefab; // Enemy to spawn
+    public Transform spawnArea; // The area where enemies spawn
+    public float spawnRadius = 10f; // Area radius for spawning
+    public List<Transform> restrictedAreas; // List of restricted spawn areas
+    public float restrictedRadius = 2f; // Radius to avoid around restricted areas
+
+    [Header("Wave Settings")]
+    public float timeBetweenWaves = 5f; // Delay between waves
+    public float spawnInterval = 1f; // Delay between enemy spawns
+    public List<int> waveEnemyCounts; // List defining enemies per wave
+
+    private int currentWave = 0;
+    private bool spawningWave = false;
+
+    private void Awake()
     {
-        StartCoroutine(SpawnWave());
+        instance = this;
     }
 
-    private IEnumerator SpawnWave()
+    void Start()
     {
-        for (int i = 0; i < waveSize; i++)
+        if (waveEnemyCounts == null || waveEnemyCounts.Count == 0)
         {
-            GameObject enemyObject = enemyPool.GetEnemy();
-            var Index = Random.Range(0, spawnPoints.Length);
+            Debug.LogError("Wave enemy counts not set!");
+            return;
+        }
+    }
 
-            enemyObject.transform.position = spawnPoints[i].position;
-            enemyObject.transform.rotation = spawnPoints[i].rotation;
+    public void StartEnemyWave()
+    {
+        if (spawningWave) return; // Prevent multiple coroutines from starting
+        currentWave = 0; // Reset wave count if needed
+        StartCoroutine(WaveLoop());
+        Debug.Log("Wave Call Time ::: ");
+    }
 
+    IEnumerator WaveLoop()
+    {
+        currentWave = 0; // Reset wave count before starting new waves
 
-            Enemy enemy = enemyObject.GetComponent<Enemy>();
+        while (currentWave < waveEnemyCounts.Count)
+        {
+            yield return new WaitForSeconds(timeBetweenWaves);
+            spawningWave = true;
 
-            // Choose a random field area for each enemy
-            Transform targetFieldArea = fieldAreas[i];
-            enemy.Initialize(targetFieldArea,i);
+            int enemiesToSpawn = waveEnemyCounts[currentWave];
+            yield return StartCoroutine(SpawnEnemies(enemiesToSpawn));
 
+            spawningWave = false;
+            currentWave++;
+        }
+    }
+    IEnumerator SpawnEnemies(int count)
+    {
+        float randomDelay = Random.Range(1f, 30f);
+
+        yield return new WaitForSeconds(randomDelay);
+
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 spawnPosition = GetValidSpawnPoint();
+          var enmey=  Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+            enmey.transform.GetComponent<Enemy>().Initialize(restrictedAreas[0].transform, i);
             yield return new WaitForSeconds(spawnInterval);
         }
+    }
 
-        //currentWave++;
+    Vector3 GetValidSpawnPoint()
+    {
+        Vector3 spawnPosition;
+        bool isValid;
+        int attempts = 0;
+        do
+        {
+            spawnPosition = GetRandomSpawnPoint();
+            isValid = true;
+
+            foreach (Transform restricted in restrictedAreas)
+            {
+                if (Vector3.Distance(spawnPosition, restricted.position) < restrictedRadius)
+                {
+                    isValid = false;
+                    break;
+                }
+            }
+            attempts++;
+        }
+        while (!isValid && attempts < 10); // Prevent infinite loops
+
+        return spawnPosition;
+    }
+
+    Vector3 GetRandomSpawnPoint()
+    {
+        Vector3 randomOffset = new Vector3(
+            Random.Range(-spawnRadius, spawnRadius),
+            0,
+            Random.Range(-spawnRadius, spawnRadius)
+        );
+        return spawnArea.position + randomOffset;
     }
 }
-
-

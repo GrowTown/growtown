@@ -9,6 +9,7 @@ public class CamerasSwitch : MonoBehaviour
     public List<CinemachineFreeLook> virtualCams = new List<CinemachineFreeLook>();
     public CinemachineFreeLook activeCamera;
     public float minDis;
+    public CinemachineVirtualCamera aimvirtualCamera;
 
 
     private Vector3 lastPlayerPosition;
@@ -29,11 +30,20 @@ public class CamerasSwitch : MonoBehaviour
         }
 
         virtualCams[index].enabled = true;
+        aimvirtualCamera.gameObject.SetActive(false);
         activeCamera = virtualCams[index];
 
         Debug.Log($"Switched to camera at index: {index}");
     }
 
+    internal void EnableShootCameraOnly() 
+    {
+        foreach (var cam in virtualCams)
+        {
+            cam.enabled = false;
+        }
+        aimvirtualCamera.gameObject.SetActive( true );
+    }
     void AdjustingTHeCameras()
     {
         Vector3 playerDirection = (transform.position - lastPlayerPosition).normalized; // Player movement direction
