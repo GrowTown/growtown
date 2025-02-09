@@ -4,86 +4,14 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    /*  public float health = 1f;
-      [SerializeField] private NavMeshAgent navAgent;
-      private Transform target; // Field or player location
-      public float speed = 3.5f;
-      public Animator animator;
-      //private NavMeshAgent navMeshAgent;
-
-      void Awake()
-      {
-          // navAgent = GetComponent<NavMeshAgent>();
-      }
-
-      /// <summary>
-      /// Initialize the enemy with a target and start moving toward it
-      /// </summary>
-      /// <param name="target"></param>
-      public void Initialize(Transform target)
-      {
-          this.target = target;
-
-          if (!gameObject.activeInHierarchy)
-          {
-              gameObject.SetActive(true);
-          }
-          if (navAgent == null)
-          {
-              Debug.Log("Can't Find NavMesh");
-          }
-          navAgent.enabled = true;
-          navAgent.speed = speed;
-          navAgent.SetDestination(target.position);
-
-
-          if (animator != null)
-          {
-              animator.SetBool("enemyIsRunning", true); // Start running animation
-          }
-      }
-
-      void Update()
-      {
-
-          if (navAgent.remainingDistance <= navAgent.stoppingDistance)
-          {
-              navAgent.isStopped = true;
-              if (animator != null)
-              {
-                  animator.SetBool("enemyIsRunning", false); // Stop running animation
-              }
-          }
-          // Check if enemy reached the target (e.g., field area)
-          if (Vector3.Distance(transform.position, target.position) < 1f)
-          {
-              // animator.SetLayerWeight(1, 1);
-              // Trigger any effects or damage to the field area
-              //gameObject.SetActive(false);
-          }
-      }
-
-      public void TakeDamage(float amount)
-      {
-          health -= amount;
-          if (health <= 0)
-          {
-              Die();
-          }
-      }
-
-      private void Die()
-      {
-
-          gameObject.SetActive(false);
-      }
-  */
+    [Header("Enemy Constraints")]
     public float health = 1f;
     private Transform target; // Field or player location
+    private int index;
     public float speed = 3.5f;
+
     public Animator animator;
-    int index = 0;
-  
+    public ParticleSystem gameObjectDestroyedEffect;
 
     /// <summary>
     /// Initialize the enemy with a target and start moving toward it
@@ -99,15 +27,17 @@ public class Enemy : MonoBehaviour
             gameObject.SetActive(true);
         }
 
-        StartMoving();
-    }
+        // Offset the enemy's target position based on index
+        Vector3 offset = new Vector3(index * .5f, 0, index * .5f);
+        Vector3 newTargetPosition = target.position + offset;
 
-    private void StartMoving()
+        StartMoving(newTargetPosition);
+    }
+    private void StartMoving(Vector3 targetPosition)
     {
         if (target != null)
         {
-            // Move the enemy towards the target's position with DOTween
-            transform.DOMove(target.position, Vector3.Distance(transform.position, target.position) / speed)
+            transform.DOMove(targetPosition, Vector3.Distance(transform.position, targetPosition) / speed)
                      .SetEase(Ease.Linear)
                      .OnComplete(() => OnReachedTarget());
         }
@@ -115,8 +45,7 @@ public class Enemy : MonoBehaviour
 
     private void OnReachedTarget()
     {
-        //animator.SetTrigger("Attack");
-       
+
         // Start oscillating movement along the x-axis after reaching the target
         Vector3 leftPosition = transform.position + new Vector3(-0.5f, 0, 0);
         Vector3 rightPosition = transform.position + new Vector3(0.5f, 0, 0);
@@ -136,22 +65,16 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Die()
+    public void Die()
     {
         DOTween.Kill(transform); // Stop any ongoing movement
         gameObject.SetActive(false);
     }
-   /* private void OnCollisionEnter(Collision collision)
+
+    private void OnDestroy()
     {
-        if (collision.gameObject.CompareTag("hammer"))
-        {
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            Debug.Log("Collision detected with: " + collision.gameObject.name);
-        }
-    }*/
+        gameObjectDestroyedEffect.Play();
+    }
 }
 
 
