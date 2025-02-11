@@ -9,6 +9,7 @@ public class CharacterMovements : MonoBehaviour
     [SerializeField]
     CinemachineFreeLook virtualCam;
     public Animator animator;
+    public Joystick joystick;
     Animator _dogAnimator;
     [SerializeField]
     GameObject _dog;
@@ -68,12 +69,24 @@ public class CharacterMovements : MonoBehaviour
     [SerializeField] private Transform fieldTransform;
     [SerializeField] private Collider fieldCollider;
 
-
+    private bool isAndroid;
 
 
 
     private void Start()
     {
+        // Detect if the game is running on Android
+#if UNITY_ANDROID
+        isAndroid = true;
+#else
+            isAndroid = false;
+#endif
+
+        // Disable joystick if not on Android
+        if (!isAndroid && joystick != null)
+        {
+            joystick.gameObject.SetActive(false);
+        }
         _controller = GetComponent<CharacterController>();
         _dogAnimator = _dog.GetComponent<Animator>();
         _animIDGrounded = Animator.StringToHash("Grounded");
@@ -120,10 +133,6 @@ public class CharacterMovements : MonoBehaviour
 
         }
     }
-
-
-
-
     private void GroundedCheck()
     {
 
@@ -195,9 +204,22 @@ public class CharacterMovements : MonoBehaviour
 
     private void CharMovements()
     {
+        float moveHorizontal;
+        float moveVertical;
 
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
+        if (isAndroid && joystick != null)
+        {
+            // Use Joystick for Android
+            moveHorizontal = joystick.Horizontal;
+            moveVertical = joystick.Vertical;
+        }
+        else
+        {
+            // Use Keyboard for PC/WebGL
+            moveHorizontal = Input.GetAxis("Horizontal");
+            moveVertical = Input.GetAxis("Vertical");
+        }
+
         Vector3 cameraForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
         Vector3 cameraRight = Vector3.Scale(cam.right, new Vector3(1, 0, 1)).normalized;
 
@@ -237,8 +259,6 @@ public class CharacterMovements : MonoBehaviour
 
         UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, UI_Manager.Instance.IsPlayerInSecondZone);
     }
-
-
 
     bool isJumping;
     private void HandleJump()

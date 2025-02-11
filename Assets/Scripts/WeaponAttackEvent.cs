@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
 {
 
-    [SerializeField] private GameObject _backGround; // Background image
-    [SerializeField] private GameObject hammer; // Hammer GameObject to activate/deactivate
+    [SerializeField] private GameObject _backGround;
+    [SerializeField] private GameObject hammer;
 
 
     private bool _isSelected;
@@ -18,7 +18,7 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
         set
         {
             _isSelected = value;
-            _backGround.SetActive(value); // Show/hide background based on selection
+            _backGround.SetActive(value);
         }
     }
 
@@ -41,19 +41,11 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
         IsSelected = isHammerActive;
     }
 
-
-    bool isMouseClick;
-   
-
-   
-
     private void Update()
     {
-        // Check for left mouse button click when hammer is active
-        if (isHammerActive &&Input.GetMouseButtonDown(1))
+        if (isHammerActive)
         {
             PlayHammerAttackAnimation();
-        
         }
     }
 
@@ -61,28 +53,20 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
     {
         if (UI_Manager.Instance.CharacterMovements.animator != null)
         {
-            UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 1); // Trigger the attack animation
-            StartCoroutine(WaitForAnimationComplete());
+            UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 1);
+            
         }
     }
 
-    private IEnumerator WaitForAnimationComplete()
+    private void WaitForAnimationComplete()
     {
-        yield return new WaitForSeconds(20f); // Adjust based on animation length
         if (UI_Manager.Instance.CharacterMovements.animator != null)
         {
-            UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 0); // Reset layer weight after animation
+            UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(1, 0); 
         }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("enemy"))
-        {
-            other.gameObject.SetActive(false);
-        }
-    }
-
+ 
 }
 
 

@@ -400,37 +400,7 @@ public class UI_Manager : MonoBehaviour
         });
         strawberriesSeedBT.onClick.AddListener(() => { ShopManager.ToBuyStrawberries(); });
         starterPackBuyBT.onClick.AddListener(() => { GameManager.Instance.StartPackToBuy(); });
-       /* cleaningWeaponBT.onClick.AddListener(() =>
-        {
-            if (!ShopManager.isCleningToolBought)
-            {
-                ShopManager.ToBuyCleaningTool();
-                cleaningWeaponBT.interactable = false;
-            }
-
-        });
-        wateringWeaponBT.onClick.AddListener(() =>
-        {
-            if (!ShopManager.isWateringToolBought)
-            {
-                ShopManager.ToBuyWateringTool();
-                wateringWeaponBT.interactable = false;
-            }
-        });
-        sickleWeaponBT.onClick.AddListener(() =>
-        {
-            if (!ShopManager.isCuttingToolBought)
-            {
-                ShopManager.ToBuyCuttingTool();
-                sickleWeaponBT.interactable = false;
-            }
-        });*/
-        /*energyBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyEnergyPoints(); });
-        waterBuyBT.onClick.AddListener(() => { GameManager.Instance.ToBuyWaterPoints(); });
-        superXpBuyBT.onClick.AddListener(() =>
-        {
-            ShopManager.ToBuySuperXp();
-        });*/
+      
         wheatlandBuyBT.onClick.AddListener(() =>
         {
             ShopManager.ToBuyWheatField();
@@ -542,46 +512,8 @@ public class UI_Manager : MonoBehaviour
             PanelManager.HideAllPanels();
         }
     }
-    internal void ShowPasticidePop()
-    {
-        if (!ShopManager.isPasticidsBought)
-        {
-            contentOfPasticidePanel.SetActive(false);
-            contentOfPasticedMsgPanel.SetActive(true);
-            if (LandHealth.CurrentLandHealth <= 70)
-            {
-                contentOfNotBuyPasticedMsgTxt.text = "your land is not good enough to Harvest and you didn't bought pasticide";
-                contentOfNotBuyPasticedMsgTxt.color = Color.red;
-            }
-            else
-            {
-                contentOfNotBuyPasticedMsgTxt.text = "your land is good enough to Harvest";
-            }
-        }
-        else
-        {
-            if (LandHealth.CurrentLandHealth >= 70)
-            {
-                contentOfNotBuyPasticedMsgTxt.text = "your land is good enough to Harvest";
-            }
-            else
-            {
-                if (GameManager.Instance.CurrentPasticideCount > 0)
-                {
-                    contentOfPasticedMsgPanel.SetActive(false);
-                    contentOfPasticidePanel.SetActive(true);
-                }
-                else
-                {
-                    contentOfPasticedMsgPanel.SetActive(true);
-                    contentOfPasticidePanel.SetActive(false);
-                    contentOfNotBuyPasticedMsgTxt.text = "you have to buy pasticide";
-                    contentOfNotBuyPasticedMsgTxt.color = Color.red;
-                }
-            }
-        }
-    }
-    internal void ToInstantiateLandHealthbar(int fieldID)
+  
+   internal void ToInstantiateLandHealthbar(int fieldID)
     {
         string landName = "";
         ref bool isSpawned = ref isCarrotHealthBarspawn;

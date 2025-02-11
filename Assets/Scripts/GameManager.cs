@@ -162,7 +162,7 @@ public class GameManager : MonoBehaviour
             case PlayerAction.Clean:
                 //if(!iscleanigStarted) UI_Manager.Instance.cleanigEffect.SetActive(true);      
                 UI_Manager.Instance.cleaningTool.SetActive(true);
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 1);
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
                 // Debug.Log("Cleaning");
                 break;
             case PlayerAction.Seed:
@@ -172,7 +172,7 @@ public class GameManager : MonoBehaviour
                 ToDecreaseTHElandHealth(UI_Manager.Instance.FieldManager.CurrentFieldID, 5);
                 isThroughingseeds = true;
                 UI_Manager.Instance.seedsBag.gameObject.SetActive(true);
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 1);
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
                 // Debug.Log("Seeding");
                 break;
             case PlayerAction.Water:
@@ -184,7 +184,7 @@ public class GameManager : MonoBehaviour
                 checkForEnoughSeeds = true;
                 UI_Manager.Instance.wateringTool.SetActive(true);
                 UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 1);
 
                 break;
             case PlayerAction.Harvest:
@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
                 if (!HasEnoughPoints(3, 0)) return;
                 isPlantStartGrowing = false;
                 isCutting = true;
-                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 1);
+                UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(6, 1);
                 UI_Manager.Instance.sickleWeapon.SetActive(true);
                 break;
         }
