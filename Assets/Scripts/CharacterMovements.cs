@@ -225,7 +225,10 @@ public class CharacterMovements : MonoBehaviour
 
         Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
 
-        bool isRunning = Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone;
+        //bool isRunning = Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone;
+
+        float joystickMagnitude = new Vector2(joystick.Horizontal, joystick.Vertical).magnitude;
+        bool isRunning = isAndroid ? joystickMagnitude > 0.9f : Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone; 
         float targetSpeed = inputDirection == Vector3.zero ? 0f : (isRunning ? runSpeed : walkSpeed);
 
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
