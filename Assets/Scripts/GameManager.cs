@@ -308,6 +308,7 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
+                WaveManager.instance.StartEnemyWave();
             }
             UI_Manager.Instance.GrowthStartedOnThisTile.Add(tilego);
         }

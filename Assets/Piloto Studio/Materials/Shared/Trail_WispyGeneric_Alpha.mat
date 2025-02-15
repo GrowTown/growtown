@@ -13,6 +13,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _USEALPHAOVERRIDE_ON
+  - _USERAMP_ON
   m_InvalidKeywords:
   - _DOUBLESIDED_ON
   - _SURFACE_TYPE_TRANSPARENT
@@ -116,7 +117,7 @@ Material:
     - _UseAlphaDisolve: 0
     - _UseAlphaOverride: 1
     - _UsePixelation: 0
-    - _UseRamp: 0
+    - _UseRamp: 1
     - _UseShadowThreshold: 0
     - _UseSoftAlpha: 0
     - _UseUVOffset: 0

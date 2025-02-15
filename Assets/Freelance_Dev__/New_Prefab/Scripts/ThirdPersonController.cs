@@ -216,6 +216,8 @@ namespace StarterAssets
                 _cinemachineTargetYaw, 0.0f);
         }
 
+     
+
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
@@ -408,7 +410,7 @@ namespace StarterAssets
 
         public void SetRotateOnMove(bool newRotateOnMove)
         {
-            _rotateOnMove = newRotateOnMove;
+            _rotateOnMove  = newRotateOnMove;
         }
 
         public void FreezePlayerPosition(bool freezePlayerPosition)

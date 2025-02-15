@@ -78,7 +78,7 @@ public class WeaponHandler : MonoBehaviour
             thirdPersonController.enabled = false;
 
             var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
-            Cam.SwitchToCam(0);
+            //Cam.SwitchToCam(0);
 
             crosHair[0].gameObject.SetActive(false);
             //crosHair[1].gameObject.SetActive(false);

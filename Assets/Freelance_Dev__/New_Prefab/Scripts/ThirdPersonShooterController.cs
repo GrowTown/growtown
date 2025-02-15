@@ -35,8 +35,14 @@ public class ThirdPersonShooterController : MonoBehaviour
     }
     private void Update()
     {
-        #region ---- Aiming || Character Rotating wrt Mechanism ----
 
+        Aiming();
+    }
+
+    internal void Aiming()
+
+    {
+     
         Vector3 mouseWorldPosition = Vector3.zero;
 
         Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2);
@@ -61,7 +67,7 @@ public class ThirdPersonShooterController : MonoBehaviour
             animator.SetFloat("Speed", 0);
 
             worldAimTarget = mouseWorldPosition;
-     
+
             Vector3 cameraForward = mainCamera.transform.forward;
             Vector3 cameraRight = mainCamera.transform.right;
 
@@ -73,7 +79,7 @@ public class ThirdPersonShooterController : MonoBehaviour
 
             Quaternion targetRotation = Quaternion.LookRotation(cameraForward);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 20f * Time.deltaTime);
-        
+
         }
         else
         {
@@ -84,7 +90,6 @@ public class ThirdPersonShooterController : MonoBehaviour
             thirdPersonController.IsPlayerAiming(false);
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
         }
-        #endregion ---- Aiming || Character Rotating wrt Mechanism ----
 
         if (starterAssetsInputs.shoot && thirdPersonController._isAiming)
         {

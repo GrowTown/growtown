@@ -19,16 +19,7 @@ public class BulletProjectile : MonoBehaviour
     [SerializeField] private Transform vfxHitGreen;
     [SerializeField] private Transform vfxHitRed;
 
-    private void Awake()
-    {
-        bulletRigidbody = GetComponent<Rigidbody>();
-    }
-
-
-    void Start()
-    {
-        bulletRigidbody.velocity = transform.forward * speed;
-    }
+  
 
     private void OnTriggerEnter(Collider other)
     {

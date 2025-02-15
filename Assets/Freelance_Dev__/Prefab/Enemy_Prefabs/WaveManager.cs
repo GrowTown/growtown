@@ -1,141 +1,117 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-    public static WaveManager Instance;
+
+
+    public static WaveManager instance;
+
+    [Header("Spawn Settings")]
+    public GameObject enemyPrefab; // Enemy to spawn
+    public Transform spawnArea; // The area where enemies spawn
+    public float spawnRadius = 10f; // Area radius for spawning
+    public List<Transform> restrictedAreas; // List of restricted spawn areas
+    public float restrictedRadius = 2f; // Radius to avoid around restricted areas
 
     [Header("Wave Settings")]
-    public int totalWaves = 5;
-    public int[] enemiesToSpawnPerWave; // Each wave has a unique enemy count
-    public float waveInterval = 10f;
-    public float minSpawnDelay = 0.5f;
-    public float maxSpawnDelay = 2f;
-
-    [Header("Boss Settings")]
-    public GameObject enemyBossPrefab;
-    public Transform[] bossSpawnPoints;
+    public float timeBetweenWaves = 5f; // Delay between waves
+    public float spawnInterval = 1f; // Delay between enemy spawns
+    public List<int> waveEnemyCounts; // List defining enemies per wave
 
     private int currentWave = 0;
-    private EnemyPoolManager enemyPoolManager;
-    private GameObject boss;
-    private bool isSpawning = false;
+    private bool spawningWave = false;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        instance = this;
+    }
+
+    void Start()
+    {
+        if (waveEnemyCounts == null || waveEnemyCounts.Count == 0)
         {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
+            Debug.LogError("Wave enemy counts not set!");
+            return;
         }
     }
 
-    private void Start()
+    public void StartEnemyWave()
     {
-        enemyPoolManager = GetComponent<EnemyPoolManager>();
+        if (spawningWave) return; // Prevent multiple coroutines from starting
+        currentWave = 0; // Reset wave count if needed
+        StartCoroutine(WaveLoop());
+        Debug.Log("Wave Call Time ::: ");
+    }
 
-        // Initialize enemies per wave if not set in Inspector
-        if (enemiesToSpawnPerWave == null || enemiesToSpawnPerWave.Length == 0)
+    IEnumerator WaveLoop()
+    {
+        currentWave = 0; // Reset wave count before starting new waves
+
+        while (currentWave < waveEnemyCounts.Count)
         {
-            enemiesToSpawnPerWave = new int[totalWaves];
-            for (int i = 0; i < totalWaves; i++)
+            yield return new WaitForSeconds(timeBetweenWaves);
+            spawningWave = true;
+
+            int enemiesToSpawn = waveEnemyCounts[currentWave];
+            yield return StartCoroutine(SpawnEnemies(enemiesToSpawn));
+
+            spawningWave = false;
+            if(currentWave <waveEnemyCounts.Count)
+             currentWave++;
+
+        }
+    }
+    IEnumerator SpawnEnemies(int count)
+    {
+        float randomDelay = Random.Range(1f, 30f);
+
+        yield return new WaitForSeconds(randomDelay);
+
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 spawnPosition = GetValidSpawnPoint();
+            var enmey = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+            enmey.transform.GetComponent<Enemy>().Initialize(restrictedAreas[0].transform, i);
+            yield return new WaitForSeconds(spawnInterval);
+        }
+    }
+
+    Vector3 GetValidSpawnPoint()
+    {
+        Vector3 spawnPosition;
+        bool isValid;
+        int attempts = 0;
+        do
+        {
+            spawnPosition = GetRandomSpawnPoint();
+            isValid = true;
+
+            foreach (Transform restricted in restrictedAreas)
             {
-                enemiesToSpawnPerWave[i] = 5 + (i * 2); // Default scaling pattern
-            }
-        }
-    }
-
-    public void StartEnemyWaves()
-    {
-        StartCoroutine(StartWaves());
-    }
-
-    private IEnumerator StartWaves()
-    {
-        while (currentWave < totalWaves)
-        {
-            enemyPoolManager.ResetEnemies(); // Reset enemies at the start of each wave
-
-            yield return new WaitForSeconds(waveInterval); // Delay before new wave starts
-
-            int enemiesToSpawn = enemiesToSpawnPerWave[currentWave];
-            Debug.Log($"Starting Wave {currentWave + 1}, Spawning {enemiesToSpawn} Enemies");
-
-            yield return StartCoroutine(SpawnEnemies(enemiesToSpawn)); // Spawn wave-specific count
-
-            currentWave++;
-
-            // If last wave, spawn boss after a short delay
-            if (currentWave == totalWaves)
-            {
-                yield return new WaitForSeconds(5f);
-                SpawnBoss();
-            }
-        }
-    }
-
-    private IEnumerator SpawnEnemies(int count)
-    {
-        if (isSpawning) yield break; // Prevent multiple spawns at the same time
-        isSpawning = true;
-
-        Transform[] spawnPoints = enemyPoolManager.spawnPoints;
-        int spawnedEnemies = 0;
-
-        while (spawnedEnemies < count)
-        {
-            GameObject enemyObject = enemyPoolManager.GetEnemy();
-            if (enemyObject != null)
-            {
-                Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-                enemyObject.transform.position = spawnPoint.position;
-                enemyObject.transform.rotation = spawnPoint.rotation;
-                enemyObject.SetActive(true);
-
-                Enemy enemy = enemyObject.GetComponent<Enemy>();
-                if (enemy != null)
+                if (Vector3.Distance(spawnPosition, restricted.position) < restrictedRadius)
                 {
-                    Transform targetFieldArea = enemyPoolManager.enemyAttackFieldAreas[Random.Range(0, enemyPoolManager.enemyAttackFieldAreas.Length)];
-                    enemy.Initialize(targetFieldArea, spawnedEnemies);
+                    isValid = false;
+                    break;
                 }
-
-                spawnedEnemies++;
             }
-
-            yield return new WaitForSeconds(Random.Range(minSpawnDelay, maxSpawnDelay)); // Random delay per enemy
+            attempts++;
         }
+        while (!isValid && attempts < 10); // Prevent infinite loops
 
-        isSpawning = false;
+        return spawnPosition;
     }
 
-    private void SpawnBoss()
+    Vector3 GetRandomSpawnPoint()
     {
-        if (enemyBossPrefab != null)
-        {
-            Transform randomSpawnPoint = bossSpawnPoints[Random.Range(0, bossSpawnPoints.Length)];
-
-            if (boss != null)
-            {
-                boss.transform.position = randomSpawnPoint.position;
-                boss.transform.rotation = randomSpawnPoint.rotation;
-                boss.SetActive(true);
-            }
-            else
-            {
-                boss = Instantiate(enemyBossPrefab, randomSpawnPoint.position, randomSpawnPoint.rotation);
-            }
-
-            Enemy bossEnemy = boss.GetComponent<Enemy>();
-            if (bossEnemy != null)
-            {
-                Transform targetFieldArea = enemyPoolManager.enemyAttackFieldAreas[Random.Range(0, enemyPoolManager.enemyAttackFieldAreas.Length)];
-                bossEnemy.Initialize(targetFieldArea, 0);
-            }
-
-            Debug.Log("Boss Spawned!");
-        }
+        Vector3 randomOffset = new Vector3(
+            Random.Range(-spawnRadius, spawnRadius),
+            0,
+            Random.Range(-spawnRadius, spawnRadius)
+        );
+        return spawnArea.position + randomOffset;
     }
+
+
 }

@@ -460,14 +460,14 @@ public class UI_Manager : MonoBehaviour
     {
         if (popupIndex == 3)
         {
-            if (isPlantGrowthCompleted && !WeaponAttackEvent.isHammerActive)
+            if (isPlantGrowthCompleted && !WeaponAttackEvent.isGunActive)
             {
                 SelectPopup(currentAction, popupIndex, selectionFunctionality);
             }
         }
         else
         {
-            if (!WeaponAttackEvent.isHammerActive)
+            if (!WeaponAttackEvent.isGunActive)
             {
                 SelectPopup(currentAction, popupIndex, selectionFunctionality);
             }

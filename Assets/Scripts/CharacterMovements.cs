@@ -68,10 +68,19 @@ public class CharacterMovements : MonoBehaviour
 
     [SerializeField] private Transform fieldTransform;
     [SerializeField] private Collider fieldCollider;
+    private float _cinemachineTargetYaw;
+    private float _cinemachineTargetPitch;
+    public float Sensitivity = 1.0f;
 
     private bool isAndroid;
 
+    public float TopClamp = 70.0f;
 
+    public float BottomClamp = -30.0f;
+    private const float _threshold = 0.01f;
+    [SerializeField] private GameObject CinemachineCameraTarget;
+    public float CameraAngleOverride = 0.0f;
+    public bool LockCameraPosition = false;
 
     private void Start()
     {
@@ -91,6 +100,7 @@ public class CharacterMovements : MonoBehaviour
         _dogAnimator = _dog.GetComponent<Animator>();
         _animIDGrounded = Animator.StringToHash("Grounded");
         animationEvents.CropCycleAnimationEvent.AddListener(OnAnimationEvents);
+        _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
     }
     void Update()
     {
@@ -100,6 +110,11 @@ public class CharacterMovements : MonoBehaviour
         if (!isJumping)
             AdjustHeightofPlayer();
         //UpdateVirtualCamera();
+        if (UI_Manager.Instance.WeaponAttackEvent.isGunActive)
+        {
+            Camerarotation();
+        }
+
 
     }
     void AdjustHeightofPlayer()
@@ -133,6 +148,35 @@ public class CharacterMovements : MonoBehaviour
 
         }
     }
+    void Camerarotation()
+    {
+        float lookX = Input.GetAxisRaw("Mouse X") * Sensitivity;
+        float lookY = Input.GetAxisRaw("Mouse Y") * Sensitivity;
+
+        // If there is an input and camera position is not locked
+        if ((Mathf.Abs(lookX) >= _threshold || Mathf.Abs(lookY) >= _threshold) && !LockCameraPosition)
+        {
+            _cinemachineTargetYaw += lookX * Sensitivity;
+            _cinemachineTargetPitch -= lookY * Sensitivity; // Invert Y for natural control
+        }
+
+        // Clamp rotation
+        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+        _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+        // Apply rotation to Cinemachine target
+        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
+    }
+
+
+
+
+    private float ClampAngle(float angle, float min, float max)
+    {
+        if (angle < -360f) angle += 360f;
+        if (angle > 360f) angle -= 360f;
+        return Mathf.Clamp(angle, min, max);
+    }
     private void GroundedCheck()
     {
 
@@ -146,61 +190,6 @@ public class CharacterMovements : MonoBehaviour
             animator.SetBool(_animIDGrounded, Grounded);
         }
     }
-
-    /*   private void CharMovements()
-       {
-           // Get movement input
-           float moveHorizontal = Input.GetAxis("Horizontal");
-           float moveVertical = Input.GetAxis("Vertical");
-
-           // Use the camera's forward and right to calculate movement relative to its orientation
-           Vector3 cameraForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized; // Flatten the forward vector
-           Vector3 cameraRight = Vector3.Scale(cam.right, new Vector3(1, 0, 1)).normalized;     // Flatten the right vector
-
-           // Calculate movement direction relative to the camera
-           Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
-
-           // Determine if running
-           bool isRunning = Input.GetKey(KeyCode.LeftShift);
-
-           // Calculate target speed
-           float targetSpeed = inputDirection == Vector3.zero ? 0f : (isRunning ? runSpeed : walkSpeed);
-
-           // Smooth acceleration and deceleration
-           float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-           if (currentHorizontalSpeed < targetSpeed - 0.1f || currentHorizontalSpeed > targetSpeed + 0.1f)
-           {
-               _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed, Time.deltaTime * SpeedChangeRate);
-               _speed = Mathf.Round(_speed * 1000f) / 1000f;
-           }
-           else
-           {
-               _speed = targetSpeed;
-           }
-
-           // Set blend tree speed
-           _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-           if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-           // Apply movement
-           Vector3 moveDirection = inputDirection * _speed;
-           _controller.Move(moveDirection * Time.deltaTime);
-
-           // Rotate the character if there's movement input
-           if (inputDirection.magnitude > 0f)
-           {
-               Quaternion toRotation = Quaternion.LookRotation(inputDirection, Vector3.up);
-               transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
-           }
-
-           // Update animator parameters
-           if (animator != null)
-           {
-               animator.SetFloat("Speed", _animationBlend); // Use "Speed" for blend tree transitions
-               animator.SetFloat("MotionSpeed", inputDirection.magnitude); // Normalize motion input
-           }
-
-       }*/
 
     private void CharMovements()
     {
@@ -225,10 +214,46 @@ public class CharacterMovements : MonoBehaviour
 
         Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
 
-        //bool isRunning = Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone;
-
+        bool isGunActive = UI_Manager.Instance.WeaponAttackEvent.isGunActive;
         float joystickMagnitude = new Vector2(joystick.Horizontal, joystick.Vertical).magnitude;
-        bool isRunning = isAndroid ? joystickMagnitude > 0.9f : Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone; 
+        //bool isRunning = joystickMagnitude >= 0.9f;
+        bool isRunning = isAndroid ? joystickMagnitude >= 0.9f && !GameManager.Instance.checkPlayerInZone : Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone;
+
+        if (animator != null)
+        {
+            if (isGunActive)
+            {
+                if (isRunning)
+                {
+
+                    animator.SetLayerWeight(2, 1f);
+                    animator.SetLayerWeight(1, 0f);
+                    animator.SetLayerWeight(0, 0f);
+                    UI_Manager.Instance.WeaponAttackEvent.leftHandPos.weight = 0f;
+                    UI_Manager.Instance.WeaponAttackEvent.aim.weight = 0f;
+                }
+                else
+                {
+
+                    animator.SetLayerWeight(1, 1f);
+                    animator.SetLayerWeight(2, 0f);
+                    animator.SetLayerWeight(0, 1f);
+                    UI_Manager.Instance.WeaponAttackEvent.leftHandPos.weight = 1f;
+                    UI_Manager.Instance.WeaponAttackEvent.aim.weight = 0.4f;
+                }
+            }
+            else
+            {
+
+                animator.SetLayerWeight(0, 1f);
+                animator.SetLayerWeight(1, 0f);
+                animator.SetLayerWeight(2, 0f);
+            }
+
+
+        }
+
+        // bool isRunning = isAndroid ? joystickMagnitude > 0.9f : Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone; 
         float targetSpeed = inputDirection == Vector3.zero ? 0f : (isRunning ? runSpeed : walkSpeed);
 
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
@@ -262,6 +287,8 @@ public class CharacterMovements : MonoBehaviour
 
         UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, UI_Manager.Instance.IsPlayerInSecondZone);
     }
+
+
 
     bool isJumping;
     private void HandleJump()
@@ -312,7 +339,6 @@ public class CharacterMovements : MonoBehaviour
             _dog.transform.rotation = Quaternion.Slerp(_dog.transform.rotation, lookRotation, Time.deltaTime * followTurnSpeed);
         }
     }
-
 
     private void SetDogAnimation(string state)
     {
