@@ -45,6 +45,7 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
     private void Start()
     {
         mainCamera = Camera.main;
+
     }
 
     public void OnPointerClick(PointerEventData eventData)

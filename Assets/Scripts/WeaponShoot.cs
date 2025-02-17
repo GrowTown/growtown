@@ -1,5 +1,6 @@
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WeaponShoot : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class WeaponShoot : MonoBehaviour
     public Transform firePoint;
     public GameObject bulletPrefab;
     public LayerMask aimColliderLayerMask;
+    public Button FireBT;
  
     [Header("Settings")]
     public float fireRate = 0.2f;
@@ -24,7 +26,10 @@ public class WeaponShoot : MonoBehaviour
 
     public float rotationSpeed = 10f;
 
-   
+    private void Start()
+    {
+        FireBT.onClick.AddListener(()=> { ForFire();});
+    }
     private void Update()
     {
        
@@ -71,6 +76,18 @@ public class WeaponShoot : MonoBehaviour
              }
          }
      }*/
+
+    void ForFire()
+    {
+        if (!UI_Manager.Instance.WeaponAttackEvent.isReloading&& UI_Manager.Instance.WeaponAttackEvent.isGunActive)
+        {
+            Fire();
+        }
+        else
+        {
+            UI_Manager.Instance.CharacterMovements.animator.SetBool("IsShooting", false);
+        }
+    }
 
     public void Fire()
     {
