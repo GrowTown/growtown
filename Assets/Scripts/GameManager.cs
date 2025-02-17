@@ -202,10 +202,10 @@ public class GameManager : MonoBehaviour
 
     public void StopCurrentAnimations()
     {
-        UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(2, 0);
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 0);
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 0);
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 0);
+        UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(6, 0);
         UI_Manager.Instance.cleaningTool.SetActive(false);
     }
     public void ShowFieldPopup(PlayerAction currentAction)

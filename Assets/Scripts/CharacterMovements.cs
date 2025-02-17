@@ -75,13 +75,14 @@ public class CharacterMovements : MonoBehaviour
 
     private bool isAndroid;
 
-    public float TopClamp = 70.0f;
 
     //Getting Character is Moving or Not
     private Vector3 lastPosition;
     private float idleTime = 0f;
     public float idleThreshold = 5f; 
-    public float BottomClamp = -30.0f;
+    public float BottomClamp = -0f;
+    public float TopClamp = 0f;
+
     private const float _threshold = 0.01f;
     [SerializeField] private GameObject CinemachineCameraTarget;
     public float CameraAngleOverride = 0.0f;
@@ -219,14 +220,13 @@ public class CharacterMovements : MonoBehaviour
     }
 
 
-
-
     private float ClampAngle(float angle, float min, float max)
     {
-        if (angle < -360f) angle += 360f;
-        if (angle > 360f) angle -= 360f;
+        while (angle < -360f) angle += 360f;
+        while (angle > 360f) angle -= 360f;
         return Mathf.Clamp(angle, min, max);
     }
+
     private void GroundedCheck()
     {
 
