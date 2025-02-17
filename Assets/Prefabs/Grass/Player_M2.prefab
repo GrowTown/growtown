@@ -12001,6 +12001,7 @@ MonoBehaviour:
   fieldCollider: {fileID: 0}
   Sensitivity: 1
   TopClamp: 70
+  idleThreshold: 5
   BottomClamp: -30
   CinemachineCameraTarget: {fileID: 3851876090419693668}
   CameraAngleOverride: 0
@@ -12031,7 +12032,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   primaryCam: {fileID: 0}
   virtualCams:
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

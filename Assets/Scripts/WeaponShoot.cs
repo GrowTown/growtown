@@ -36,10 +36,7 @@ public class WeaponShoot : MonoBehaviour
         {
             UI_Manager.Instance.CharacterMovements.animator.SetBool("IsShooting", false);
         }
-        if (UI_Manager.Instance.WeaponAttackEvent.crossHair.activeSelf)
-        {
-
-        }
+     
     }
 
     /* public void Fire()
