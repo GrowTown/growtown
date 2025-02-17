@@ -363,7 +363,6 @@ public class CharacterMovements : MonoBehaviour
         string name = param[0];
         int value = Convert.ToInt32(param[1]);
 
-        Debug.Log(name + " " + value);
 
         _dogAnimator.SetInteger(name, value);
 

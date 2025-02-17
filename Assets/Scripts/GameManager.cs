@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
+using DG.Tweening;
 
 
 public class GameManager : MonoBehaviour
@@ -394,6 +395,11 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.ShopManager.ToBuyWateringTool();
         UI_Manager.Instance.ShopManager.ToBuyCuttingTool();
         UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
+
+        RectTransform joystickRect = UI_Manager.Instance.joystick.GetComponent<RectTransform>();
+        Vector2 targetPosition = new Vector2(160, 259);
+        JoystickMoveFromLeft(joystickRect, targetPosition, 1.5f);
+
         foreach (var item in startPackName)
         {
             var shopItemHolder = UI_Manager.Instance.ShopManager.FindShopItemHolder(item);
@@ -406,6 +412,17 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.wateringWeaponBT.interactable = false;
         UI_Manager.Instance.cleaningWeaponBT.interactable = false;
         
+    }
+
+    public void JoystickMoveFromLeft(RectTransform target, Vector2 destination, float duration)
+    {
+        // Set the starting position to the left
+        Vector2 startPosition = new Vector2(-Screen.width, destination.y);
+        target.anchoredPosition = startPosition;
+
+        // Animate the movement to the destination
+        target.DOAnchorPos(destination, duration)
+              .SetEase(Ease.OutQuad); // Smooth animation
     }
 
     bool isWaterPointDecreased;

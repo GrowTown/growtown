@@ -41,6 +41,7 @@ public class UI_Manager : MonoBehaviour
     public GameObject carrotFieldArea;
     public GameObject shotGun;
     public GameObject shotGunSpawnPoint;
+    public GameObject joystick;
 
 
     [Header("Transforms")]
