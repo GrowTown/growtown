@@ -5,9 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-
-
-
 public class ShopManager : MonoBehaviour
 {
 
@@ -52,13 +49,12 @@ public class ShopManager : MonoBehaviour
                 shopIH.Initialize(item);
                 if (item.level == 1)
                 {
-                 buttons.Add(item.itemName, shopIH.buyBT);
+                    buttons.Add(item.itemName, shopIH.buyBT);
                 }
                 else
                 {
                     shopIH.buyBT.gameObject.SetActive(false);
                 }
-
             }
         }
 
@@ -126,14 +122,12 @@ public class ShopManager : MonoBehaviour
                     else
                     {
                         Debug.LogWarning($"No ShopItemHolder found for item: {itemName}");
-
                     }
                 });
             }
             else
             {
                 Debug.LogWarning($"No action found for item: {itemName}");
-
             }
         }
     }

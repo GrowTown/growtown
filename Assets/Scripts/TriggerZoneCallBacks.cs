@@ -36,12 +36,11 @@ public class TriggerZoneCallBacks : MonoBehaviour
                         if (fieldID == 2)
                         {
                             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
-
+                            UI_Manager.Instance.ActiveAllInventory(-232);
                         }
                         else if (fieldID == 1)
                         {
                             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(3);
-                            
                         }
                         else
                         {
@@ -119,6 +118,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
             UI_Manager.Instance.isPlayerInField = false;
 
             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
+            UI_Manager.Instance.ActiveAllInventory(55);
             switch (zoneType)
             {
                 case ZoneType.Field:

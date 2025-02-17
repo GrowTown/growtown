@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -41,8 +42,7 @@ public class UI_Manager : MonoBehaviour
     public GameObject carrotFieldArea;
     public GameObject shotGun;
     public GameObject shotGunSpawnPoint;
-    public GameObject joystick;
-
+    public GameObject inventoryHolder;
 
     [Header("Transforms")]
     public Transform lhHolderTransform;
@@ -264,6 +264,8 @@ public class UI_Manager : MonoBehaviour
 
     void Start()
     {
+        var Cam = CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
+        Cam.DisAbaleAllCamera();
         starterPackInfoPopUpPanel.SetActive(true);
         //  score.text = scoreIn.ToString();
         GameManager.Instance.CurrentEnergyCount = 500;
@@ -592,5 +594,23 @@ public class UI_Manager : MonoBehaviour
         GrowthStartedPlants.Clear();
     }
     #endregion
+
+    public void ActiveAllInventory(float value) 
+    {
+        RectTransform inventory = inventoryHolder.GetComponent<RectTransform>();
+        Vector2 targetPosition = new Vector2(value, -70);
+        MoveInventoryHolder(inventory, targetPosition, 1.5f);
+    }
+
+    public void MoveInventoryHolder(RectTransform target, Vector2 destination, float duration)
+    {
+        // Set the starting position to the left
+        Vector2 startPosition = new Vector2(Screen.width, destination.y);
+        target.anchoredPosition = startPosition;
+
+        // Animate the movement to the destination
+        target.DOAnchorPos(destination, duration)
+              .SetEase(Ease.OutQuad); // Smooth animation
+    }
 
 }

@@ -2,6 +2,7 @@ using Cinemachine;
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterMovements : MonoBehaviour
 {
@@ -76,11 +77,16 @@ public class CharacterMovements : MonoBehaviour
 
     public float TopClamp = 70.0f;
 
+    //Getting Character is Moving or Not
+    private Vector3 lastPosition;
+    private float idleTime = 0f;
+    public float idleThreshold = 5f; 
     public float BottomClamp = -30.0f;
     private const float _threshold = 0.01f;
     [SerializeField] private GameObject CinemachineCameraTarget;
     public float CameraAngleOverride = 0.0f;
     public bool LockCameraPosition = false;
+
 
     private void Start()
     {
@@ -100,8 +106,12 @@ public class CharacterMovements : MonoBehaviour
         _dogAnimator = _dog.GetComponent<Animator>();
         _animIDGrounded = Animator.StringToHash("Grounded");
         animationEvents.CropCycleAnimationEvent.AddListener(OnAnimationEvents);
+
+        lastPosition = transform.position;
         _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
     }
+
+
     void Update()
     {
         Shader.SetGlobalVector("_Player", transform.position);
@@ -115,8 +125,48 @@ public class CharacterMovements : MonoBehaviour
             Camerarotation();
         }
 
+        // Check if position has changed
+        if (transform.position != lastPosition)
+        {
+            idleTime = 0f; // Reset idle timer
+            lastPosition = transform.position; // Update last position
+            ChangeOpacityOfJoystick(.5f);
+        }
+        else
+        {
+            idleTime += Time.deltaTime; // Increase idle time
+        }
+
+        // Check if idle time exceeded the threshold
+        if (idleTime >= idleThreshold)
+        {
+            OnIdle();
+            idleTime = 0f; // Reset after triggering (optional)
+        }
 
     }
+
+    void OnIdle()
+    {
+        Debug.Log("Character has been idle for 5 seconds!");
+        ChangeOpacityOfJoystick(.2f);
+    }
+
+    private void ChangeOpacityOfJoystick(float opacity) 
+    {
+
+        var joysticjImage = joystick.gameObject.GetComponent<Image>();
+        var joystickHandleImage = joystick.gameObject.transform.GetChild(0).GetComponent<Image>();
+
+        Color colorJ = joysticjImage.color;
+        colorJ.a = opacity;
+        joysticjImage.color = colorJ;
+
+        Color colorH = joystickHandleImage.color;
+        colorH.a = opacity;
+        joystickHandleImage.color = colorH;
+    }
+
     void AdjustHeightofPlayer()
     {
         var height = new Vector3(transform.position.x, _charGroundPos, transform.position.z);
