@@ -9,6 +9,7 @@ public class ShopItem : ScriptableObject
     public int price;
     public int level;
     public ItemType type;
+
 }
 
 

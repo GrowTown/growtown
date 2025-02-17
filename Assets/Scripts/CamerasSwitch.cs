@@ -44,6 +44,14 @@ public class CamerasSwitch : MonoBehaviour
         }
         aimvirtualCamera.gameObject.SetActive( true );
     }
+    internal void DisAbaleAllCamera()
+    {
+        foreach (var cam in virtualCams)
+        {
+            cam.enabled = false;
+        }
+    }
+
     void AdjustingTHeCameras()
     {
         Vector3 playerDirection = (transform.position - lastPlayerPosition).normalized; // Player movement direction

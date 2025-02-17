@@ -389,14 +389,16 @@ public class GameManager : MonoBehaviour
     List<string>startPackName= new List<string>() { "CleaningTool", "WateringTool", "CuttingTool", "TomatoSeed" };
     public void StartPackToBuy()
     {
+        var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
+        Cam.SwitchToCam(0);
         UI_Manager.Instance.ShopManager.ToBuyTomato();
         UI_Manager.Instance.ShopManager.ToBuyCleaningTool();
         UI_Manager.Instance.ShopManager.ToBuyWateringTool();
         UI_Manager.Instance.ShopManager.ToBuyCuttingTool();
         UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
 
-        RectTransform joystickRect = UI_Manager.Instance.joystick.GetComponent<RectTransform>();
-        Vector2 targetPosition = new Vector2(160, 259);
+        RectTransform joystickRect = UI_Manager.Instance.CharacterMovements.joystick.GetComponent<RectTransform>();
+        Vector2 targetPosition = new Vector2(250, 259);
         JoystickMoveFromLeft(joystickRect, targetPosition, 1.5f);
 
         foreach (var item in startPackName)

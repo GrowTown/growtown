@@ -5,9 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-
-
-
 public class ShopManager : MonoBehaviour
 {
 
@@ -50,7 +47,14 @@ public class ShopManager : MonoBehaviour
                 GameObject itemObject = Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
                 var shopIH = itemObject.GetComponent<ShopItemHolder>();
                 shopIH.Initialize(item);
-                if (item.level == 1) buttons.Add(item.itemName, shopIH.buyBT);
+                if (item.level == 1)
+                {
+                    buttons.Add(item.itemName, shopIH.buyBT);
+                }
+                else
+                {
+                    shopIH.buyBT.gameObject.SetActive(false);
+                }
             }
         }
 
@@ -59,6 +63,8 @@ public class ShopManager : MonoBehaviour
             for (int j = 0; j < 10; j++)
             {
                 GameObject itemObject = Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
+                var shopIH = itemObject.GetComponent<ShopItemHolder>();
+                shopIH.buyBT.gameObject.SetActive(false);
             }
         }
 
@@ -169,6 +175,7 @@ public class ShopManager : MonoBehaviour
                     if (existingItem != null)
                     {
                         existingItem.UnlockItem();
+                        existingItem.buyBT.gameObject.SetActive(true);
                         buttons.Add(item.itemName, existingItem.buyBT);
                         if (buttonActions.ContainsKey(item.itemName))
                         {
