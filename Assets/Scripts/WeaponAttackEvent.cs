@@ -153,6 +153,63 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
     }*/
 
     public float crosshairDistance = 5f;
+    /*    internal void Aiming()
+        {
+            if (IsPointerOverUI()) return;
+
+            var player = UI_Manager.Instance.CharacterMovements.transform;
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = true;
+
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            Transform hitTransform = null;
+
+            Debug.DrawRay(ray.origin, ray.direction * maxFireDistance, Color.red, 1f);
+
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, maxFireDistance))
+            {
+                hitTransform = raycastHit.transform;
+                Vector3 aimTarget = raycastHit.point;
+
+                // Prevent crosshair from coming too close to the player
+                float minAimDistance = 2.0f; // Adjust this value
+                float distanceToPlayer = Vector3.Distance(player.position, aimTarget);
+                if (distanceToPlayer < minAimDistance)
+                {
+                    aimTarget = player.position + (ray.direction * minAimDistance);
+                }
+
+                // Prevent crosshair from going too high
+                float maxAimHeight = player.position.y + 2f; // Adjust this value
+                if (aimTarget.y > maxAimHeight)
+                {
+                    aimTarget.y = maxAimHeight;
+                }
+
+                // Apply the clamped position to the crosshair target
+                targetForCrossHair.position = aimTarget;
+
+                // Update crosshair UI position
+                Vector3 screenPoint = mainCamera.WorldToScreenPoint(targetForCrossHair.position);
+                crossHair.GetComponent<RectTransform>().position = screenPoint;
+
+
+                // Player rotation logic
+                Vector3 directionToTarget = new Vector3(aimTarget.x, player.position.y, aimTarget.z);
+
+                // Prevent aiming too far behind the player
+                float angle = Vector3.Angle(player.forward, directionToTarget);
+
+
+
+                // Calculate the target rotation (horizontal only)
+                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+
+                // Smoothly rotate the player towards the target (horizontal rotation only)
+                player.rotation = Quaternion.Slerp(player.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+        }*/
+
     internal void Aiming()
     {
         if (IsPointerOverUI()) return;
@@ -171,49 +228,39 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
             hitTransform = raycastHit.transform;
             Vector3 aimTarget = raycastHit.point;
 
-            // Prevent crosshair from coming too close to the player
-            float minAimDistance = 2.0f; // Adjust this value
-            float distanceToPlayer = Vector3.Distance(player.position, aimTarget);
-            if (distanceToPlayer < minAimDistance)
+            // Calculate the direction from the player to the aim target
+            Vector3 directionToTarget = (aimTarget - player.position).normalized;
+
+            // Calculate the angle between the player's forward direction and the aim direction
+            float angle = Vector3.Angle(player.forward, directionToTarget);
+
+            // Prevent aiming behind the player (e.g., beyond 90 degrees)
+            if (angle > 90f)
             {
-                aimTarget = player.position + (ray.direction * minAimDistance);
+                // Option 1: Stop aiming entirely
+                return;
+
+                // Option 2: Clamp the aim direction to the edge of the front hemisphere
+                // directionToTarget = Vector3.RotateTowards(player.forward, directionToTarget, Mathf.Deg2Rad * 90f, 0f);
             }
 
-            // Prevent crosshair from going too high
-            float maxAimHeight = player.position.y + 1.5f; // Adjust this value
-            if (aimTarget.y > maxAimHeight)
-            {
-                aimTarget.y = maxAimHeight;
-            }
-
-            // Apply the clamped position to the crosshair target
-            targetForCrossHair.position = aimTarget;
+            // Set the crosshair position at a fixed distance from the player
+            targetForCrossHair.position = player.position + directionToTarget * crosshairDistance;
 
             // Update crosshair UI position
             Vector3 screenPoint = mainCamera.WorldToScreenPoint(targetForCrossHair.position);
             crossHair.GetComponent<RectTransform>().position = screenPoint;
 
             // Player rotation logic
-            Vector3 directionToTarget = new Vector3(aimTarget.x, player.position.y, aimTarget.z) - player.position;
-
-            // Prevent aiming too far behind the player
-            float angle = Vector3.Angle(player.forward, directionToTarget);
-
-            // Adjust Aim Constraint weights based on the angle
-            float aimConstraintWeight = Mathf.Clamp01(1 - (angle / 80f)); // Reduce weight as angle increases
-          
-            aim.weight = aimConstraintWeight;
-
-            if (angle > 80f) return;
+            Vector3 horizontalDirectionToTarget = new Vector3(directionToTarget.x, 0f, directionToTarget.z).normalized;
 
             // Calculate the target rotation (horizontal only)
-            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+            Quaternion targetRotation = Quaternion.LookRotation(horizontalDirectionToTarget);
 
             // Smoothly interpolate the player's rotation towards the target
             player.rotation = Quaternion.Slerp(player.rotation, targetRotation, Time.deltaTime * rotationDamping);
         }
     }
-
     private void DeActivatingTheGun()
     {
         var animator = UI_Manager.Instance.CharacterMovements.animator;
