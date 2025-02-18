@@ -68,9 +68,15 @@ public class CharacterMovements : MonoBehaviour
     public AnimationEventTrigger animationEvents;
 
     [Header("Gun Camera Constraints")]
-    public float gunYawLimit = 45f; // Maximum horizontal rotation when gun is active
-    public float gunPitchLimit = 30f; // Maximum vertical rotation when gun is active
+    public float gunYawLimit = 60f; // Maximum horizontal rotation when gun is active
+    public float gunPitchLimit = 60; // Maximum vertical rotation when gun is active
 
+
+    // Public fields for camera rotation
+    public float CinemachineTargetYaw { get; private set; } // Public getter, private setter
+    public float CinemachineTargetPitch { get; private set; } // Public getter, private set
+    public float CameraHeight = 1.5f;
+    public float maxCameraHeight = 1.6f;
     private float currentYawLimit = 0f;
     private float currentPitchLimit = 0f;
 
@@ -116,7 +122,8 @@ public class CharacterMovements : MonoBehaviour
         animationEvents.CropCycleAnimationEvent.AddListener(OnAnimationEvents);
 
         lastPosition = transform.position;
-        _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
+        CinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
+        CinemachineTargetPitch = CinemachineCameraTarget.transform.rotation.eulerAngles.x;
     }
 
 
@@ -207,27 +214,6 @@ public class CharacterMovements : MonoBehaviour
 
         }
     }
-    /*  void Camerarotation()
-      {
-          float lookX = Input.GetAxisRaw("Mouse X") * Sensitivity;
-          float lookY = Input.GetAxisRaw("Mouse Y") * Sensitivity;
-
-          // If there is an input and camera position is not locked
-          if ((Mathf.Abs(lookX) >= _threshold || Mathf.Abs(lookY) >= _threshold) && !LockCameraPosition)
-          {
-              _cinemachineTargetYaw += lookX * Sensitivity;
-              _cinemachineTargetPitch -= lookY * Sensitivity; // Invert Y for natural control
-          }
-
-          // Clamp rotation
-          _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-          _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-          // Apply rotation to Cinemachine target
-          CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
-      }
-  */
-
  
     private Coroutine resetCameraCoroutine;
 
@@ -239,39 +225,71 @@ public class CharacterMovements : MonoBehaviour
         currentYawLimit = Mathf.Lerp(currentYawLimit, targetYawLimit, Time.deltaTime * 5f);
         currentPitchLimit = Mathf.Lerp(currentPitchLimit, targetPitchLimit, Time.deltaTime * 5f);
     }
-
     internal bool iscameraReset = false;
+
+
+    /*   void Camerarotation()
+       {
+           // Reset camera to back of player when gun is active
+           if (UI_Manager.Instance.WeaponAttackEvent.isGunActive && !iscameraReset)
+           {
+               StartResetCamera();
+               iscameraReset = true;
+               return; // Prevent further camera rotation while gun is active
+           }
+
+           float lookX = Input.GetAxisRaw("Mouse X") * Sensitivity;
+           float lookY = Input.GetAxisRaw("Mouse Y") * Sensitivity;
+
+           // If there is an input and camera position is not locked
+           if ((Mathf.Abs(lookX) >= _threshold || Mathf.Abs(lookY) >= _threshold) && !LockCameraPosition)
+           {
+               CinemachineTargetYaw += lookX * Sensitivity;
+               CinemachineTargetPitch -= lookY * Sensitivity; // Invert Y for natural control
+           }
+
+           // Apply constraints
+           CinemachineTargetYaw = Mathf.Clamp(CinemachineTargetYaw, -currentYawLimit, currentYawLimit);
+           CinemachineTargetPitch = Mathf.Clamp(CinemachineTargetPitch, -currentPitchLimit, currentPitchLimit);
+
+           // Clamp rotation
+           CinemachineTargetYaw = ClampAngle(CinemachineTargetYaw, float.MinValue, float.MaxValue);
+           CinemachineTargetPitch = ClampAngle(CinemachineTargetPitch, BottomClamp, TopClamp);
+
+           // Apply rotation to Cinemachine target
+           CinemachineCameraTarget.transform.rotation = Quaternion.Euler(CinemachineTargetPitch + CameraAngleOverride, CinemachineTargetYaw, 0.0f);
+
+           // Update camera height (if needed)
+           Vector3 cameraPosition = CinemachineCameraTarget.transform.position;
+           cameraPosition.y = Mathf.Clamp(cameraPosition.y, maxCameraHeight, float.MaxValue);
+           CinemachineCameraTarget.transform.position = cameraPosition;
+       }*/
+
 
     void Camerarotation()
     {
-        // Reset camera to back of player when gun is active
-        if (UI_Manager.Instance.WeaponAttackEvent.isGunActive&& !iscameraReset)
+        // Reset camera when gun is activated, but allow further rotation
+        if (UI_Manager.Instance.WeaponAttackEvent.isGunActive && !iscameraReset)
         {
             StartResetCamera();
             iscameraReset = true;
-            return; // Prevent further camera rotation while gun is active
         }
 
         float lookX = Input.GetAxisRaw("Mouse X") * Sensitivity;
         float lookY = Input.GetAxisRaw("Mouse Y") * Sensitivity;
 
-        // If there is an input and camera position is not locked
         if ((Mathf.Abs(lookX) >= _threshold || Mathf.Abs(lookY) >= _threshold) && !LockCameraPosition)
         {
-            _cinemachineTargetYaw += lookX * Sensitivity;
-            _cinemachineTargetPitch -= lookY * Sensitivity; // Invert Y for natural control
+            CinemachineTargetYaw += lookX * Sensitivity;
+            CinemachineTargetPitch -= lookY * Sensitivity;
         }
 
-        // Apply constraints
-        _cinemachineTargetYaw = Mathf.Clamp(_cinemachineTargetYaw, -currentYawLimit, currentYawLimit);
-        _cinemachineTargetPitch = Mathf.Clamp(_cinemachineTargetPitch, -currentPitchLimit, currentPitchLimit);
+        //  Fix: Ensure Clamping is Correct
+        CinemachineTargetYaw = Mathf.Clamp(CinemachineTargetYaw, -currentYawLimit, currentYawLimit);
+        CinemachineTargetPitch = Mathf.Clamp(CinemachineTargetPitch, BottomClamp, TopClamp);
 
-        // Clamp rotation
-        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-        _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-        // Apply rotation to Cinemachine target
-        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
+        // Apply final rotation
+        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(CinemachineTargetPitch + CameraAngleOverride, CinemachineTargetYaw, 0.0f);
     }
 
     private void StartResetCamera()
@@ -285,22 +303,21 @@ public class CharacterMovements : MonoBehaviour
 
     private IEnumerator ResetCameraToBackCoroutine()
     {
-        float startYaw = _cinemachineTargetYaw;
+        float startYaw = CinemachineTargetYaw;
         float desiredYaw = transform.eulerAngles.y;
         float duration = 0.5f; // Adjust for faster/slower transition
         float elapsed = 0f;
 
         while (elapsed < duration)
         {
-            _cinemachineTargetYaw = Mathf.LerpAngle(startYaw, desiredYaw, elapsed / duration);
+            CinemachineTargetYaw = Mathf.LerpAngle(startYaw, desiredYaw, elapsed / duration);
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        _cinemachineTargetYaw = desiredYaw; // Ensure final alignment
+        CinemachineTargetYaw = desiredYaw; // Ensure final alignment
         resetCameraCoroutine = null;
     }
-
     private float ClampAngle(float angle, float min, float max)
     {
         while (angle < -360f) angle += 360f;
@@ -404,7 +421,7 @@ public class CharacterMovements : MonoBehaviour
         Vector3 moveDirection = inputDirection * _speed;
         _controller.Move(moveDirection * Time.deltaTime);
 
-        if (inputDirection.magnitude > 0f)
+        if (inputDirection.magnitude > 0f&&!UI_Manager.Instance.WeaponAttackEvent.isGunActive)
         {
             Quaternion toRotation = Quaternion.LookRotation(inputDirection, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
@@ -418,7 +435,30 @@ public class CharacterMovements : MonoBehaviour
 
         UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, UI_Manager.Instance.IsPlayerInSecondZone);
     }
+    internal Vector3 GetPlayerMovementDirection()
+    {
+        float moveHorizontal;
+        float moveVertical;
 
+        if (isAndroid && joystick != null)
+        {
+            // Use Joystick for Android
+            moveHorizontal = joystick.Horizontal;
+            moveVertical = joystick.Vertical;
+        }
+        else
+        {
+            // Use Keyboard for PC/WebGL
+            moveHorizontal = Input.GetAxis("Horizontal");
+            moveVertical = Input.GetAxis("Vertical");
+        }
+
+        Vector3 cameraForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
+        Vector3 cameraRight = Vector3.Scale(cam.right, new Vector3(1, 0, 1)).normalized;
+
+        Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
+        return inputDirection;
+    }
 
 
     bool isJumping;

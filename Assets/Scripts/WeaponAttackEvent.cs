@@ -69,9 +69,9 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
     {
         if (isGunActive)
         {
-           
+
             ActivatingTheGun();
-          
+
             Aiming();
         }
         else
@@ -79,7 +79,7 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
             DeActivatingTheGun();
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && _canReload&& isGunActive)
+        if (Input.GetKeyDown(KeyCode.R) && _canReload && isGunActive)
         {
             WeaponReload();
         }
@@ -151,64 +151,40 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
             player.rotation = Quaternion.Slerp(player.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         }
     }*/
+    private Vector3 smoothedAimTarget;
+    private Vector3 smoothVelocity = Vector3.zero;
 
-    public float crosshairDistance = 5f;
-    /*    internal void Aiming()
-        {
-            if (IsPointerOverUI()) return;
+    /* internal void Aiming()
+     {
+         if (IsPointerOverUI()) return;
 
-            var player = UI_Manager.Instance.CharacterMovements.transform;
-            Cursor.lockState = CursorLockMode.Confined;
-            Cursor.visible = true;
+         var player = UI_Manager.Instance.CharacterMovements.transform;
+         Cursor.lockState = CursorLockMode.Confined;
+         Cursor.visible = true;
 
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            Transform hitTransform = null;
+         Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+         Ray ray = mainCamera.ScreenPointToRay(screenCenter);
 
-            Debug.DrawRay(ray.origin, ray.direction * maxFireDistance, Color.red, 1f);
+         Debug.DrawRay(ray.origin, ray.direction * maxFireDistance, Color.red, 1f);
 
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, maxFireDistance))
-            {
-                hitTransform = raycastHit.transform;
-                Vector3 aimTarget = raycastHit.point;
+         if (Physics.Raycast(ray, out RaycastHit raycastHit, maxFireDistance))
+         {
+             Vector3 aimTarget = raycastHit.point;
 
-                // Prevent crosshair from coming too close to the player
-                float minAimDistance = 2.0f; // Adjust this value
-                float distanceToPlayer = Vector3.Distance(player.position, aimTarget);
-                if (distanceToPlayer < minAimDistance)
-                {
-                    aimTarget = player.position + (ray.direction * minAimDistance);
-                }
+             // Update Crosshair Position
+             Vector3 screenPoint = mainCamera.WorldToScreenPoint(aimTarget);
+             crossHair.GetComponent<RectTransform>().position = screenPoint;
 
-                // Prevent crosshair from going too high
-                float maxAimHeight = player.position.y + 2f; // Adjust this value
-                if (aimTarget.y > maxAimHeight)
-                {
-                    aimTarget.y = maxAimHeight;
-                }
+             // Use Raycast Hit for Target Position
+             targetForCrossHair.position = aimTarget; // Fix: Use world position directly
 
-                // Apply the clamped position to the crosshair target
-                targetForCrossHair.position = aimTarget;
-
-                // Update crosshair UI position
-                Vector3 screenPoint = mainCamera.WorldToScreenPoint(targetForCrossHair.position);
-                crossHair.GetComponent<RectTransform>().position = screenPoint;
-
-
-                // Player rotation logic
-                Vector3 directionToTarget = new Vector3(aimTarget.x, player.position.y, aimTarget.z);
-
-                // Prevent aiming too far behind the player
-                float angle = Vector3.Angle(player.forward, directionToTarget);
-
-
-
-                // Calculate the target rotation (horizontal only)
-                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-
-                // Smoothly rotate the player towards the target (horizontal rotation only)
-                player.rotation = Quaternion.Slerp(player.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            }
-        }*/
+             // Smoothly Rotate Player Towards the Aim Target
+             Vector3 directionToTarget = (aimTarget - player.position).normalized;
+             directionToTarget.y = player.position.y; // Prevent tilting up/down
+             Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+             player.rotation = Quaternion.Slerp(player.rotation, targetRotation, Time.deltaTime * 10f);
+         }
+     }*/
 
     internal void Aiming()
     {
@@ -218,49 +194,46 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
 
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        Transform hitTransform = null;
+        Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        Ray ray = mainCamera.ScreenPointToRay(screenCenter);
 
         Debug.DrawRay(ray.origin, ray.direction * maxFireDistance, Color.red, 1f);
 
         if (Physics.Raycast(ray, out RaycastHit raycastHit, maxFireDistance))
         {
-            hitTransform = raycastHit.transform;
             Vector3 aimTarget = raycastHit.point;
 
-            // Calculate the direction from the player to the aim target
-            Vector3 directionToTarget = (aimTarget - player.position).normalized;
+            // Get the player's movement direction from CharMovements
+            Vector3 inputDirection = UI_Manager.Instance.CharacterMovements.GetPlayerMovementDirection();
 
-            // Calculate the angle between the player's forward direction and the aim direction
-            float angle = Vector3.Angle(player.forward, directionToTarget);
-
-            // Prevent aiming behind the player (e.g., beyond 90 degrees)
-            if (angle > 90f)
+            // Only apply movement offset if the player is moving
+            if (inputDirection.magnitude > 0)
             {
-                // Option 1: Stop aiming entirely
-                return;
-
-                // Option 2: Clamp the aim direction to the edge of the front hemisphere
-                // directionToTarget = Vector3.RotateTowards(player.forward, directionToTarget, Mathf.Deg2Rad * 90f, 0f);
+                // Offset the aim target based on the player's movement direction
+                float movementOffsetStrength = 0.5f; // Adjust this value to control how much the crosshair moves
+                aimTarget += inputDirection * movementOffsetStrength;
             }
 
-            // Set the crosshair position at a fixed distance from the player
-            targetForCrossHair.position = player.position + directionToTarget * crosshairDistance;
+            // Smooth the aim target movement
+            float smoothTime = 0.1f; // Adjust for smoother/faster transitions
+            smoothedAimTarget = Vector3.SmoothDamp(smoothedAimTarget, aimTarget, ref smoothVelocity, smoothTime);
 
-            // Update crosshair UI position
-            Vector3 screenPoint = mainCamera.WorldToScreenPoint(targetForCrossHair.position);
+            // Update Crosshair Position
+            Vector3 screenPoint = mainCamera.WorldToScreenPoint(smoothedAimTarget);
             crossHair.GetComponent<RectTransform>().position = screenPoint;
 
-            // Player rotation logic
-            Vector3 horizontalDirectionToTarget = new Vector3(directionToTarget.x, 0f, directionToTarget.z).normalized;
+            // Use smoothed aim target for player rotation
+            targetForCrossHair.position = smoothedAimTarget;
 
-            // Calculate the target rotation (horizontal only)
-            Quaternion targetRotation = Quaternion.LookRotation(horizontalDirectionToTarget);
-
-            // Smoothly interpolate the player's rotation towards the target
-            player.rotation = Quaternion.Slerp(player.rotation, targetRotation, Time.deltaTime * rotationDamping);
+            // Smoothly Rotate Player Towards the Aim Target
+            Vector3 directionToTarget = (smoothedAimTarget - player.position).normalized;
+            directionToTarget.y = player.position.y; // Prevent tilting up/down
+            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+            player.rotation = Quaternion.Slerp(player.rotation, targetRotation, Time.deltaTime * 10f);
         }
     }
+
+
     private void DeActivatingTheGun()
     {
         var animator = UI_Manager.Instance.CharacterMovements.animator;
@@ -273,7 +246,7 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
             aim.weight = 0;
             UI_Manager.Instance.CharacterMovements.iscameraReset = false;
             if (!UI_Manager.Instance.isPlayerInField)
-           UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
+                UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
         }
     }
 

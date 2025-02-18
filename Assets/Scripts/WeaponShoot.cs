@@ -97,8 +97,9 @@ public class WeaponShoot : MonoBehaviour
         var player = this.transform;
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
+        Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        Ray ray = cam.ScreenPointToRay(screenCenter);
 
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         Transform hitTransform = null;
 
         Debug.DrawRay(ray.origin, ray.direction * maxFireDistance, Color.red, 1f);
@@ -107,28 +108,13 @@ public class WeaponShoot : MonoBehaviour
         {
             hitTransform = raycastHit.transform;
             Vector3 aimTarget = raycastHit.point;
-
-            // Calculate the direction from the player to the aim target
+            // Calculate direction from player to aim target
             Vector3 directionToTarget = (aimTarget - player.position).normalized;
 
-            // Calculate the angle between the player's forward direction and the aim direction
-            float angle = Vector3.Angle(player.forward, directionToTarget);
-
-            // Prevent aiming behind the player (e.g., beyond 90 degrees)
-            if (angle > 90f)
-            {
-                // Option 1: Stop aiming entirely
-                return;
-
-                // Option 2: Clamp the aim direction to the edge of the front hemisphere
-                // directionToTarget = Vector3.RotateTowards(player.forward, directionToTarget, Mathf.Deg2Rad * 90f, 0f);
-            }
-
-            UI_Manager.Instance.WeaponAttackEvent.targetForCrossHair.position = player.position + directionToTarget * crosshairDistance;
-            // Update crosshair UI position
-            Vector3 screenPoint = cam.WorldToScreenPoint(UI_Manager.Instance.WeaponAttackEvent.targetForCrossHair.position);
+            Vector3 screenPoint = cam.WorldToScreenPoint(aimTarget);
             UI_Manager.Instance.WeaponAttackEvent.crossHair.GetComponent<RectTransform>().position = screenPoint;
-
+            UI_Manager.Instance.WeaponAttackEvent.targetForCrossHair.position = aimTarget;
+            // Update crosshair UI position
 
             if (UI_Manager.Instance.CharacterMovements.animator != null)
             {
