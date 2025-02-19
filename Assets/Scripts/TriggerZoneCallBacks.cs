@@ -51,6 +51,8 @@ public class TriggerZoneCallBacks : MonoBehaviour
                         UI_Manager.Instance.FieldManager.EnterField(fieldID);
                         UI_Manager.Instance.ToInstantiateLandHealthbar(fieldID);
                         UI_Manager.Instance.ShowLandHealthBar(fieldID);
+                        UI_Manager.Instance.ToInstantiateCropTimerbar(fieldID);
+                        UI_Manager.Instance.ShowCropTimer(fieldID);
                     }
 
                     break;
@@ -65,50 +67,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
         }
     }
 
-    /* private void OnTriggerExit(Collider other)
-     {
-         if (other.CompareTag("Player"))
-         {
-             GameManager.Instance.checkPlayerInZone = false;
-             playerInZone = false;
-             UI_Manager.Instance.isPlayerInField = false;
-
-             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
-             switch (zoneType)
-             {
-                 case ZoneType.Field:
-                     GameManager.Instance.HideFieldPopup();
-                     GameManager.Instance.StopCurrentAction();
-                     if (UI_Manager.Instance.FieldManager.fieldSteps.ContainsKey(fieldID))
-                     {
-                         UI_Manager.Instance.FieldManager.fieldSteps[fieldID] = UI_Manager.Instance.oldcurrentStep;
-                     }
-                     else
-                     {
-                         UI_Manager.Instance.FieldManager.fieldSteps.Add(fieldID, UI_Manager.Instance.oldcurrentStep);
-                     }
-                     UI_Manager.Instance.LandHealthBarImg.SetActive(false);
-
-                     // UI_Manager.Instance.oldcurrentStep = currentStep;
-                     break;
-                 case ZoneType.Market:
-                     if (UI_Manager.Instance.ShopManager.isCuttingToolBought && UI_Manager.Instance.ShopManager.isWateringToolBought && UI_Manager.Instance.ShopManager.isCleningToolBought)
-                     {
-
-                         UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
-                     }
-                     else
-                     {
-                         UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(true);
-
-                     }
-                     onPlayerExit?.Invoke(this);
-                     break;
-             }
-         }
-     }
- */
-
+ 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -124,6 +83,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                 case ZoneType.Field:
                     GameManager.Instance.HideFieldPopup();
                     UI_Manager.Instance.HideLandHealthBar();
+                    UI_Manager.Instance.HideCropTimerBar();
                     GameManager.Instance.StopCurrentAction();
                     UI_Manager.Instance.FieldManager.SaveFieldStep(fieldID, UI_Manager.Instance.FieldManager.CurrentStepID);
                     UI_Manager.Instance.LandHealthBarImg.SetActive(false);

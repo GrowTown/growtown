@@ -11,22 +11,39 @@ public class PlantGrowth : MonoBehaviour
     [SerializeField] internal SkinnedMeshRenderer plantMesh;
     internal Timer _initialGrowTimer;
     private Timer _afterwateredGrowTimer;
+    private Timer _afterHarvestWitherTimer;
     [SerializeField] Transform[] tomatoSpawnPoints;
     float cuttingHight = 0.2f;
     private WaveManager waveManager;
     internal bool IsTileWatered;
     public int initialgrowthTime = 1;
     public int AfterWateredgrowthTime = 1;
+    public int AfterHarvestWitherTime = 1;
     float _currentGrowth;
+    float _afterWaterGrowth;
+    float _afterHarvest;
     double _currentTimer;
     internal Coroutine InitialCoroutine;
     internal Coroutine AfterWateredCoroutine;
+    internal Coroutine AfterHarvestCoroutine;
 
 
     public float CurrentGrowth
     {
         get => _currentGrowth;
         set => _currentGrowth = value;
+    }
+
+    public float CurrentGrowthAfterWater
+    {
+        get => _afterWaterGrowth;
+        set => _afterWaterGrowth = value;
+    }
+
+    public float CurrentGrowthAfterHarvest
+    {
+        get => _afterHarvest;
+        set => _afterHarvest = value;
     }
 
     public double CurrentTimer
@@ -62,6 +79,19 @@ public class PlantGrowth : MonoBehaviour
             {
                 plantMesh.SetBlendShapeWeight(0, growthProgress * 100f);
                 CurrentGrowth = growthProgress;
+                if (UI_Manager.Instance.FieldManager.CurrentFieldID == 2)
+                {
+                    GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+
+                }
+                else if (UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
+                {
+                    GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+                }
+                else
+                {
+                    GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+                }
                 if (growthProgress >= 0.5f && !isWateredDuringWithering)
                 {
                     GameManager.Instance.Withering();
@@ -93,6 +123,23 @@ public class PlantGrowth : MonoBehaviour
         {
 
             float growthProgress = Mathf.Lerp(CurrentGrowth, 1.0f, (float)(1.0f - (_afterwateredGrowTimer.secondsLeft / totalGrowthTime)));
+            CurrentGrowthAfterWater = growthProgress;
+            if (UI_Manager.Instance.FieldManager.CurrentFieldID == 2)
+            {
+                GameManager.Instance.iswateredField3 = true;
+                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+
+            }
+            else if (UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
+            {
+                GameManager.Instance.iswateredField2= true;
+                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+            }
+            else
+            {
+                GameManager.Instance.iswateredField1 = true;
+                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+            }
             Debug.Log("AfterWatered :: " + _afterwateredGrowTimer.secondsLeft);
 
             if (!isNotWateredDuringWithering)
@@ -110,10 +157,58 @@ public class PlantGrowth : MonoBehaviour
 
             StopCoroutine(AfterWateredCoroutine);
             Destroy(_afterwateredGrowTimer);
+            StartCoroutine(AfterHarvestPlantWither());
         });
     }
 
+    public IEnumerator AfterHarvestPlantWither()
+    {
 
+        _afterHarvestWitherTimer = this.gameObject.AddComponent<Timer>();
+        var updatedTime = Mathf.Max(0, (int)(AfterHarvestWitherTime * 60)); // Convert to seconds
+        _afterHarvestWitherTimer.Initialize("Plant Wither - After Harvest", DateTime.Now, TimeSpan.FromSeconds(updatedTime));
+        _afterHarvestWitherTimer.StartTimer();
+        float totalGrowthTime = (float)(_afterHarvestWitherTimer.timeToFinish.TotalSeconds);
+        while (_afterHarvestWitherTimer.secondsLeft > 0)
+        {
+
+            float growthProgress = Mathf.Lerp(CurrentGrowthAfterWater, 1.0f, (float)(1.0f - (_afterHarvestWitherTimer.secondsLeft / totalGrowthTime)));
+            CurrentGrowthAfterHarvest = growthProgress;
+            Debug.Log("AfterWatered :: " + _afterHarvestWitherTimer.secondsLeft);
+            if (UI_Manager.Instance.FieldManager.CurrentFieldID == 2)
+            {
+                GameManager.Instance.isHarvestField3 = true;
+                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+
+            }
+            else if (UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
+            {
+                GameManager.Instance.isHarvestField2 = true;
+                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+            }
+            else
+            {
+                GameManager.Instance.isHarvestField1 = true;
+                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+            }
+
+            yield return null;
+        }
+
+        _afterHarvestWitherTimer.TimerFinishedEvent.AddListener(delegate
+        {
+            if (this.gameObject != null)
+            {
+               if(!GameManager.Instance.witheredPlants.Contains(this.gameObject))
+                {
+                    plantMesh.material.color=Color.red;
+                    GameManager.Instance.witheredPlants.Add(this.gameObject);
+                }
+            }
+            StopCoroutine(AfterHarvestCoroutine);
+            Destroy(_afterHarvestWitherTimer);
+        });
+    }
 
 
     /* private void OnMouseDown()
@@ -126,6 +221,7 @@ public class PlantGrowth : MonoBehaviour
         plantMesh.SetBlendShapeWeight(0, 100f);
         Debug.Log("Plant growth complete!");
         SpawnTomatoes();
+      
     }
 
 

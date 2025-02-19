@@ -43,9 +43,12 @@ public class UI_Manager : MonoBehaviour
     public GameObject shotGun;
     public GameObject shotGunSpawnPoint;
     public GameObject inventoryHolder;
+    public GameObject cropTimerPrefab;
+    
 
     [Header("Transforms")]
     public Transform lhHolderTransform;
+    public Transform cropTimerHolder;
 
     [Header("Effects")]
     public GameObject waterEffect;
@@ -139,6 +142,12 @@ public class UI_Manager : MonoBehaviour
     internal bool isTomatoHealthBarspawn = false;
     internal bool isWheatHealthBarspawn = false;
     internal bool isCarrotHealthBarspawn = false;
+    internal bool isTomatoCropTimerBarspawn = false;
+    internal bool isWheatCropTimerBarspawn = false;
+    internal bool isCarrotCropTimerBarspawn = false;
+    internal bool isTomatoCropTimer = false;
+    internal bool isWheatCropTimer = false;
+    internal bool isCarrotCropTimer = false;
     internal bool isButtonsInitialized = false;
 
     internal bool IsPlayerInSecondZone = false;
@@ -390,7 +399,7 @@ public class UI_Manager : MonoBehaviour
         sellInventoryBT.onClick.AddListener(() =>
         {
             // sellPopupPanel.SetActive(true);
-            SellHarvest();
+            ShopManager.SellHarvest();
         });
         wheatSeedBT.onClick.AddListener(() =>
         {
@@ -578,21 +587,70 @@ public class UI_Manager : MonoBehaviour
             lhHolderTransform.GetChild(i).gameObject.SetActive(false);
         }
     }
-
-    internal void SellHarvest()
+    internal void ToInstantiateCropTimerbar(int fieldID)
     {
-        foreach (var item in ListOfHarvestCount)
+        string landName = "";
+        ref bool isSpawned = ref isCarrotCropTimerBarspawn;
+
+        switch (fieldID)
         {
-            GameManager.Instance.CounttheHarvest(item.Value.Count);
+            case 0:
+                landName = "CarrotField";
+                isSpawned = ref isCarrotCropTimerBarspawn;
+                break;
+            case 1:
+                landName = "WheatField";
+                isSpawned = ref isWheatCropTimerBarspawn;
+                break;
+            case 2:
+                landName = "TomatoField";
+                isSpawned = ref isTomatoCropTimerBarspawn;
+                break;
+            default:
+                Debug.LogWarning("Invalid fieldID");
+                return;
         }
 
-        sellPopupPanel.SetActive(false);
-        marketPopUp.SetActive(true);
-        GameManager.Instance.isHarvestCompleted = false;
-        ListOfHarvestCount.Clear();
-        GameManager.Instance.HarvestCount = 0;
-        GrowthStartedPlants.Clear();
+        if (!isSpawned)
+        {
+            isSpawned = true;
+            var go = Instantiate(cropTimerPrefab, cropTimerHolder);
+            /*var rectTransform = go.GetComponent<RectTransform>();
+            rectTransform.position = new Vector3(80, 0, 0);
+            rectTransform.localScale = Vector3.one;
+            rectTransform.anchoredPosition = Vector2.zero;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;*/
+
+            go.GetComponent<CropTimerBar>().CurrentCropName = landName;
+        }
+
     }
+
+    public void ShowCropTimer(int fieldID)
+    {
+        if(fieldID == 0)
+        {
+            cropTimerHolder.GetChild(2).gameObject.SetActive(true);
+        }
+        if(fieldID == 1)
+        {
+            cropTimerHolder.GetChild(1).gameObject.SetActive(true);
+        }
+        else
+        {
+            cropTimerHolder.GetChild(0).gameObject.SetActive(true);
+        }
+    }
+
+    internal void HideCropTimerBar()
+    {
+        for (int i = 0; i < cropTimerHolder.childCount; i++)
+        {
+            cropTimerHolder.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+
     #endregion
 
     public void ActiveAllInventory(float value) 

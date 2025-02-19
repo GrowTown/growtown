@@ -186,6 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconImage: {fileID: 3865050268504673161}
   countText: {fileID: 2561668117959423932}
+  useBT: {fileID: 4079639901852313808}
 --- !u!1 &2526075987029787607
 GameObject:
   m_ObjectHideFlags: 0
@@ -329,7 +330,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: BUY
+  m_text: Use
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 178b4b2f39e6b014991b02d817d08f92, type: 2}
   m_sharedMaterial: {fileID: -4899343900194029809, guid: 178b4b2f39e6b014991b02d817d08f92,
@@ -417,7 +418,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4134992780159780128
 RectTransform:
   m_ObjectHideFlags: 0

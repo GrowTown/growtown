@@ -333,10 +333,7 @@ public class ShopManager : MonoBehaviour
     {
         if (GameManager.Instance.CurrentScore >= 20)
         {
-            GameManager.Instance.CurrentScore -= 20;
-            UI_Manager.Instance.isSuperXpEnable = true;
-            UI_Manager.Instance.SliderControls.gameObject.SetActive(true);
-            UI_Manager.Instance.SliderControls.StartSliderBehavior();
+            GameManager.Instance.CurrentScore -= 20;      
         }
         else
         {
@@ -378,6 +375,21 @@ public class ShopManager : MonoBehaviour
             UI_Manager.Instance.notEnoughMoneyText.text = "You didn't have enough money";
             //Debug.Log("You didn't have enough money");
         }
+    }
+
+    internal void SellHarvest()
+    {
+        foreach (var item in UI_Manager.Instance.ListOfHarvestCount)
+        {
+            GameManager.Instance.CounttheHarvest(item.Value.Count);
+        }
+
+        UI_Manager.Instance.sellPopupPanel.SetActive(false);
+        UI_Manager.Instance.marketPopUp.SetActive(true);
+        GameManager.Instance.isHarvestCompleted = false; 
+        UI_Manager.Instance.ListOfHarvestCount.Clear();
+        GameManager.Instance.HarvestCount = 0;
+        UI_Manager.Instance.GrowthStartedPlants.Clear();
     }
     #endregion
 }

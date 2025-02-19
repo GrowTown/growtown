@@ -41,6 +41,7 @@ public class InventoryManager : MonoBehaviour
                 GameObject newItem = Instantiate(inventoryItemPrefab, parent);
                 InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
                 inventoryItem.Initialize(item, 50);
+                inventoryItem.useBT.gameObject.SetActive(false);
                 inventoryItems.Add(item.Item.itemName, inventoryItem);
             }
             else

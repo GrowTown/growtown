@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class SliderControls : MonoBehaviour
 {
-    public Slider progressBar; // Reference to the Slider
-    //public Button startButton; // Reference to the Button
-    public Image sliderFillImage; // Reference to the Slider's fill area
+    public Slider progressBar; 
+    //public Button startButton; 
+    public Image sliderFillImage; 
     public float decreaseDuration = 10f; 
 
     private Coroutine sliderCoroutine;

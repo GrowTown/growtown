@@ -6,6 +6,7 @@ public class InventoryItem : MonoBehaviour
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI countText;
+    [SerializeField] internal Button useBT;
     int _count = 0;
    public int Itemcount
     {
