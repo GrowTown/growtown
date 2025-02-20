@@ -2,7 +2,6 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-//using System.Numerics;
 using UnityEngine;
 
 public class PlantGrowth : MonoBehaviour
@@ -26,7 +25,6 @@ public class PlantGrowth : MonoBehaviour
     internal Coroutine InitialCoroutine;
     internal Coroutine AfterWateredCoroutine;
     internal Coroutine AfterHarvestCoroutine;
-
 
     public float CurrentGrowth
     {
@@ -155,9 +153,9 @@ public class PlantGrowth : MonoBehaviour
         {
             OnGrowthComplete();
 
-            StopCoroutine(AfterWateredCoroutine);
-            Destroy(_afterwateredGrowTimer);
-            StartCoroutine(AfterHarvestPlantWither());
+           /* StopCoroutine(AfterWateredCoroutine);
+            Destroy(_afterwateredGrowTimer);*/
+           
         });
     }
 
@@ -172,7 +170,7 @@ public class PlantGrowth : MonoBehaviour
         while (_afterHarvestWitherTimer.secondsLeft > 0)
         {
 
-            float growthProgress = Mathf.Lerp(CurrentGrowthAfterWater, 1.0f, (float)(1.0f - (_afterHarvestWitherTimer.secondsLeft / totalGrowthTime)));
+            float growthProgress = Mathf.Lerp(CurrentGrowthAfterWater, 2.0f, (float)(1.0f - (_afterHarvestWitherTimer.secondsLeft / totalGrowthTime)));
             CurrentGrowthAfterHarvest = growthProgress;
             Debug.Log("AfterWatered :: " + _afterHarvestWitherTimer.secondsLeft);
             if (UI_Manager.Instance.FieldManager.CurrentFieldID == 2)
@@ -205,6 +203,7 @@ public class PlantGrowth : MonoBehaviour
                     GameManager.Instance.witheredPlants.Add(this.gameObject);
                 }
             }
+            _afterHarvestWitherTimer.StopTimer(); 
             StopCoroutine(AfterHarvestCoroutine);
             Destroy(_afterHarvestWitherTimer);
         });
@@ -221,7 +220,13 @@ public class PlantGrowth : MonoBehaviour
         plantMesh.SetBlendShapeWeight(0, 100f);
         Debug.Log("Plant growth complete!");
         SpawnTomatoes();
-      
+        if (_afterwateredGrowTimer != null)
+        {
+            _afterwateredGrowTimer.StopTimer();
+            StopCoroutine(AfterWateredCoroutine);
+            Destroy(_afterwateredGrowTimer);
+        }
+       AfterHarvestCoroutine= StartCoroutine("AfterHarvestPlantWither");
     }
 
 

@@ -553,12 +553,12 @@ public class UI_Manager : MonoBehaviour
         {
             isSpawned = true;
             var go = Instantiate(LandHealthBarImg, lhHolderTransform);
-            var rectTransform = go.GetComponent<RectTransform>();
-            rectTransform.position = new Vector3(80, 0, 0);
+           /* var rectTransform = go.GetComponent<RectTransform>();
+            rectTransform.position = new Vector3(144, 0, 0);
             rectTransform.localScale = Vector3.one;
             rectTransform.anchoredPosition = Vector2.zero;
             rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;*/
 
             go.GetComponent<LandHealth>().CurrentLandName = landName;
         }
@@ -615,13 +615,9 @@ public class UI_Manager : MonoBehaviour
         {
             isSpawned = true;
             var go = Instantiate(cropTimerPrefab, cropTimerHolder);
-            /*var rectTransform = go.GetComponent<RectTransform>();
-            rectTransform.position = new Vector3(80, 0, 0);
-            rectTransform.localScale = Vector3.one;
-            rectTransform.anchoredPosition = Vector2.zero;
-            rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;*/
-
+           /* var rectTransform = go.GetComponent<RectTransform>();
+            rectTransform.position = new Vector3(-81, 0, 0);*/
+   
             go.GetComponent<CropTimerBar>().CurrentCropName = landName;
         }
 
