@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
 {
     internal Dictionary<string, InventoryItem> inventoryItems = new Dictionary<string, InventoryItem>();
-
+    Dictionary<string, Action> inventoryButtonActions;
     internal List<Transform> inventoryTransforms = new List<Transform>();
 
     [SerializeField] private Transform seedsParent;
@@ -24,6 +25,15 @@ public class InventoryManager : MonoBehaviour
         inventoryTransforms.Add(toolsParent);
         inventoryTransforms.Add(powerupsParent);
         inventoryTransforms.Add(nftsParent);
+
+        inventoryButtonActions = new Dictionary<string, Action>
+        {
+            
+            { "SuperXp", () =>GameManager.Instance.SuperXpToUse()},
+            { "F", () => Debug.Log("Third Button Pressed") },
+            { "F1", () => Debug.Log("Third Button Pressed") },
+            { "F2", () => Debug.Log("Third Button Pressed") },
+        };
     }
     public void AddToInventory(ShopItemHolder item)
     {
@@ -44,11 +54,23 @@ public class InventoryManager : MonoBehaviour
                 inventoryItem.useBT.gameObject.SetActive(false);
                 inventoryItems.Add(item.Item.itemName, inventoryItem);
             }
+            else if (item.Item.itemName == "SuperXp")
+            {
+                GameObject newItem = Instantiate(inventoryItemPrefab, parent);
+                InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
+                inventoryItem.Initialize(item, 1);
+                inventoryItems.Add(item.Item.itemName, inventoryItem);
+                if (inventoryButtonActions.ContainsKey(item.Item.itemName))
+                {
+                    inventoryItem.useBT.onClick.AddListener(() => inventoryButtonActions[item.Item.itemName]());
+                }
+            }
             else
             {
                 GameObject newItem = Instantiate(inventoryItemPrefab, parent);
                 InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
                 inventoryItem.Initialize(item, 1);
+                inventoryItem.useBT.gameObject.SetActive(false);
                 inventoryItems.Add(item.Item.itemName, inventoryItem);
             }
         }

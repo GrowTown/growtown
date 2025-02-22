@@ -43,14 +43,13 @@ namespace GreetingClient
                 return "Error fetching greeting";
             }
         }
-         public async Task<string> GetPrinicpal()
+        public async Task<string> GetPrinicpal()
         {
             CandidArg arg = CandidArg.FromCandid();
             QueryResponse response = await this.Agent.QueryAsync(this.CanisterId, "getPrincipal", arg);
             CandidArg reply = response.ThrowOrGetReply();
             return reply.ToObjects<string>(this.Converter);
         }
-
 
         public async Task<List<(Principal, List<(ulong, Principal, string, string, string)>)>> GetAllCollections()
         {
@@ -90,5 +89,45 @@ namespace GreetingClient
                 return new List<(Principal, List<(ulong, Principal, string, string, string)>)>();
             }
         }
+ 
+        public async Task<List<(ulong, string, string, string, ulong)>> CountListings()
+        {
+            CandidArg arg = CandidArg.FromCandid();
+            try
+            {
+                Debug.Log("🔄 Calling countlistings...");
+
+                if (this.Agent == null)
+                {
+                    Debug.LogError("❌ Agent is NULL, cannot proceed!");
+                    return new List<(ulong, string, string, string, ulong)>();
+                }
+
+
+                // Call the canister function
+                CandidArg reply = await this.Agent.CallAsync(this.CanisterId, "countlistings", arg);
+
+                // Log raw response
+                Debug.Log($"✅ Raw response from canister: {reply}");
+
+                // Deserialize response
+                var result = reply.ToObjects<(List<(ulong, string, string, string, ulong)>, int, int)>(this.Converter);
+
+                if (result.Item1 == null || result.Item1.Count == 0)
+                {
+                    Debug.LogWarning("⚠️ No listings found. Returning an empty list.");
+                    return new List<(ulong, string, string, string, ulong)>();
+                }
+
+                Debug.Log($"✅ Successfully retrieved {result.Item1.Count} NFT listings.");
+                return result.Item1;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"❌ Failed to fetch NFT listings: {e.Message}");
+                return new List<(ulong, string, string, string, ulong)>();
+            }
+        }
+
     }
 }

@@ -469,7 +469,7 @@ public class GameManager : MonoBehaviour
         }
         while (_timer.secondsLeft > 0)
         {
-            Debug.Log("Time Left :: " + _timer.secondsLeft);
+            Debug.Log("Time Left :: " + _timer.secondsLeft);   
             yield return null;
         }
         if (CurrentWaterCount < 500)
@@ -586,7 +586,7 @@ public class GameManager : MonoBehaviour
     internal IEnumerator ShowBoughtLand(string landname)
     {
         var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
-        UI_Manager.Instance.marketPopUp.SetActive(false);
+        UI_Manager.Instance.marketPopUpPanel.SetActive(false);
         if (landname == "wheat")
         {
             Cam.SwitchToCam(3);
@@ -602,7 +602,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(10f);
         //Cam.virtualCams[3].LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
         isShowingnewLand = false;
-        UI_Manager.Instance.marketPopUp.SetActive(true);
+        UI_Manager.Instance.marketPopUpPanel.SetActive(true);
         Cam.SwitchToCam(2);
         Cam.activeCamera.LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
 

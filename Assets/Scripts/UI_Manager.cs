@@ -10,6 +10,7 @@ public class UI_Manager : MonoBehaviour
 
     [Header("GameObjects")]
     public GameObject marketPopUp;
+    public GameObject marketPopUpPanel;
     public GameObject inventoryPanel;
     public GameObject[] PopupImg;
     public GameObject sickleWeapon;

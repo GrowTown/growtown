@@ -117,6 +117,7 @@ namespace IC.GameKit
                 var agent = new HttpAgent(DelegationIdentity);
                 var canisterId = Principal.FromText(greetBackendCanister);
                 var client = new GreetingClient.GreetingClient(agent, canisterId);
+                API_Manager.Instance.Initialize(client);
 
                 DebugWithCounter("🔄 Fetching user principal from Greet()...");
                 var getPrincipalTask = client.GetPrinicpal();
