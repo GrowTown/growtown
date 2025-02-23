@@ -304,6 +304,8 @@ public class PlantGrowth : MonoBehaviour
                         {
                            
                             UI_Manager.Instance.GrownPlantsToCut.Remove(UI_Manager.Instance.FieldManager.CurrentFieldID);
+                            GameManager.Instance.ReSetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID);
+                             
                         }
                         Destroy(this.gameObject); // Destroy the GameObject
 

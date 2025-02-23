@@ -275,7 +275,7 @@ public class GameManager : MonoBehaviour
 
                         pg.AfterWateredCoroutine = StartCoroutine(pg.AfterWateredTileGrowth(pg.CurrentTimer));
                         iswateringStarted = true;
-                        
+
                         if (!UI_Manager.Instance.GrowthStartedPlants.Contains(item))
                         {
                             UI_Manager.Instance.GrowthStartedPlants.Add(item);
@@ -469,7 +469,7 @@ public class GameManager : MonoBehaviour
         }
         while (_timer.secondsLeft > 0)
         {
-            Debug.Log("Time Left :: " + _timer.secondsLeft);   
+            Debug.Log("Time Left :: " + _timer.secondsLeft);
             yield return null;
         }
         if (CurrentWaterCount < 500)
@@ -612,7 +612,7 @@ public class GameManager : MonoBehaviour
     {
         if (fieldID == 0)
         {
-            UI_Manager.Instance.lhHolderTransform.GetChild(3).gameObject.GetComponent<LandHealth>().LandHealthDecrease(deduct);
+            UI_Manager.Instance.lhHolderTransform.GetChild(2).gameObject.GetComponent<LandHealth>().LandHealthDecrease(deduct);
         }
         else if (fieldID == 1)
         {
@@ -684,18 +684,18 @@ public class GameManager : MonoBehaviour
                 UI_Manager.Instance.isWheatCropTimer = true;
 
             }
-            else if(!iswateredField2)
+            else if (!iswateredField2)
             {
                 UI_Manager.Instance.cropTimerHolder.GetChild(1).GetComponent<CropTimerBar>().GetPlant(plant, "second");
-                iswateredField2=true;
-                
+                iswateredField2 = true;
+
             }
             else if (!isHarvestField2)
             {
                 UI_Manager.Instance.cropTimerHolder.GetChild(1).GetComponent<CropTimerBar>().GetPlant(plant, "third");
                 isHarvestField2 = true;
             }
-            
+
         }
         else
         {
@@ -707,7 +707,7 @@ public class GameManager : MonoBehaviour
             }
             else if (iswateredField3)
             {
-                UI_Manager.Instance.cropTimerHolder.GetChild(0).GetComponent<CropTimerBar>().GetPlant(plant,"second");
+                UI_Manager.Instance.cropTimerHolder.GetChild(0).GetComponent<CropTimerBar>().GetPlant(plant, "second");
                 iswateredField3 = false;
             }
             else if (isHarvestField3)
@@ -717,5 +717,26 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public void ReSetCropTimerBar(int fieldID)
+    {
+        if (fieldID == 0)
+        {
+            UI_Manager.Instance.cropTimerHolder.GetChild(2).GetComponent<CropTimerBar>().UpdateHealthBar(0);
+            UI_Manager.Instance.isCarrotCropTimer= false;
+        }
+        else if (fieldID == 1)
+        {
+            UI_Manager.Instance.cropTimerHolder.GetChild(1).GetComponent<CropTimerBar>().UpdateHealthBar(0);
+            UI_Manager.Instance.isWheatCropTimer= false;
+
+        }
+        else
+        {
+            UI_Manager.Instance.cropTimerHolder.GetChild(0).GetComponent<CropTimerBar>().UpdateHealthBar(0);
+            UI_Manager.Instance.isTomatoCropTimer = false;
+    
+        }
+    }
     #endregion
+
 }
