@@ -379,46 +379,61 @@ public class UI_Manager : MonoBehaviour
         pasticideNotBoughtBT.onClick.AddListener(() =>
         {
             HideFieldPopup();
+            AudioManager.Instance.PlaySFX();
             GameManager.Instance.StopCurrentAction();
         });
-        pasticideNormalHealthUseBT.onClick.AddListener(() => {
+        pasticideNormalHealthUseBT.onClick.AddListener(() => 
+        {
+            AudioManager.Instance.PlaySFX();
             GameManager.Instance.ToIncreaseLandHealthUsePasticide(UI_Manager.Instance.FieldManager.CurrentFieldID, 100);
             pasticidePopUpPanel.SetActive(false);
         });
-        pasticideBuyBT.onClick.AddListener(() => { ShopManager.ToBuyPasticide(); });
+        pasticideBuyBT.onClick.AddListener(() => { AudioManager.Instance.PlaySFX(); ShopManager.ToBuyPasticide(); });
+
         pasticideUseBT.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX();
             GameManager.Instance.ToIncreaseLandHealthUsePasticide(UI_Manager.Instance.FieldManager.CurrentFieldID,100);
             pasticidePopUpPanel.SetActive(false);
         });
+
         buyInventoryBT.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX();
             marketPopUp.SetActive(true);
             sellPopupPanel.SetActive(false);
         });
+
         sellInventoryBT.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX();
             // sellPopupPanel.SetActive(true);
             ShopManager.SellHarvest();
         });
+
         wheatSeedBT.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX();
             ShopManager.ToBuyWheat();
         });
+
         tomatoSeedBT.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX();
             ShopManager.ToBuyTomato();
             seedBought = true;
         });
-        strawberriesSeedBT.onClick.AddListener(() => { ShopManager.ToBuyStrawberries(); });
-        starterPackBuyBT.onClick.AddListener(() => { GameManager.Instance.StartPackToBuy(); });
+        strawberriesSeedBT.onClick.AddListener(() => { AudioManager.Instance.PlaySFX(); ShopManager.ToBuyStrawberries(); });
+        starterPackBuyBT.onClick.AddListener(() => { AudioManager.Instance.PlaySFX(); GameManager.Instance.StartPackToBuy(); });
       
         wheatlandBuyBT.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX();
             ShopManager.ToBuyWheatField();
         });
         carrotlandBuyBT.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX();
             ShopManager.ToBuyCarrotField();
         });
         
