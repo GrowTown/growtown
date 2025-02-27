@@ -15,6 +15,7 @@ public class Tab_Button : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         tabGroup.OnTabSelected(this);
+        AudioManager.Instance.PlaySFX();
     }
 
     public void ScaleButton(float targetScale, float duration)

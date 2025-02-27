@@ -1,3 +1,4 @@
+using CandyCoded.HapticFeedback;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
@@ -15,6 +16,8 @@ public class AudioManager : MonoBehaviour
     [Header("Volume Settings")]
     [Range(0, 1)] public float musicVolume = 1f;
     [Range(0, 1)] public float sfxVolume = 1f;
+
+    public HapticFeedbackController hapticFeedbackController;
 
     private const string MusicVolumeKey = "MusicVolume";
     private const string SFXVolumeKey = "SFXVolume";

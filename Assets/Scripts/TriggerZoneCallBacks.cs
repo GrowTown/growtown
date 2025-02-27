@@ -37,6 +37,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                         {
                             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
                             UI_Manager.Instance.ActiveAllInventory(-232);
+                            AudioManager.Instance.hapticFeedbackController.LightFeedback();
                         }
                         else if (fieldID == 1)
                         {
@@ -61,6 +62,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     if (!GameManager.Instance.isShowingnewLand)
                     {
                         other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(2);
+                        AudioManager.Instance.hapticFeedbackController.LightFeedback();
                     }
                     break;
             }

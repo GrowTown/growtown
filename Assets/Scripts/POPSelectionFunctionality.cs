@@ -46,6 +46,7 @@ public class POPSelectionFunctionality : MonoBehaviour, IPointerClickHandler
 
     void Check()
     {
+        AudioManager.Instance.PlaySFX();
         if (_hasBeenClicked) return;
         onClick?.Invoke(this);
         _hasBeenClicked = true;

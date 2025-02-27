@@ -31,6 +31,7 @@ public class BulletProjectile : MonoBehaviour
             GameObject temp = other.transform.parent.gameObject;
             Destroy(temp.transform.parent.gameObject);
             Instantiate(vfxHitGreen, transform.position, Quaternion.identity);
+            AudioManager.Instance.hapticFeedbackController.LightFeedback();
             Destroy(gameObject, lifetime);
 
         }
