@@ -146,7 +146,7 @@ namespace IC.GameKit
                     CandidTypedValue.Text(uuid)
                 );
 
-                var createUserTask = agent.CallAndWaitAsync(canisterId, "create_user", arg);
+                var createUserTask = agent.CallAsynchronousAndWaitAsync(canisterId, "create_user", arg);
                 if (await Task.WhenAny(createUserTask, Task.Delay(5000)) != createUserTask)
                 {
                     DebugWithCounter("❌ Timeout while creating user.");

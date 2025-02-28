@@ -45,7 +45,7 @@ public class UI_Manager : MonoBehaviour
     public GameObject shotGunSpawnPoint;
     public GameObject inventoryHolder;
     public GameObject cropTimerPrefab;
-    
+
 
     [Header("Transforms")]
     public Transform lhHolderTransform;
@@ -128,7 +128,8 @@ public class UI_Manager : MonoBehaviour
     private InventoryManager _inventoryManager;
     [SerializeField]
     private UIAnimationM _uIAnimationM;
-
+    [SerializeField]
+    private LocalSaveManager _localSaveManager;
     private PlayerLevel _playerLevel;
 
     internal int oldcurrentStep = -1;
@@ -171,6 +172,11 @@ public class UI_Manager : MonoBehaviour
 
     #region Properties
 
+    public LocalSaveManager LocalSaveManager
+    {
+        get => _localSaveManager;
+        set => _localSaveManager = value;
+    }
     public UIAnimationM UIAnimationM
     {
         get => _uIAnimationM;
@@ -178,8 +184,8 @@ public class UI_Manager : MonoBehaviour
     }
     public InventoryManager InventoryManager
     {
-        get=>_inventoryManager; 
-        set=>_inventoryManager = value;
+        get => _inventoryManager;
+        set => _inventoryManager = value;
     }
     public TabGroup TabGroup
     {
@@ -276,14 +282,14 @@ public class UI_Manager : MonoBehaviour
     {
         var Cam = CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
         Cam.DisAbaleAllCamera();
-        starterPackInfoPopUpPanel.SetActive(true);
-        //  score.text = scoreIn.ToString();
-        GameManager.Instance.CurrentEnergyCount = 500;
-        GameManager.Instance.CurrentWaterCount = 500;
-        GameManager.Instance.CurrentScore = 500;
-        energyText.text = GameManager.Instance.CurrentEnergyCount.ToString();
-        waterText.text = GameManager.Instance.CurrentWaterCount.ToString();
-        playerXpTxt.text = PlayerXp.CurrentPlayerXpPoints.ToString();
+        if (!GameManager.Instance.isStarterPackBought)
+        {
+            starterPackInfoPopUpPanel.SetActive(true);
+            //  score.text = scoreIn.ToString();
+            GameManager.Instance.CurrentEnergyCount = 500;
+            GameManager.Instance.CurrentWaterCount = 500;
+            GameManager.Instance.CurrentScore = 500;
+        }
         CallBackEvents();
 
     }
@@ -308,22 +314,22 @@ public class UI_Manager : MonoBehaviour
     void MakeButtonsInteractable()
     {
 
-            if (GameManager.Instance.CurrentEnergyCount == 500)
-            {
-                energyBuyBT.interactable = false;
-            }
-            else
-            {
-                energyBuyBT.interactable = true;
-            }
-            if (GameManager.Instance.CurrentWaterCount == 500)
-            {
-                waterBuyBT.interactable = false;
-            }
-            else
-            {
-                waterBuyBT.interactable = true;
-            }
+        if (GameManager.Instance.CurrentEnergyCount == 500)
+        {
+            energyBuyBT.interactable = false;
+        }
+        else
+        {
+            energyBuyBT.interactable = true;
+        }
+        if (GameManager.Instance.CurrentWaterCount == 500)
+        {
+            waterBuyBT.interactable = false;
+        }
+        else
+        {
+            waterBuyBT.interactable = true;
+        }
         if (isButtonsInitialized)
         {
             if (SliderControls.gameObject.activeSelf)
@@ -382,14 +388,15 @@ public class UI_Manager : MonoBehaviour
             HideFieldPopup();
             GameManager.Instance.StopCurrentAction();
         });
-        pasticideNormalHealthUseBT.onClick.AddListener(() => {
+        pasticideNormalHealthUseBT.onClick.AddListener(() =>
+        {
             GameManager.Instance.ToIncreaseLandHealthUsePasticide(UI_Manager.Instance.FieldManager.CurrentFieldID, 100);
             pasticidePopUpPanel.SetActive(false);
         });
         pasticideBuyBT.onClick.AddListener(() => { ShopManager.ToBuyPasticide(); });
         pasticideUseBT.onClick.AddListener(() =>
         {
-            GameManager.Instance.ToIncreaseLandHealthUsePasticide(UI_Manager.Instance.FieldManager.CurrentFieldID,100);
+            GameManager.Instance.ToIncreaseLandHealthUsePasticide(UI_Manager.Instance.FieldManager.CurrentFieldID, 100);
             pasticidePopUpPanel.SetActive(false);
         });
         buyInventoryBT.onClick.AddListener(() =>
@@ -413,7 +420,7 @@ public class UI_Manager : MonoBehaviour
         });
         strawberriesSeedBT.onClick.AddListener(() => { ShopManager.ToBuyStrawberries(); });
         starterPackBuyBT.onClick.AddListener(() => { GameManager.Instance.StartPackToBuy(); });
-      
+
         wheatlandBuyBT.onClick.AddListener(() =>
         {
             ShopManager.ToBuyWheatField();
@@ -422,7 +429,7 @@ public class UI_Manager : MonoBehaviour
         {
             ShopManager.ToBuyCarrotField();
         });
-        
+
     }
 
     POPSelectionFunctionality currentSelectedPopUp;
@@ -525,8 +532,8 @@ public class UI_Manager : MonoBehaviour
             PanelManager.HideAllPanels();
         }
     }
-  
-   internal void ToInstantiateLandHealthbar(int fieldID)
+
+    internal void ToInstantiateLandHealthbar(int fieldID)
     {
         string landName = "";
         ref bool isSpawned = ref isCarrotHealthBarspawn;
@@ -554,12 +561,12 @@ public class UI_Manager : MonoBehaviour
         {
             isSpawned = true;
             var go = Instantiate(LandHealthBarImg, lhHolderTransform);
-           /* var rectTransform = go.GetComponent<RectTransform>();
-            rectTransform.position = new Vector3(144, 0, 0);
-            rectTransform.localScale = Vector3.one;
-            rectTransform.anchoredPosition = Vector2.zero;
-            rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;*/
+            /* var rectTransform = go.GetComponent<RectTransform>();
+             rectTransform.position = new Vector3(144, 0, 0);
+             rectTransform.localScale = Vector3.one;
+             rectTransform.anchoredPosition = Vector2.zero;
+             rectTransform.offsetMin = Vector2.zero;
+             rectTransform.offsetMax = Vector2.zero;*/
 
             go.GetComponent<LandHealth>().CurrentLandName = landName;
         }
@@ -616,9 +623,9 @@ public class UI_Manager : MonoBehaviour
         {
             isSpawned = true;
             var go = Instantiate(cropTimerPrefab, cropTimerHolder);
-           /* var rectTransform = go.GetComponent<RectTransform>();
-            rectTransform.position = new Vector3(-81, 0, 0);*/
-   
+            /* var rectTransform = go.GetComponent<RectTransform>();
+             rectTransform.position = new Vector3(-81, 0, 0);*/
+
             go.GetComponent<CropTimerBar>().CurrentCropName = landName;
         }
 
@@ -626,11 +633,11 @@ public class UI_Manager : MonoBehaviour
 
     public void ShowCropTimer(int fieldID)
     {
-        if(fieldID == 0)
+        if (fieldID == 0)
         {
             cropTimerHolder.GetChild(2).gameObject.SetActive(true);
         }
-        if(fieldID == 1)
+        if (fieldID == 1)
         {
             cropTimerHolder.GetChild(1).gameObject.SetActive(true);
         }
@@ -650,7 +657,7 @@ public class UI_Manager : MonoBehaviour
 
     #endregion
 
-    public void ActiveAllInventory(float value) 
+    public void ActiveAllInventory(float value)
     {
         RectTransform inventory = inventoryHolder.GetComponent<RectTransform>();
         Vector2 targetPosition = new Vector2(value, -70);

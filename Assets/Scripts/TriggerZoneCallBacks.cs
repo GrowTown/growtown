@@ -92,7 +92,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
 
                 case ZoneType.Market:
                     
-                    if (UI_Manager.Instance.ShopManager.isCuttingToolBought &&
+                  /*  if (UI_Manager.Instance.ShopManager.isCuttingToolBought &&
                         UI_Manager.Instance.ShopManager.isWateringToolBought &&
                         UI_Manager.Instance.ShopManager.isCleningToolBought)
                     {
@@ -101,7 +101,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     else
                     {
                         UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(true);
-                    }
+                    }*/
                     onPlayerExit?.Invoke(this);
                     break;
             }

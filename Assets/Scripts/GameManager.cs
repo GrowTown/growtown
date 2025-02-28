@@ -1,4 +1,5 @@
 using DG.Tweening;
+using DG.Tweening.Core.Easing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ public class GameManager : MonoBehaviour
     internal int spawnedTomatoesCount;
     internal bool checkPlayerInZone;
     internal bool checkForEnoughSeeds;
+    internal bool isStarterPackBought;
     internal int HarvestCount;
 
     int _currentFieldID;
@@ -31,6 +33,7 @@ public class GameManager : MonoBehaviour
     PlayerAction _currentAction;
     bool _timerStartAfterPlants;
     Timer _timer;
+    internal Dictionary<string, int> Inventory = new Dictionary<string, int>();
 
 
     #region Properties
@@ -150,11 +153,62 @@ public class GameManager : MonoBehaviour
             //DontDestroyOnLoad(gameObject);
         }
     }
+    private void Start()
+    {
+        LoadPlayerData();
+        if (isStarterPackBought)
+        {
+            ActivatingTheJoystick();
+        }
+
+    }
 
     bool iscleanigStarted;
-
+    private void OnApplicationQuit()
+    {
+        SavePlayerData();
+    }
     #region Methods
 
+    public void AddItemToInventory(string itemName, int count)
+    {
+        if (Inventory.ContainsKey(itemName))
+            Inventory[itemName] += count;
+        else
+            Inventory[itemName] = count;
+
+        Debug.Log($"{itemName} count is now {Inventory[itemName]}");
+    }
+    private void SavePlayerData()
+    {
+        PlayerData data = new PlayerData
+        {
+            XP = UI_Manager.Instance.PlayerXp.CurrentPlayerXpPoints,
+            Energy = CurrentEnergyCount,
+            Water = CurrentWaterCount,
+            Score = CurrentScore,
+            Level = UI_Manager.Instance.PlayerLevel.CurrentPlayerLevel,
+            StartPackBought = isStarterPackBought
+
+
+        };
+
+        UI_Manager.Instance.LocalSaveManager.SavePlayerData(data);
+        Debug.Log("Data saved on quit!");
+    }
+
+    private void LoadPlayerData()
+    {
+        PlayerData data = UI_Manager.Instance.LocalSaveManager.LoadPlayerData();
+        UI_Manager.Instance.PlayerXp.CurrentPlayerXpPoints=data.XP;
+        CurrentEnergyCount = data.Energy;
+        CurrentWaterCount = data.Water;
+        CurrentScore = data.Score;
+        isStarterPackBought = data.StartPackBought;
+        UI_Manager.Instance.PlayerLevel.CurrentPlayerLevel = data.Level;
+
+        Debug.Log($"Loaded data - Energy: {CurrentEnergyCount}, Water: {CurrentWaterCount}, Score: {CurrentScore}, Level: {UI_Manager.Instance.PlayerLevel.CurrentPlayerLevel }");
+    }
     public void StartActionAnimation(PlayerAction action)
     {
         switch (action)
@@ -373,9 +427,7 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.ShopManager.ToBuyCuttingTool();
         UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
 
-        RectTransform joystickRect = UI_Manager.Instance.CharacterMovements.joystick.GetComponent<RectTransform>();
-        Vector2 targetPosition = new Vector2(250, 259);
-        JoystickMoveFromLeft(joystickRect, targetPosition, 1.5f);
+        ActivatingTheJoystick();
 
         foreach (var item in startPackName)
         {
@@ -388,7 +440,15 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.sickleWeaponBT.interactable = false;
         UI_Manager.Instance.wateringWeaponBT.interactable = false;
         UI_Manager.Instance.cleaningWeaponBT.interactable = false;
+        isStarterPackBought = true;
 
+    }
+
+    void ActivatingTheJoystick()
+    {
+        RectTransform joystickRect = UI_Manager.Instance.CharacterMovements.joystick.GetComponent<RectTransform>();
+        Vector2 targetPosition = new Vector2(250, 259);
+        JoystickMoveFromLeft(joystickRect, targetPosition, 1.5f);
     }
 
     public void JoystickMoveFromLeft(RectTransform target, Vector2 destination, float duration)
@@ -562,7 +622,7 @@ public class GameManager : MonoBehaviour
           }
           return true;
       }*/
-    public void ToIncreaseLandHealthUsePasticide(int fieldID, int deduct)
+    public void ToIncreaseLandHealthUsePasticide(int fieldID,  int deduct)
     {
 
         if (fieldID == 0)
@@ -608,7 +668,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    internal void ToDecreaseTHElandHealth(int fieldID, int deduct)
+    internal void ToDecreaseTHElandHealth(int fieldID, int deduct) 
     {
         if (fieldID == 0)
         {
@@ -623,7 +683,7 @@ public class GameManager : MonoBehaviour
             UI_Manager.Instance.lhHolderTransform.GetChild(0).gameObject.GetComponent<LandHealth>().LandHealthDecrease(deduct);
         }
     }
-
+     
     public void PesticideboughtCount(int fieldID, bool check)
     {
         if (fieldID == 0)
