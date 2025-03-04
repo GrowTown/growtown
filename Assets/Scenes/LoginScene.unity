@@ -434,7 +434,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   exitButton: {fileID: 1588324257}
   sceneToLoad: GrowTownGameScene
-  greetFrontend: https://7kl52-gyaaa-aaaac-ahmgq-cai.icp0.io/
+  greetFrontend: https://s6dkc-nyaaa-aaaac-albta-cai.icp0.io
   greetBackendCanister: 7nk3o-laaaa-aaaac-ahmga-cai
 --- !u!4 &1316279678
 Transform:

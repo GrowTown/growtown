@@ -10,19 +10,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-
 public class API_Manager : MonoBehaviour
 {
-
     public static API_Manager Instance { get; private set; }
 
     private GreetingClient.GreetingClient? _greetingClient;
-    string _currentuUserprincipalStr;
+    private string _currentUserPrincipal = "";
+    private bool _isInitialized = false; // Track initialization state
 
-    private Dictionary<string, List<NFTCollection>> _collectionsDict = new Dictionary<string, List<NFTCollection>>();
-    private Dictionary<string, List<NFTCollection>> _userCollections = new Dictionary<string, List<NFTCollection>>();
-    private Dictionary<string, List<NFTListing>> _marketplaceListings = new Dictionary<string, List<NFTListing>>();
-    private string _currentUserPrincipal;
+    private Dictionary<string, List<NFTCollection>> _collectionsDict = new();
+    private Dictionary<string, List<NFTCollection>> _userCollections = new();
+    private Dictionary<string, List<NFTListing>> _marketplaceListings = new();
 
     public event Action<List<NFTCollection>>? OnCollectionsUpdated;
     public event Action<List<NFTListing>>? OnUserNFTListingsUpdated;
@@ -46,33 +44,28 @@ public class API_Manager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Initializes API_Manager with the ICP agent and target canister.
-    /// This must be called before making any API requests.
-    /// </summary>
     public void Initialize(GreetingClient.GreetingClient greetingClient)
     {
         _greetingClient = greetingClient;
+        _isInitialized = true;
+        Debug.Log("✅ API_Manager initialized successfully with greeting client.");
     }
-    private void Start()
+
+    private async void Start()
     {
-        InitializeNFTData();
+        // Removed InitializeNFTData() from Start to prevent premature calls
+        Debug.Log("🔄 API_Manager starting, waiting for initialization...");
     }
 
     private async void InitializeNFTData()
     {
         await FetchCurrentUserCollections();
-        //await FetchUserNFTListings();
+        await FetchUserNFTListings();
     }
 
-
-    /// <summary>
-    /// Fetches all NFT collections from the backend.
-    /// Stores the results in a dictionary for fast lookups.
-    /// </summary>
     public async Task FetchAllCollections()
     {
-        if (_greetingClient == null)
+        if (!_isInitialized || _greetingClient == null)
         {
             Debug.LogError("❌ API_Manager is not initialized. Call Initialize() first.");
             return;
@@ -81,7 +74,7 @@ public class API_Manager : MonoBehaviour
         Debug.Log("🔄 Fetching all NFT Collections...");
         var rawCollections = await _greetingClient.GetAllCollections();
 
-        _collectionsDict.Clear(); // Clear existing data before reloading
+        _collectionsDict.Clear();
 
         foreach (var (userPrincipal, nftList) in rawCollections)
         {
@@ -112,20 +105,14 @@ public class API_Manager : MonoBehaviour
         OnCollectionsUpdated?.Invoke(GetAllCollectionsList());
     }
 
-    /// <summary>
-    /// Returns all NFT collections as a flat list.
-    /// </summary>
     public List<NFTCollection> GetAllCollectionsList()
     {
         return _collectionsDict.Values.SelectMany(c => c).ToList();
     }
 
-    /// <summary>
-    /// Fetches the current user's NFTs and updates the UI.
-    /// </summary>
     public async Task FetchCurrentUserCollections()
     {
-        if (_greetingClient == null)
+        if (!_isInitialized || _greetingClient == null)
         {
             Debug.LogError("❌ API_Manager is not initialized. Call Initialize() first.");
             return;
@@ -133,11 +120,9 @@ public class API_Manager : MonoBehaviour
 
         Debug.Log("🔄 Fetching Current User's NFT Collections...");
 
-        // Get the Current User's Principal ID
-        CurrentUserPrincipal = await _greetingClient.GetPrinicpal();
+        CurrentUserPrincipal = await _greetingClient.GetPrincipal();
         Debug.Log($"🔹 Current User Principal: {CurrentUserPrincipal}");
 
-        // Fetch all collections
         var rawCollections = await _greetingClient.GetAllCollections();
 
         _userCollections.Clear();
@@ -163,24 +148,27 @@ public class API_Manager : MonoBehaviour
             }
         }
 
-        if (_userCollections.ContainsKey(CurrentUserPrincipal))
+        if (_userCollections.TryGetValue(CurrentUserPrincipal, out var userCollections))
         {
-            Debug.Log($"✅ Found {_userCollections[CurrentUserPrincipal].Count} collections for the current user.");
-            OnCollectionsUpdated?.Invoke(_userCollections[CurrentUserPrincipal]); // Update UI
+            Debug.Log($"✅ Found {userCollections.Count} collections for the current user.");
+            OnCollectionsUpdated?.Invoke(userCollections);
         }
         else
         {
             Debug.LogWarning("⚠️ No NFT collections found for the current user.");
-            OnCollectionsUpdated?.Invoke(new List<NFTCollection>()); // Empty UI
+            OnCollectionsUpdated?.Invoke(new List<NFTCollection>());
         }
     }
 
-   /* /// <summary>
-    /// Fetches all NFTs from the current user's collections.
-    /// </summary>
     public async Task FetchUserNFTListings()
     {
-        if (string.IsNullOrEmpty(CurrentUserPrincipal) || !_userCollections.ContainsKey(CurrentUserPrincipal))
+        if (!_isInitialized || _greetingClient == null)
+        {
+            Debug.LogError("❌ API_Manager is not initialized. Call Initialize() first.");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(CurrentUserPrincipal) || !_userCollections.TryGetValue(CurrentUserPrincipal, out var collections))
         {
             Debug.LogWarning("⚠ No collections found for the user. Fetch collections first.");
             return;
@@ -188,142 +176,60 @@ public class API_Manager : MonoBehaviour
 
         Debug.Log("🔄 Fetching NFT listings for user's collections...");
 
-        List<NFTListing> allUserNFTs = new List<NFTListing>();
+        List<NFTListing> allUserNFTs = new();
 
-        foreach (var collection in _userCollections[CurrentUserPrincipal])
+        foreach (var collection in collections)
         {
-            string collectionCanisterId = collection.CanisterId;
+            Principal collectionCanisterId = Principal.FromText(collection.CanisterId);
+            ulong chunkSize = 10UL;
+            ulong pageNo = 0UL;
 
-            // Fetch NFT listings for each collection
-            var result = await _greetingClient.CountListings();
+            var (listings, currentPage, totalPages) = await _greetingClient.CountListings(collectionCanisterId, chunkSize, pageNo);
 
-            if (result.IsOk)
+            foreach (var (tokenIndex, tokenIdentifier, listing, metadata, price) in listings)
             {
-                foreach (var (tokenIndex, tokenIdentifier, listing, metadata, price) in result.Ok.data)
+                NFTListing nftListing = new NFTListing
                 {
-                    NFTListing nftListing = new NFTListing
-                    {
-                        TokenIndex = tokenIndex,
-                        TokenIdentifier = tokenIdentifier,
-                        ListingDetails = listing,
-                        Metadata = metadata,
-                        Price = price
-                    };
+                    TokenIndex = tokenIndex,
+                    TokenIdentifier = tokenIdentifier,
+                    ListingDetails = listing.ToString() ?? "Unknown",
+                    Metadata = metadata,
+                    Price = price
+                };
 
-                    allUserNFTs.Add(nftListing);
-                }
+                allUserNFTs.Add(nftListing);
             }
-            else
-            {
-                Debug.LogWarning($"⚠️ No NFTs found in collection: {collectionCanisterId}");
-            }
+
+            Debug.Log($"✅ Fetched {listings.Count} listings from collection {collection.Name}, page {currentPage}/{totalPages}");
         }
 
         Debug.Log($"✅ Loaded {allUserNFTs.Count} NFTs for the current user.");
-        OnUserNFTListingsUpdated?.Invoke(allUserNFTs); // Update UI
-    }*/
-
-    /// <summary>
-    /// Returns NFT collections owned by a specific user (Principal).
-    /// </summary>
-    public List<NFTCollection> GetCollectionsByUser(string principal)
-    {
-        if (_collectionsDict.TryGetValue(principal, out var userCollections))
-        {
-            return userCollections;
-        }
-        return new List<NFTCollection>();
+        OnUserNFTListingsUpdated?.Invoke(allUserNFTs);
     }
 
-
+    public List<NFTCollection> GetCollectionsByUser(string principal)
+    {
+        return _collectionsDict.TryGetValue(principal, out var userCollections) 
+            ? userCollections 
+            : new List<NFTCollection>();
+    }
 }
 
-/// <summary>
-/// Represents an NFT collection.
-/// </summary>
 public class NFTCollection
 {
     public string OwnerPrincipal { get; set; } = "";
-    public ulong Timestamp { get; set; }
+    public long Timestamp { get; set; }
     public string CanisterId { get; set; } = "";
     public string Name { get; set; } = "";
     public string Symbol { get; set; } = "";
     public string Metadata { get; set; } = "";
 }
 
-/// <summary>
-/// Represents for NFT Listings.
-/// </summary>
 public class NFTListing
 {
-    public ulong TokenIndex;
-    public string TokenIdentifier;
-    public string ListingDetails;
-    public string Metadata;
-    public ulong Price;
+    public uint TokenIndex { get; set; }
+    public string TokenIdentifier { get; set; } = "";
+    public string ListingDetails { get; set; } = "";
+    public string Metadata { get; set; } = "";
+    public ulong Price { get; set; }
 }
-
-/*
-using UnityEngine;
-using UnityEngine.UI;
-
-public class NFTCollectionItem : MonoBehaviour
-{
-    public Text nameText;
-    public Text symbolText;
-    public Text ownerText;
-    public Text timestampText;
-
-    /// <summary>
-    /// Populates the UI fields with NFT data.
-    /// </summary>
-    public void SetData(NFTCollection collection)
-    {
-        nameText.text = collection.Name;
-        symbolText.text = collection.Symbol;
-        ownerText.text = "Owner: " + collection.OwnerPrincipal;
-        timestampText.text = "Timestamp: " + collection.Timestamp;
-    }
-}*/
-
-/*using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-
-public class NFTCollectionUIManager : MonoBehaviour
-{
-    public Transform contentPanel; // Reference to Scroll View Content
-    public GameObject nftCollectionPrefab; // Reference to NFTCollectionItem Prefab
-
-    private void Start()
-    {
-        API_Manager.Instance.OnCollectionsUpdated += UpdateUI;
-    }
-
-    private void OnDestroy()
-    {
-        API_Manager.Instance.OnCollectionsUpdated -= UpdateUI;
-    }
-
-    /// <summary>
-    /// Updates the UI with the latest NFT collections.
-    /// </summary>
-    private void UpdateUI(List<NFTCollection> collections)
-    {
-        // Clear previous items
-        foreach (Transform child in contentPanel)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // Populate with new data
-        foreach (var collection in collections)
-        {
-            GameObject newItem = Instantiate(nftCollectionPrefab, contentPanel);
-            NFTCollectionItem itemScript = newItem.GetComponent<NFTCollectionItem>();
-
-            itemScript.SetData(collection);
-        }
-    }
-}
-*/

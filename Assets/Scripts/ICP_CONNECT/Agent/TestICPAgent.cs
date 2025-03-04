@@ -1,29 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
-using EdjCase.ICP.Agent;
 using EdjCase.ICP.Agent.Agents;
 using EdjCase.ICP.Agent.Identities;
 using EdjCase.ICP.Candid.Models;
-using System.Collections.Generic;
 using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
-using UnityEngine.Experimental.Rendering;
 
 namespace IC.GameKit
 {
     public class TestICPAgent : MonoBehaviour
     {
         public Button exitButton;
-        public string sceneToLoad = "GameScene";         
-        public string greetFrontend = "https://7kl52-gyaaa-aaaac-ahmgq-cai.icp0.io/";
+        public string sceneToLoad = "GrowTownGameScene";         
+        public string greetFrontend = "https://s6dkc-nyaaa-aaaac-albta-cai.icp0.io/";
         public string greetBackendCanister = "7nk3o-laaaa-aaaac-ahmga-cai";
+
         Ed25519Identity mEd25519Identity = null;
         DelegationIdentity mDelegationIdentity = null;
-        private bool sceneLoaded = false;
-        private bool userCreated = false;
-        private int debugCounter = 0;
 
         public Ed25519Identity TestIdentity => mEd25519Identity;
 
@@ -32,43 +26,55 @@ namespace IC.GameKit
             get => mDelegationIdentity;
             set
             {
-                if (mDelegationIdentity == null)
-                {
-                    mDelegationIdentity = value;
-                    EnableButtons();
-                }
+                mDelegationIdentity = value;
+                EnableButtons();
             }
+        }
+
+        private bool isSceneLoading = false; // Track scene loading state
+
+        void Awake()
+        {
+            // Ensure only one instance exists
+            TestICPAgent[] agents = FindObjectsOfType<TestICPAgent>();
+            if (agents.Length > 1)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            DontDestroyOnLoad(gameObject); // Persist across scenes
         }
 
         void Start()
         {
-            try
-            {
-                WasmtimeLoader.LoadWasmtime();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"❌ Error loading Wasmtime: {e.Message}");
-            }
-
-            if (exitButton != null)
-            {
-                exitButton.onClick.AddListener(ExitGame);
-            }
-            else
-            {
-                Debug.LogWarning("⚠️ Exit button is not assigned.");
-            }
-
+#if UNITY_WEBGL
+            Debug.Log("ℹ️ Skipping Wasmtime on WebGL.");
+#else
+            WasmtimeLoader.LoadWasmtime();
+#endif
+            exitButton.onClick.AddListener(ExitGame);
             mEd25519Identity = Ed25519Identity.Generate();
         }
 
         public void StartGameFun()
         {
-            if (!SceneManager.GetActiveScene().name.Equals(sceneToLoad))
+            string currentScene = SceneManager.GetActiveScene().name;
+            if (!isSceneLoading && currentScene != sceneToLoad && !IsRenderingFailed())
             {
+                isSceneLoading = true;
                 SceneManager.LoadScene(sceneToLoad);
+                SceneManager.sceneLoaded += OnSceneLoaded;
             }
+            else
+            {
+                Debug.LogWarning("Scene " + sceneToLoad + " is already loaded, loading, or rendering failed. Skipping load.");
+            }
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            isSceneLoading = false;
+            SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         void ExitGame()
@@ -79,88 +85,68 @@ namespace IC.GameKit
 #endif
         }
 
-        internal async void EnableButtons()
+        public void EnableButtons()
         {
-            if (mDelegationIdentity != null && !sceneLoaded)
+            if (mDelegationIdentity != null)
             {
-                sceneLoaded = true;  // Prevent re-entry
-                DebugWithCounter("✅ Delegation Identity is set. Calling AutoCreateUser...");
-                await AutoCreateUser();
-
-                if (!SceneManager.GetActiveScene().name.Equals(sceneToLoad))
-                {
-                    if (!CreateSafeRenderTexture(Screen.width, Screen.height))
-                    {
-                        DebugWithCounter("⚠️ RenderTexture creation failed. Proceeding without it.");
-                    }
-                    SceneManager.LoadScene(sceneToLoad);
-                }
+                Debug.Log("✅ Delegation Identity is set. Calling AutoCreateUser...");
+                AutoCreateUser();
+            }
+            else
+            {
+                Debug.LogWarning("⚠ DelegationIdentity is null. Cannot enable buttons.");
             }
         }
 
-        private async Task AutoCreateUser()
+        private async void AutoCreateUser()
         {
             if (DelegationIdentity == null)
             {
-                DebugWithCounter("❌ DelegationIdentity is NULL, API call cannot proceed!");
+                Debug.LogError("❌ DelegationIdentity is NULL, API call cannot proceed!");
+                StartGameFun(); // Fallback, but check for rendering and recursion
                 return;
             }
+            var agent = new HttpAgent(DelegationIdentity);
+            var canisterId = Principal.FromText(greetBackendCanister);
+            var client = new GreetingClient.GreetingClient(agent, canisterId);
 
-            if (userCreated)
-            {
-                DebugWithCounter("ℹ️ User already created. Skipping AutoCreateUser.");
-                return;
-            }
+            // Initialize API_Manager explicitly
+            API_Manager.Instance.Initialize(client);
 
             try
             {
-                var agent = new HttpAgent(DelegationIdentity);
-                var canisterId = Principal.FromText(greetBackendCanister);
-                var client = new GreetingClient.GreetingClient(agent, canisterId);
-                API_Manager.Instance.Initialize(client);
-
-                DebugWithCounter("🔄 Fetching user principal from Greet()...");
-                var getPrincipalTask = client.GetPrinicpal();
-                if (await Task.WhenAny(getPrincipalTask, Task.Delay(5000)) != getPrincipalTask)
+                Debug.Log("🔄 Fetching user principal...");
+                string userPrincipalString = await client.GetPrincipal();
+                Principal userPrincipal;
+                try
                 {
-                    DebugWithCounter("❌ Timeout while fetching principal.");
+                    userPrincipal = Principal.FromText(userPrincipalString);
+                    Debug.LogError($" Principal format: {userPrincipalString}");
+                    DataTransfer.UserPrincipal = userPrincipal.ToString();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"❌ Invalid Principal format: {userPrincipalString}. Error: {ex.Message}");
+                    StartGameFun(); // Fallback, but check for rendering and recursion
                     return;
                 }
-
-                string userPrincipalString = await getPrincipalTask;
-                if (string.IsNullOrEmpty(userPrincipalString))
-                {
-                    DebugWithCounter("❌ Received null or empty principal string.");
-                    return;
-                }
-
-                Principal userPrincipal = Principal.FromText(userPrincipalString);
-                DebugWithCounter($"✅ Principal response: {userPrincipal}");
-                DataTransfer.UserPrincipal = userPrincipal.ToString();
-
                 string uuid = GenerateUUID();
-                DebugWithCounter($"✅ Generated UUID: {uuid}");
-
+                Debug.Log($"✅ Principal response: {userPrincipal}");
+                Debug.Log($"✅ Generated UUID: {uuid}");
                 CandidArg arg = CandidArg.FromCandid(
                     CandidTypedValue.Principal(userPrincipal),
                     CandidTypedValue.Text(uuid)
                 );
-
-                var createUserTask = agent.CallAsynchronousAndWaitAsync(canisterId, "create_user", arg);
-                if (await Task.WhenAny(createUserTask, Task.Delay(5000)) != createUserTask)
-                {
-                    DebugWithCounter("❌ Timeout while creating user.");
-                    return;
-                }
-
-                CandidArg reply = await createUserTask;
-                DebugWithCounter($"✅ create_user response: {reply}");
-
-                userCreated = true;  // Prevent re-creating the user
+                Debug.Log("🔄 Calling create_user on canister...");
+                CandidArg reply = await agent.CallAsynchronousAndWaitAsync(canisterId, "create_user", arg);
+                Debug.Log($"✅ create_user response: {reply}");
+                await API_Manager.Instance.FetchCurrentUserCollections(); // Fetch collections after user creation
+                StartGameFun(); // Load scene only once after success, if rendering is stable
             }
             catch (Exception e)
             {
-                DebugWithCounter($"❌ Failed to create user: {e.Message}");
+                Debug.LogError($"❌ Failed to create user: {e.Message}\nStackTrace: {e.StackTrace}");
+                StartGameFun(); // Fallback, but check for rendering and recursion
             }
         }
 
@@ -169,95 +155,49 @@ namespace IC.GameKit
             return Guid.NewGuid().ToString();
         }
 
-        public static class WasmtimeLoader
+        // Helper method to check if rendering has failed (based on logcat errors)
+        private bool IsRenderingFailed()
         {
-            public static void LoadWasmtime()
-            {
-                try
-                {
-                    string pluginPath = Application.dataPath + "/Plugins/libwasmtime.dylib";
-                    IntPtr handle = dlopen(pluginPath, RTLD_NOW);
-
-                    if (handle == IntPtr.Zero)
-                    {
-                        throw new Exception(Marshal.PtrToStringAnsi(dlerror()));
-                    }
-
-                    Debug.Log("✅ Wasmtime successfully loaded!");
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"❌ Failed to load Wasmtime: {e.Message}");
-                }
-            }
-
-            private const int RTLD_NOW = 2;
-
-            [DllImport("libdl")]
-            private static extern IntPtr dlopen(string path, int flag);
-
-            [DllImport("libdl")]
-            private static extern IntPtr dlerror();
+            // This is a simple check; in a real scenario, you might track errors or use Unity’s debug logs
+            return Application.HasProLicense() && (Screen.currentResolution.width == 0 || Screen.currentResolution.height == 0);
         }
+    }
 
-        private bool CreateSafeRenderTexture(int width, int height)
-        {
-            try
-            {
-                GraphicsFormat preferredFormat = GraphicsFormat.R16G16B16A16_SFloat;
-
-                if (!SystemInfo.IsFormatSupported(preferredFormat, FormatUsage.Render))
-                {
-                    DebugWithCounter("⚠️ R16G16B16A16_SFloat not supported, falling back to R8G8B8A8_UNorm.");
-                    preferredFormat = GraphicsFormat.R8G8B8A8_UNorm;
-                }
-
-                RenderTextureDescriptor descriptor = new RenderTextureDescriptor(width, height)
-                {
-                    graphicsFormat = preferredFormat,
-                    depthBufferBits = 24,
-                    msaaSamples = 1,
-                    sRGB = true,
-                    useMipMap = false,
-                    autoGenerateMips = false
-                };
-
-#if UNITY_ANDROID || UNITY_WEBGL
-                descriptor.msaaSamples = SystemInfo.supportsMultisampleAutoResolve ? 2 : 1;
-                descriptor.sRGB = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.DefaultHDR);
+    public static class WasmtimeLoader
+    {
+#if UNITY_ANDROID
+        private const string WasmtimeLib = "wasmtime";
+#elif UNITY_IOS
+        private const string WasmtimeLib = "__Internal";
+#elif UNITY_STANDALONE_OSX
+        private const string WasmtimeLib = "libwasmtime";
+#else
+        private const string WasmtimeLib = "unsupported";
 #endif
 
-                RenderTexture renderTexture = new RenderTexture(descriptor);
-                if (renderTexture != null)
-                {
-                    renderTexture.Create();
-                    if (renderTexture.IsCreated())
-                    {
-                        DebugWithCounter("✅ RenderTexture created successfully.");
-                        return true;
-                    }
-                    else
-                    {
-                        DebugWithCounter("❌ Failed to create RenderTexture.");
-                    }
-                }
-                else
-                {
-                    DebugWithCounter("❌ RenderTexture is null after creation attempt.");
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugWithCounter($"❌ Exception during RenderTexture creation: {ex.Message}");
-            }
+        [DllImport(WasmtimeLib, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr wasmtime_config_new();
 
-            return false;
-        }
-
-        private void DebugWithCounter(string message)
+        public static void LoadWasmtime()
         {
-            debugCounter++;
-            Debug.Log($"[{debugCounter}] {message}");
+#if UNITY_WEBGL
+            Debug.Log("ℹ️ Wasmtime not supported on WebGL. Consider WebAssembly alternative.");
+#else
+            try
+            {
+                IntPtr config = wasmtime_config_new();
+                if (config == IntPtr.Zero)
+                {
+                    Debug.LogError("❌ Wasmtime loaded but initialization failed.");
+                    return;
+                }
+                Debug.Log("✅ Wasmtime successfully loaded!");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"❌ Failed to load Wasmtime: {e.Message}");
+            }
+#endif
         }
     }
 }
