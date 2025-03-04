@@ -27,7 +27,7 @@ namespace GreetingClient
         }
 
         public async Task<string> Greet()
-        {
+        { 
             try
             {
                 Debug.Log("🔄 Sending Greet request...");
@@ -43,7 +43,7 @@ namespace GreetingClient
                 Debug.LogError($"❌ Failed to fetch greeting: {e.Message}");
                 return "Error fetching greeting";
             }
-        }
+        } 
         public async Task<string> GetPrinicpal()
         {
             CandidArg arg = CandidArg.FromCandid();
@@ -232,11 +232,37 @@ namespace GreetingClient
         }
 
         //userNFTcollection 
-        public async Task<CandidArg> GetUserNFTCollection(Principal collectionCanisterId,string userAccountId,ulong chunkSize,ulong pageNo)
+        public async Task GetUserNFTCollection(Principal collectionCanisterId, string user, ulong chunkSize, ulong pageNo)
         {
-            var response = await Agent.CallAsynchronousAndWaitAsync(collectionCanisterId,"userNFTcollection",CandidArg.FromCandid(CandidTypedValue.Text(userAccountId),CandidTypedValue.Nat(chunkSize),CandidTypedValue.Nat(pageNo)));
+            try
+            {
+                var response = await Agent.CallAsync(collectionCanisterId,"userNFTcollection",CandidArg.FromCandid(CandidTypedValue.Principal(collectionCanisterId),
+                        CandidTypedValue.Text(user),CandidTypedValue.Nat(chunkSize),CandidTypedValue.Nat(pageNo)));
 
-            return response;
+                var result = response.ToObjects<Dictionary<string, object>>();
+                if (result is Dictionary<string, object> responseData)
+                {
+                    if (responseData.TryGetValue("Ok", out var okData))
+                    {
+                        var successData = (Dictionary<string, object>)okData;
+                        var nftData = (List<object>)successData["data"];
+                        var currentPage = (ulong)successData["current_page"];
+                        var totalPages = (ulong)successData["total_pages"];
+
+                        Console.WriteLine($"Fetched NFTs: {nftData.Count}");
+                        Console.WriteLine($"Current Page: {currentPage}");
+                        Console.WriteLine($"Total Pages: {totalPages}");
+                    }
+                    else if (responseData.TryGetValue("Err", out var errData))
+                    {
+                        Console.WriteLine("Error fetching NFTs: " + errData);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to fetch user NFT collection: " + ex.Message);
+            }
         }
 
     }

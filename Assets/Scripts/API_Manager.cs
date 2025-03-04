@@ -175,7 +175,7 @@ public class API_Manager : MonoBehaviour
         }
     }
 
-   /* /// <summary>
+    /*/// <summary>
     /// Fetches all NFTs from the current user's collections.
     /// </summary>
     public async Task FetchUserNFTListings()
@@ -195,7 +195,7 @@ public class API_Manager : MonoBehaviour
             string collectionCanisterId = collection.CanisterId;
 
             // Fetch NFT listings for each collection
-            var result = await _greetingClient.CountListings();
+            var result = await _greetingClient.CountListings(collectionCanisterId,10,);
 
             if (result.IsOk)
             {
@@ -263,67 +263,4 @@ public class NFTListing
     public ulong Price;
 }
 
-/*
-using UnityEngine;
-using UnityEngine.UI;
 
-public class NFTCollectionItem : MonoBehaviour
-{
-    public Text nameText;
-    public Text symbolText;
-    public Text ownerText;
-    public Text timestampText;
-
-    /// <summary>
-    /// Populates the UI fields with NFT data.
-    /// </summary>
-    public void SetData(NFTCollection collection)
-    {
-        nameText.text = collection.Name;
-        symbolText.text = collection.Symbol;
-        ownerText.text = "Owner: " + collection.OwnerPrincipal;
-        timestampText.text = "Timestamp: " + collection.Timestamp;
-    }
-}*/
-
-/*using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-
-public class NFTCollectionUIManager : MonoBehaviour
-{
-    public Transform contentPanel; // Reference to Scroll View Content
-    public GameObject nftCollectionPrefab; // Reference to NFTCollectionItem Prefab
-
-    private void Start()
-    {
-        API_Manager.Instance.OnCollectionsUpdated += UpdateUI;
-    }
-
-    private void OnDestroy()
-    {
-        API_Manager.Instance.OnCollectionsUpdated -= UpdateUI;
-    }
-
-    /// <summary>
-    /// Updates the UI with the latest NFT collections.
-    /// </summary>
-    private void UpdateUI(List<NFTCollection> collections)
-    {
-        // Clear previous items
-        foreach (Transform child in contentPanel)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // Populate with new data
-        foreach (var collection in collections)
-        {
-            GameObject newItem = Instantiate(nftCollectionPrefab, contentPanel);
-            NFTCollectionItem itemScript = newItem.GetComponent<NFTCollectionItem>();
-
-            itemScript.SetData(collection);
-        }
-    }
-}
-*/
