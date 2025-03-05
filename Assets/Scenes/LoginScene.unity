@@ -2042,7 +2042,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6589163691153753297}
-  - component: {fileID: 9079084372320667381}
   m_Layer: 0
   m_Name: LoginSceneUI
   m_TagString: Untagged
