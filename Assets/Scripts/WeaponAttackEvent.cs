@@ -245,7 +245,7 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
             leftHandPos.weight = 0;
             aim.weight = 0;
             UI_Manager.Instance.CharacterMovements.iscameraReset = false;
-            if (!UI_Manager.Instance.isPlayerInField)
+            if (!UI_Manager.Instance.IsPlayerInSecondZone)
                 UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
         }
     }

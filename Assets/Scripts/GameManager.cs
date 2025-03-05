@@ -21,7 +21,6 @@ public class GameManager : MonoBehaviour
     internal bool checkForEnoughSeeds;
     internal bool isStarterPackBought;
     internal int HarvestCount;
-
     int _currentFieldID;
     int _currentWheatSeedCount = 0;
     int _currentTomatoSeedCount = 0;
@@ -155,18 +154,17 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        LoadPlayerData();
+       // LoadPlayerData();
         if (isStarterPackBought)
         {
             ActivatingTheJoystick();
         }
-
     }
 
     bool iscleanigStarted;
     private void OnApplicationQuit()
     {
-        SavePlayerData();
+       // SavePlayerData();
     }
     #region Methods
 
@@ -336,7 +334,7 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
-                WaveManager.instance.StartEnemyWave();
+               // WaveManager.instance.StartEnemyWave();
             }
             UI_Manager.Instance.GrowthStartedOnThisTile.Add(tilego);
         }
@@ -344,8 +342,6 @@ public class GameManager : MonoBehaviour
         {
             Destroy(item);
         }
-
-
     }
     internal List<GameObject> witheredPlants = new List<GameObject>();
     public void Withering()
@@ -450,7 +446,6 @@ public class GameManager : MonoBehaviour
         Vector2 targetPosition = new Vector2(250, 259);
         JoystickMoveFromLeft(joystickRect, targetPosition, 1.5f);
     }
-
     public void JoystickMoveFromLeft(RectTransform target, Vector2 destination, float duration)
     {
         // Set the starting position to the left
