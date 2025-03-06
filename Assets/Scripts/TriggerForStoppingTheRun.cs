@@ -31,7 +31,11 @@ public class TriggerForStoppingTheRun : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             UI_Manager.Instance.IsPlayerInSecondZone = false;
-            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
+
+           var CamSwitch=other.gameObject.GetComponent<CamerasSwitch>();
+            var newPos=CamSwitch.activeCamera.transform.position;
+            CamSwitch.SwitchToCam(0);
+            CamSwitch.activeCamera.transform.position = newPos;
         }
     }
 }
