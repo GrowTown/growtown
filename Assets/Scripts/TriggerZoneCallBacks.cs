@@ -33,7 +33,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                 case ZoneType.Field:
                     if (!UI_Manager.Instance.starterPackInfoPopUpPanel.activeSelf)
                     {
-                        if (fieldID == 2)
+                        /*if (fieldID == 2)
                         {
                             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
                             UI_Manager.Instance.ActiveAllInventory(-232);
@@ -47,7 +47,8 @@ public class TriggerZoneCallBacks : MonoBehaviour
                         {
                             other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(4);
                            
-                        }
+                        }*/
+                        UI_Manager.Instance.ActiveAllInventory(-232);
                         GameManager.Instance.CurrentFieldID = fieldID;
                         UI_Manager.Instance.FieldManager.EnterField(fieldID);
                         UI_Manager.Instance.ToInstantiateLandHealthbar(fieldID);
@@ -78,7 +79,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
             playerInZone = false;
             UI_Manager.Instance.isPlayerInField = false;
 
-            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
+           // other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(0);
             UI_Manager.Instance.ActiveAllInventory(55);
             switch (zoneType)
             {
@@ -94,7 +95,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
 
                 case ZoneType.Market:
                     
-                    if (UI_Manager.Instance.ShopManager.isCuttingToolBought &&
+                  /*  if (UI_Manager.Instance.ShopManager.isCuttingToolBought &&
                         UI_Manager.Instance.ShopManager.isWateringToolBought &&
                         UI_Manager.Instance.ShopManager.isCleningToolBought)
                     {
@@ -103,7 +104,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     else
                     {
                         UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(true);
-                    }
+                    }*/
                     onPlayerExit?.Invoke(this);
                     break;
             }

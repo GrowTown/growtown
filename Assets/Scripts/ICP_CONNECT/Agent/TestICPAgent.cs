@@ -1,29 +1,29 @@
 using UnityEngine;
 using UnityEngine.UI;
-using EdjCase.ICP.Agent;
 using EdjCase.ICP.Agent.Agents;
+using EdjCase.ICP.Agent.Agents.Http;
 using EdjCase.ICP.Agent.Identities;
 using EdjCase.ICP.Candid.Models;
-using System.Collections.Generic;
 using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
-using UnityEngine.Experimental.Rendering;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Collections.Generic;
+using System.Linq; // Added this line to resolve 'Any' errors
 
 namespace IC.GameKit
 {
     public class TestICPAgent : MonoBehaviour
     {
         public Button exitButton;
-        public string sceneToLoad = "GameScene";         
-        public string greetFrontend = "https://7kl52-gyaaa-aaaac-ahmgq-cai.icp0.io/";
+        public string sceneToLoad = "GrowTownGameScene";
+        public string greetFrontend = "https://s6dkc-nyaaa-aaaac-albta-cai.icp0.io/";
         public string greetBackendCanister = "7nk3o-laaaa-aaaac-ahmga-cai";
-        Ed25519Identity mEd25519Identity = null;
-        DelegationIdentity mDelegationIdentity = null;
-        private bool sceneLoaded = false;
-        private bool userCreated = false;
-        private int debugCounter = 0;
+        public string icHost = "https://icp0.io";
+
+        public bool isSceneLoaded =false;
+        private Ed25519Identity mEd25519Identity = null;
+        private DelegationIdentity mDelegationIdentity = null;
 
         public Ed25519Identity TestIdentity => mEd25519Identity;
 
@@ -32,43 +32,57 @@ namespace IC.GameKit
             get => mDelegationIdentity;
             set
             {
-                if (mDelegationIdentity == null)
-                {
-                    mDelegationIdentity = value;
-                    EnableButtons();
+                mDelegationIdentity = value;
+                if (!isSceneLoaded){
+StartCoroutine(EnableButtonsCoroutine());
+isSceneLoaded = true;
                 }
             }
         }
 
+        private bool isSceneLoading = false;
+
+        public static TestICPAgent Instance { get; private set; }
+
+        void Awake()
+        {
+            TestICPAgent[] agents = FindObjectsOfType<TestICPAgent>();
+            if (agents.Length > 1)
+            {
+                Debug.LogWarning("⚠ Duplicate TestICPAgent found. Destroying this instance.");
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
         void Start()
         {
-            try
-            {
-                WasmtimeLoader.LoadWasmtime();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"❌ Error loading Wasmtime: {e.Message}");
-            }
-
-            if (exitButton != null)
-            {
-                exitButton.onClick.AddListener(ExitGame);
-            }
-            else
-            {
-                Debug.LogWarning("⚠️ Exit button is not assigned.");
-            }
-
+            Debug.Log("ℹ️ Starting TestICPAgent...");
+            exitButton.onClick.AddListener(ExitGame);
             mEd25519Identity = Ed25519Identity.Generate();
         }
 
         public void StartGameFun()
         {
-            if (!SceneManager.GetActiveScene().name.Equals(sceneToLoad))
+            string currentScene = SceneManager.GetActiveScene().name;
+            if (!isSceneLoading && currentScene != sceneToLoad && !IsRenderingFailed())
             {
+                isSceneLoading = true;
                 SceneManager.LoadScene(sceneToLoad);
+                SceneManager.sceneLoaded += OnSceneLoaded;
             }
+            else
+            {
+                Debug.LogWarning($"Scene {sceneToLoad} is already loaded, loading, or rendering failed. Skipping load.");
+            }
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            isSceneLoading = false;
+            SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         void ExitGame()
@@ -79,184 +93,182 @@ namespace IC.GameKit
 #endif
         }
 
-        internal async void EnableButtons()
+        private System.Collections.IEnumerator EnableButtonsCoroutine()
         {
-            if (mDelegationIdentity != null && !sceneLoaded)
-            {
-                sceneLoaded = true;  // Prevent re-entry
-                DebugWithCounter("✅ Delegation Identity is set. Calling AutoCreateUser...");
-                await AutoCreateUser();
+            yield return EnableButtonsAsync().AsCoroutine();
+        }
 
-                if (!SceneManager.GetActiveScene().name.Equals(sceneToLoad))
-                {
-                    if (!CreateSafeRenderTexture(Screen.width, Screen.height))
-                    {
-                        DebugWithCounter("⚠️ RenderTexture creation failed. Proceeding without it.");
-                    }
-                    SceneManager.LoadScene(sceneToLoad);
-                }
+        public async Task EnableButtonsAsync()
+        {
+            if (mDelegationIdentity != null)
+            {
+                Debug.Log("✅ Delegation Identity is set. Calling AutoCreateUser...");
+                await AutoCreateUserAsync();
+            }
+            else
+            {
+                Debug.LogWarning("⚠ DelegationIdentity is null. Proceeding with anonymous identity...");
+                await AutoCreateUserAsync(true);
             }
         }
 
-        private async Task AutoCreateUser()
+        private async Task AutoCreateUserAsync(bool useAnonymous = false)
         {
-            if (DelegationIdentity == null)
-            {
-                DebugWithCounter("❌ DelegationIdentity is NULL, API call cannot proceed!");
-                return;
-            }
+            Debug.Log("1️⃣ Creating HttpAgent...");
+            var httpClient = new HttpClient { BaseAddress = new Uri(icHost) };
+            var agentHttpClient = new DefaultHttpClient(httpClient);
+            IAgent agent = new HttpAgent(
+                httpClient: agentHttpClient,
+                identity: useAnonymous || mDelegationIdentity == null ? null : mDelegationIdentity
+            );
+            Debug.Log($"Agent Identity: {(agent.Identity != null ? agent.Identity.GetPrincipal().ToText() : "Anonymous")}");
 
-            if (userCreated)
-            {
-                DebugWithCounter("ℹ️ User already created. Skipping AutoCreateUser.");
-                return;
-            }
-
+            Debug.Log("2️⃣ Setting canisterId...");
+            Principal canisterId;
             try
             {
-                var agent = new HttpAgent(DelegationIdentity);
-                var canisterId = Principal.FromText(greetBackendCanister);
-                var client = new GreetingClient.GreetingClient(agent, canisterId);
-
-                DebugWithCounter("🔄 Fetching user principal from Greet()...");
-                var getPrincipalTask = client.GetPrinicpal();
-                if (await Task.WhenAny(getPrincipalTask, Task.Delay(5000)) != getPrincipalTask)
-                {
-                    DebugWithCounter("❌ Timeout while fetching principal.");
-                    return;
-                }
-
-                string userPrincipalString = await getPrincipalTask;
-                if (string.IsNullOrEmpty(userPrincipalString))
-                {
-                    DebugWithCounter("❌ Received null or empty principal string.");
-                    return;
-                }
-
-                Principal userPrincipal = Principal.FromText(userPrincipalString);
-                DebugWithCounter($"✅ Principal response: {userPrincipal}");
-                DataTransfer.UserPrincipal = userPrincipal.ToString();
-
-                string uuid = GenerateUUID();
-                DebugWithCounter($"✅ Generated UUID: {uuid}");
-
-                CandidArg arg = CandidArg.FromCandid(
-                    CandidTypedValue.Principal(userPrincipal),
-                    CandidTypedValue.Text(uuid)
-                );
-
-                var createUserTask = agent.CallAndWaitAsync(canisterId, "create_user", arg);
-                if (await Task.WhenAny(createUserTask, Task.Delay(5000)) != createUserTask)
-                {
-                    DebugWithCounter("❌ Timeout while creating user.");
-                    return;
-                }
-
-                CandidArg reply = await createUserTask;
-                DebugWithCounter($"✅ create_user response: {reply}");
-
-                userCreated = true;  // Prevent re-creating the user
-            }
-            catch (Exception e)
-            {
-                DebugWithCounter($"❌ Failed to create user: {e.Message}");
-            }
-        }
-
-        private string GenerateUUID()
-        {
-            return Guid.NewGuid().ToString();
-        }
-
-        public static class WasmtimeLoader
-        {
-            public static void LoadWasmtime()
-            {
-                try
-                {
-                    string pluginPath = Application.dataPath + "/Plugins/libwasmtime.dylib";
-                    IntPtr handle = dlopen(pluginPath, RTLD_NOW);
-
-                    if (handle == IntPtr.Zero)
-                    {
-                        throw new Exception(Marshal.PtrToStringAnsi(dlerror()));
-                    }
-
-                    Debug.Log("✅ Wasmtime successfully loaded!");
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"❌ Failed to load Wasmtime: {e.Message}");
-                }
-            }
-
-            private const int RTLD_NOW = 2;
-
-            [DllImport("libdl")]
-            private static extern IntPtr dlopen(string path, int flag);
-
-            [DllImport("libdl")]
-            private static extern IntPtr dlerror();
-        }
-
-        private bool CreateSafeRenderTexture(int width, int height)
-        {
-            try
-            {
-                GraphicsFormat preferredFormat = GraphicsFormat.R16G16B16A16_SFloat;
-
-                if (!SystemInfo.IsFormatSupported(preferredFormat, FormatUsage.Render))
-                {
-                    DebugWithCounter("⚠️ R16G16B16A16_SFloat not supported, falling back to R8G8B8A8_UNorm.");
-                    preferredFormat = GraphicsFormat.R8G8B8A8_UNorm;
-                }
-
-                RenderTextureDescriptor descriptor = new RenderTextureDescriptor(width, height)
-                {
-                    graphicsFormat = preferredFormat,
-                    depthBufferBits = 24,
-                    msaaSamples = 1,
-                    sRGB = true,
-                    useMipMap = false,
-                    autoGenerateMips = false
-                };
-
-#if UNITY_ANDROID || UNITY_WEBGL
-                descriptor.msaaSamples = SystemInfo.supportsMultisampleAutoResolve ? 2 : 1;
-                descriptor.sRGB = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.DefaultHDR);
-#endif
-
-                RenderTexture renderTexture = new RenderTexture(descriptor);
-                if (renderTexture != null)
-                {
-                    renderTexture.Create();
-                    if (renderTexture.IsCreated())
-                    {
-                        DebugWithCounter("✅ RenderTexture created successfully.");
-                        return true;
-                    }
-                    else
-                    {
-                        DebugWithCounter("❌ Failed to create RenderTexture.");
-                    }
-                }
-                else
-                {
-                    DebugWithCounter("❌ RenderTexture is null after creation attempt.");
-                }
+                canisterId = Principal.FromText(greetBackendCanister);
             }
             catch (Exception ex)
             {
-                DebugWithCounter($"❌ Exception during RenderTexture creation: {ex.Message}");
+                Debug.LogError($"❌ Failed to parse canister ID '{greetBackendCanister}': {ex.Message}");
+                StartGameFun();
+                return;
             }
 
-            return false;
+            Debug.Log("3️⃣ Creating GreetingClient...");
+            var client = new GreetingClient.GreetingClient(agent, canisterId);
+
+            Debug.Log("4️⃣ Checking API_Manager.Instance...");
+            if (API_Manager.Instance == null)
+            {
+                Debug.LogError("❌ API_Manager.Instance is null! Creating new instance...");
+                GameObject apiManagerObj = new GameObject("API_Manager");
+                API_Manager apiManager = apiManagerObj.AddComponent<API_Manager>();
+                apiManager.Initialize(client);
+            }
+            else
+            {
+                Debug.Log("5️⃣ Initializing API_Manager...");
+                API_Manager.Instance.Initialize(client);
+            }
+
+            try
+            {
+                Debug.Log("6️⃣ Fetching user principal...");
+                string userPrincipalString;
+                try
+                {
+                    var principalTask = client.GetPrincipal();
+                    Debug.Log("6.1️⃣ Initiated GetPrincipal call...");
+                    userPrincipalString = await Task.WhenAny(principalTask, Task.Delay(10000)) == principalTask
+                        ? principalTask.Result
+                        : throw new TimeoutException("GetPrincipal timed out after 10s");
+                    Debug.Log("6.2️⃣ GetPrincipal completed.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"❌ Failed to fetch principal: {ex.Message}");
+                    Debug.LogWarning("⚠ Falling back to anonymous principal...");
+                    userPrincipalString = "2vxsx-fae"; // Anonymous principal
+                }
+
+                Principal userPrincipal = Principal.FromText(userPrincipalString);
+                Debug.Log($"✅ Principal: {userPrincipal}");
+                DataTransfer.UserPrincipal = userPrincipal.ToString();
+
+                string uuid = Guid.NewGuid().ToString();
+                Debug.Log($"✅ Generated UUID: {uuid}");
+
+                Debug.Log("7️⃣ Preparing create_user call...");
+                CandidArg arg = CandidArg.FromCandid(
+                    CandidTypedValue.FromObject(userPrincipal),
+                    CandidTypedValue.FromObject(uuid)
+                );
+
+                Debug.Log("8️⃣ Calling create_user on canister...");
+                try
+                {
+                    CandidArg reply = await agent.CallAsync(canisterId, "create_user", arg);
+                    Debug.Log($"✅ create_user response: {reply}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"❌ Failed to call create_user: {ex.Message}");
+                    Debug.LogWarning("⚠ Skipping create_user due to error...");
+                }
+
+                Debug.Log("9️⃣ Waiting for collections to propagate...");
+                int attempts = 0;
+                const int maxAttempts = 1;
+                List<(Principal, List<(long, Principal, string, string, string)>)> allCollections = null; // Explicitly typed
+                while (attempts < maxAttempts)
+                {
+                    await Task.Delay(2000); // Wait 2 seconds per attempt
+                    Debug.Log($"⏳ Attempt {attempts + 1}/{maxAttempts}: Fetching collections...");
+                    await API_Manager.Instance.FetchAllCollections();
+
+                    // if (allCollections.Any(c => c.Item1.ToText() == userPrincipalString))
+                    // {
+                    //     Debug.Log($"✅ Found {allCollections.Count} collections for user {userPrincipalString}");
+                    //     break;
+                    // }
+                    attempts++;
+                    Debug.Log($"collection are fetching");
+                }
+
+                // if (allCollections != null && allCollections.Any())
+                // {
+                //     foreach ((Principal principal, List<(long, Principal, string, string, string)> collections) in allCollections) // Explicit types added
+                //     {
+                //         Debug.Log($"User: {principal.ToText()}, Collections: {collections.Count}");
+                //     }
+                // }
+                // else
+                // {
+                //     Debug.LogWarning($"⚠ No collections found for {userPrincipalString} after {maxAttempts} attempts.");
+                // }
+
+                // Debug.Log("🔟 Fetching user collections...");
+                // try
+                // {
+                //     await API_Manager.Instance.FetchAllCollections();
+                //     Debug.Log("✅ User collections fetched successfully.");
+                // }
+                // catch (Exception ex)
+                // {
+                //     Debug.LogError($"❌ Failed to fetch user collections: {ex.Message}");
+                //     Debug.LogWarning("⚠ Proceeding without user collections...");
+                // }
+
+                Debug.Log("🔚 Starting game...");
+                StartGameFun();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"❌ Unexpected error in AutoCreateUserAsync: {e.Message}\nStackTrace: {e.StackTrace}");
+                StartGameFun();
+            }
         }
 
-        private void DebugWithCounter(string message)
+        private bool IsRenderingFailed()
         {
-            debugCounter++;
-            Debug.Log($"[{debugCounter}] {message}");
+            return Application.HasProLicense() && (Screen.currentResolution.width == 0 || Screen.currentResolution.height == 0);
+        }
+    }
+
+    public static class TaskExtensions
+    {
+        public static System.Collections.IEnumerator AsCoroutine(this Task task)
+        {
+            while (!task.IsCompleted)
+            {
+                yield return null;
+            }
+            if (task.IsFaulted)
+            {
+                throw task.Exception;
+            }
         }
     }
 }

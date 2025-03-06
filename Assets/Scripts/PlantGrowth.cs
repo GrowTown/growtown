@@ -300,13 +300,13 @@ public class PlantGrowth : MonoBehaviour
                     {
                         plantList.Remove(this.gameObject); // Remove the GameObject from the list
 
-                        // Optionally check if the list is empty and perform additional actions
                         if (plantList.Count == 0)
                         {
-                            // Perform any cleanup or special handling for an empty list
+                           
                             UI_Manager.Instance.GrownPlantsToCut.Remove(UI_Manager.Instance.FieldManager.CurrentFieldID);
+                            GameManager.Instance.ReSetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID);
+                             
                         }
-
                         Destroy(this.gameObject); // Destroy the GameObject
 
                     }

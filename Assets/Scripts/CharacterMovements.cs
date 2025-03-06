@@ -365,7 +365,7 @@ public class CharacterMovements : MonoBehaviour
         bool isGunActive = UI_Manager.Instance.WeaponAttackEvent.isGunActive;
         float joystickMagnitude = new Vector2(joystick.Horizontal, joystick.Vertical).magnitude;
         //bool isRunning = joystickMagnitude >= 0.9f;
-        bool isRunning = isAndroid ? joystickMagnitude >= 0.9f && !GameManager.Instance.checkPlayerInZone : Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone;
+        bool isRunning = isAndroid ? joystickMagnitude >= 0.9f && !UI_Manager.Instance.IsPlayerInSecondZone : Input.GetKey(KeyCode.LeftShift) && !UI_Manager.Instance.IsPlayerInSecondZone;
 
         if (animator != null)
         {

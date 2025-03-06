@@ -434,8 +434,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   exitButton: {fileID: 1588324257}
   sceneToLoad: GrowTownGameScene
-  greetFrontend: https://7kl52-gyaaa-aaaac-ahmgq-cai.icp0.io/
+  greetFrontend: https://s6dkc-nyaaa-aaaac-albta-cai.icp0.io
   greetBackendCanister: 7nk3o-laaaa-aaaac-ahmga-cai
+  icHost: https://icp0.io
+  isSceneLoaded: 0
 --- !u!4 &1316279678
 Transform:
   m_ObjectHideFlags: 0
@@ -2042,7 +2044,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6589163691153753297}
-  - component: {fileID: 9079084372320667381}
   m_Layer: 0
   m_Name: LoginSceneUI
   m_TagString: Untagged
@@ -2050,21 +2051,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &9079084372320667381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9079084372320667380}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c464658e3c7fad642b066b6b4fcc5db5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startButton: {fileID: 1179448404}
-  exitButton: {fileID: 1588324257}
-  sceneToLoad: GrowTownGameScene
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 
@@ -35,8 +36,62 @@ public class ShopManager : MonoBehaviour
         {
             shopItems[item.type].Add(item);
         }
-
+        //API_Manager.Instance.OnUserNFTListingsUpdated += UpdateNFTShop;
     }
+
+   /* private void UpdateNFTShop(List<NFTListing> nftListings)
+    {
+        shopItems[ItemType.NFTs].Clear(); // Clear previous NFTs to avoid duplication
+
+        foreach (var nft in nftListings)
+        {
+            ShopItem newNFT = ScriptableObject.CreateInstance<ShopItem>();
+
+            // Extract NFT Metadata
+            newNFT.itemName = nft.Metadata.name;
+            newNFT.icon = LoadNFTIcon(nft.Metadata.image);  // Load image from URL
+            newNFT.price = (int)nft.Price;
+            newNFT.type = ItemType.NFTs;
+
+            shopItems[ItemType.NFTs].Add(newNFT);
+        }
+
+        RefreshNFTUI(); // Update UI with new NFT items
+    }*/
+
+
+    private Sprite LoadNFTIcon(string url)
+    {
+        Texture2D texture = new Texture2D(2, 2);
+        using (UnityWebRequest www = UnityWebRequestTexture.GetTexture(url))
+        {
+            www.SendWebRequest();
+            while (!www.isDone) { } // Blocking call (Use coroutine for async)
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+                return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+            }
+        }
+        return null;
+    }
+    private void RefreshNFTUI()
+    {
+        var nftTab = UI_Manager.Instance.TabGroup.objectsToSwap[(int)ItemType.NFTs].transform.GetChild(0).GetChild(0);
+
+        foreach (Transform child in nftTab)
+        {
+            Destroy(child.gameObject); // Remove old items
+        }
+
+        foreach (var item in shopItems[ItemType.NFTs])
+        {
+            GameObject itemObject = Instantiate(itemPrefab, nftTab);
+            var shopIH = itemObject.GetComponent<ShopItemHolder>();
+            shopIH.Initialize(item);
+        }
+    }
+
 
     private void Initialize()
     {

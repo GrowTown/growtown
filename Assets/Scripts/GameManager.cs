@@ -1,4 +1,5 @@
 using DG.Tweening;
+using DG.Tweening.Core.Easing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,8 +19,8 @@ public class GameManager : MonoBehaviour
     internal int spawnedTomatoesCount;
     internal bool checkPlayerInZone;
     internal bool checkForEnoughSeeds;
+    internal bool isStarterPackBought;
     internal int HarvestCount;
-
     int _currentFieldID;
     int _currentWheatSeedCount = 0;
     int _currentTomatoSeedCount = 0;
@@ -31,6 +32,7 @@ public class GameManager : MonoBehaviour
     PlayerAction _currentAction;
     bool _timerStartAfterPlants;
     Timer _timer;
+    internal Dictionary<string, int> Inventory = new Dictionary<string, int>();
 
 
     #region Properties
@@ -150,11 +152,61 @@ public class GameManager : MonoBehaviour
             //DontDestroyOnLoad(gameObject);
         }
     }
+    private void Start()
+    {
+       // LoadPlayerData();
+        if (isStarterPackBought)
+        {
+            ActivatingTheJoystick();
+        }
+    }
 
     bool iscleanigStarted;
-
+    private void OnApplicationQuit()
+    {
+       // SavePlayerData();
+    }
     #region Methods
 
+    public void AddItemToInventory(string itemName, int count)
+    {
+        if (Inventory.ContainsKey(itemName))
+            Inventory[itemName] += count;
+        else
+            Inventory[itemName] = count;
+
+        Debug.Log($"{itemName} count is now {Inventory[itemName]}");
+    }
+    private void SavePlayerData()
+    {
+        PlayerData data = new PlayerData
+        {
+            XP = UI_Manager.Instance.PlayerXp.CurrentPlayerXpPoints,
+            Energy = CurrentEnergyCount,
+            Water = CurrentWaterCount,
+            Score = CurrentScore,
+            Level = UI_Manager.Instance.PlayerLevel.CurrentPlayerLevel,
+            StartPackBought = isStarterPackBought
+
+
+        };
+
+        UI_Manager.Instance.LocalSaveManager.SavePlayerData(data);
+        Debug.Log("Data saved on quit!");
+    }
+
+    private void LoadPlayerData()
+    {
+        PlayerData data = UI_Manager.Instance.LocalSaveManager.LoadPlayerData();
+        UI_Manager.Instance.PlayerXp.CurrentPlayerXpPoints=data.XP;
+        CurrentEnergyCount = data.Energy;
+        CurrentWaterCount = data.Water;
+        CurrentScore = data.Score;
+        isStarterPackBought = data.StartPackBought;
+        UI_Manager.Instance.PlayerLevel.CurrentPlayerLevel = data.Level;
+
+        Debug.Log($"Loaded data - Energy: {CurrentEnergyCount}, Water: {CurrentWaterCount}, Score: {CurrentScore}, Level: {UI_Manager.Instance.PlayerLevel.CurrentPlayerLevel }");
+    }
     public void StartActionAnimation(PlayerAction action)
     {
         switch (action)
@@ -275,14 +327,14 @@ public class GameManager : MonoBehaviour
 
                         pg.AfterWateredCoroutine = StartCoroutine(pg.AfterWateredTileGrowth(pg.CurrentTimer));
                         iswateringStarted = true;
-                        
+
                         if (!UI_Manager.Instance.GrowthStartedPlants.Contains(item))
                         {
                             UI_Manager.Instance.GrowthStartedPlants.Add(item);
                         }
                     }
                 }
-                WaveManager.instance.StartEnemyWave();
+               // WaveManager.instance.StartEnemyWave();
             }
             UI_Manager.Instance.GrowthStartedOnThisTile.Add(tilego);
         }
@@ -290,8 +342,6 @@ public class GameManager : MonoBehaviour
         {
             Destroy(item);
         }
-
-
     }
     internal List<GameObject> witheredPlants = new List<GameObject>();
     public void Withering()
@@ -373,9 +423,7 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.ShopManager.ToBuyCuttingTool();
         UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
 
-        RectTransform joystickRect = UI_Manager.Instance.CharacterMovements.joystick.GetComponent<RectTransform>();
-        Vector2 targetPosition = new Vector2(250, 259);
-        JoystickMoveFromLeft(joystickRect, targetPosition, 1.5f);
+        ActivatingTheJoystick();
 
         foreach (var item in startPackName)
         {
@@ -388,9 +436,16 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.sickleWeaponBT.interactable = false;
         UI_Manager.Instance.wateringWeaponBT.interactable = false;
         UI_Manager.Instance.cleaningWeaponBT.interactable = false;
+        isStarterPackBought = true;
 
     }
 
+    void ActivatingTheJoystick()
+    {
+        RectTransform joystickRect = UI_Manager.Instance.CharacterMovements.joystick.GetComponent<RectTransform>();
+        Vector2 targetPosition = new Vector2(250, 259);
+        JoystickMoveFromLeft(joystickRect, targetPosition, 1.5f);
+    }
     public void JoystickMoveFromLeft(RectTransform target, Vector2 destination, float duration)
     {
         // Set the starting position to the left
@@ -562,7 +617,7 @@ public class GameManager : MonoBehaviour
           }
           return true;
       }*/
-    public void ToIncreaseLandHealthUsePasticide(int fieldID, int deduct)
+    public void ToIncreaseLandHealthUsePasticide(int fieldID,  int deduct)
     {
 
         if (fieldID == 0)
@@ -586,7 +641,7 @@ public class GameManager : MonoBehaviour
     internal IEnumerator ShowBoughtLand(string landname)
     {
         var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
-        UI_Manager.Instance.marketPopUp.SetActive(false);
+        UI_Manager.Instance.marketPopUpPanel.SetActive(false);
         if (landname == "wheat")
         {
             Cam.SwitchToCam(3);
@@ -602,17 +657,17 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(10f);
         //Cam.virtualCams[3].LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
         isShowingnewLand = false;
-        UI_Manager.Instance.marketPopUp.SetActive(true);
+        UI_Manager.Instance.marketPopUpPanel.SetActive(true);
         Cam.SwitchToCam(2);
         Cam.activeCamera.LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
 
     }
 
-    internal void ToDecreaseTHElandHealth(int fieldID, int deduct)
+    internal void ToDecreaseTHElandHealth(int fieldID, int deduct) 
     {
         if (fieldID == 0)
         {
-            UI_Manager.Instance.lhHolderTransform.GetChild(3).gameObject.GetComponent<LandHealth>().LandHealthDecrease(deduct);
+            UI_Manager.Instance.lhHolderTransform.GetChild(2).gameObject.GetComponent<LandHealth>().LandHealthDecrease(deduct);
         }
         else if (fieldID == 1)
         {
@@ -623,7 +678,7 @@ public class GameManager : MonoBehaviour
             UI_Manager.Instance.lhHolderTransform.GetChild(0).gameObject.GetComponent<LandHealth>().LandHealthDecrease(deduct);
         }
     }
-
+     
     public void PesticideboughtCount(int fieldID, bool check)
     {
         if (fieldID == 0)
@@ -684,18 +739,18 @@ public class GameManager : MonoBehaviour
                 UI_Manager.Instance.isWheatCropTimer = true;
 
             }
-            else if(!iswateredField2)
+            else if (!iswateredField2)
             {
                 UI_Manager.Instance.cropTimerHolder.GetChild(1).GetComponent<CropTimerBar>().GetPlant(plant, "second");
-                iswateredField2=true;
-                
+                iswateredField2 = true;
+
             }
             else if (!isHarvestField2)
             {
                 UI_Manager.Instance.cropTimerHolder.GetChild(1).GetComponent<CropTimerBar>().GetPlant(plant, "third");
                 isHarvestField2 = true;
             }
-            
+
         }
         else
         {
@@ -707,7 +762,7 @@ public class GameManager : MonoBehaviour
             }
             else if (iswateredField3)
             {
-                UI_Manager.Instance.cropTimerHolder.GetChild(0).GetComponent<CropTimerBar>().GetPlant(plant,"second");
+                UI_Manager.Instance.cropTimerHolder.GetChild(0).GetComponent<CropTimerBar>().GetPlant(plant, "second");
                 iswateredField3 = false;
             }
             else if (isHarvestField3)
@@ -717,5 +772,26 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public void ReSetCropTimerBar(int fieldID)
+    {
+        if (fieldID == 0)
+        {
+            UI_Manager.Instance.cropTimerHolder.GetChild(2).GetComponent<CropTimerBar>().UpdateHealthBar(0);
+            UI_Manager.Instance.isCarrotCropTimer= false;
+        }
+        else if (fieldID == 1)
+        {
+            UI_Manager.Instance.cropTimerHolder.GetChild(1).GetComponent<CropTimerBar>().UpdateHealthBar(0);
+            UI_Manager.Instance.isWheatCropTimer= false;
+
+        }
+        else
+        {
+            UI_Manager.Instance.cropTimerHolder.GetChild(0).GetComponent<CropTimerBar>().UpdateHealthBar(0);
+            UI_Manager.Instance.isTomatoCropTimer = false;
+    
+        }
+    }
     #endregion
+
 }
