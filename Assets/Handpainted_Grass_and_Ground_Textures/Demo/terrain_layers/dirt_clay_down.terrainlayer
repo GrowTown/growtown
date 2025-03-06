@@ -7,7 +7,7 @@ TerrainLayer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: dirt_clay_down
-  m_DiffuseTexture: {fileID: 2800000, guid: a7b05dec520c8cf4c8e08dfef1f84db4, type: 3}
+  m_DiffuseTexture: {fileID: 2800000, guid: 46cc1e28981d28949961007cbc078393, type: 3}
   m_NormalMapTexture: {fileID: 2800000, guid: c1f53e51bfd4d024c847b4600d3e89ab, type: 3}
   m_MaskMapTexture: {fileID: 0}
   m_TileSize: {x: 3, y: 3}
@@ -16,7 +16,7 @@ TerrainLayer:
   m_Metallic: 0
   m_Smoothness: 0
   m_NormalScale: 0.9
-  m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 1}
-  m_DiffuseRemapMax: {x: 0.8679245, y: 0.47244573, z: 0.20879315, w: 1}
+  m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 0}
+  m_DiffuseRemapMax: {x: 0.764151, y: 0.61484367, z: 0.19824673, w: 1}
   m_MaskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
   m_MaskMapRemapMax: {x: 1, y: 1, z: 1, w: 1}
