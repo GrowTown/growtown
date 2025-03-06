@@ -53,31 +53,25 @@ public async Task<string> GetPrincipal()
    
 
 public async Task<List<(Principal, List<(long, Principal, string, string, string)>)>> GetAllCollections()
-{
-    try
-    {
-        Debug.Log("🔄 Calling getAllCollections...");
-        CandidArg arg = CandidArg.FromCandid();
-        QueryResponse response = await this.Agent.QueryAsync(this.CanisterId, "getAllCollections", arg);
-        CandidArg reply = response.ThrowOrGetReply();
-
-        var rawResult = reply.ToObjects<List<(Principal, List<(long, Principal, string, string, string)>)>>(this.Converter);
-        
-        if (rawResult == null)
         {
-            Debug.LogWarning("⚠️ No collections found. Returning an empty list.");
-            return new List<(Principal, List<(long, Principal, string, string, string)>)>();
+            try
+            {
+                Debug.Log("🔄 Calling getAllCollections...");
+                CandidArg arg = CandidArg.FromCandid();
+                QueryResponse response = await this.Agent.QueryAsync(this.CanisterId, "getAllCollections", arg);
+                CandidArg reply = response.ThrowOrGetReply();
+                var rawResult = reply.ToObjects<List<(Principal, List<(long, Principal, string, string, string)>)>>(this.Converter) 
+                    ?? new List<(Principal, List<(long, Principal, string, string, string)>)>();
+                Debug.Log($"✅ Successfully retrieved {rawResult.Count} user collections.");
+                return rawResult;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"❌ Failed to fetch collections: {e.Message}");
+                return new List<(Principal, List<(long, Principal, string, string, string)>)>();
+            }
         }
 
-        Debug.Log($"✅ Successfully retrieved {rawResult.Count} user collections.");
-        return rawResult;
-    }
-    catch (Exception e)
-    {
-        Debug.LogError($"❌ Failed to fetch collections: {e.Message}");
-        return new List<(Principal, List<(long, Principal, string, string, string)>)>();
-    }
-}
         public async Task<(List<(uint, string, object, string, ulong)>, ulong, ulong)> CountListings(Principal collectionCanisterId, ulong chunkSize, ulong pageNo)
         {
             try

@@ -1,9 +1,7 @@
 ﻿#nullable enable
 using EdjCase.ICP.Agent.Agents;
 using EdjCase.ICP.Candid.Models;
-using EdjCase.ICP.Candid;
 using EdjCase.ICP.Agent.Responses;
-using EdjCase.ICP.Agent.Identities;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -66,18 +64,41 @@ namespace IC.GameKit
             Debug.Log("🔄 API_Manager starting, waiting for initialization...");
         }
 
-        public async Task FetchAllCollections()
+        public async Task<List<(Principal, List<(long, Principal, string, string, string)>)>> GetAllCollections()
         {
             if (!_isInitialized || _greetingClient == null)
             {
-                Debug.LogError("❌ API_Manager is not initialized. Call Initialize() first.");
-                return;
+                Debug.LogError("❌ API_Manager is not initialized. Cannot fetch collections.");
+                return new List<(Principal, List<(long, Principal, string, string, string)>)>();
             }
 
-            Debug.Log("🔄 Fetching all NFT Collections...");
-            var rawCollections = await _greetingClient.GetAllCollections();
+            try
+            {
+                Debug.Log("🔄 Initiating getAllCollections call to canister...");
+                CandidArg arg = CandidArg.FromCandid();
+                QueryResponse response = await _greetingClient.Agent.QueryAsync(_greetingClient.CanisterId, "getAllCollections", arg);
+                Debug.Log($"🔍 Query response received: {response}");
+                CandidArg reply = response.ThrowOrGetReply();
+                Debug.Log($"🔍 Raw CandidArg reply: {reply}");
+                var rawResult = reply.ToObjects<List<(Principal, List<(long, Principal, string, string, string)>)>>(_greetingClient.Converter)
+                    ?? new List<(Principal, List<(long, Principal, string, string, string)>)>();
+                Debug.Log($"✅ Successfully retrieved {rawResult.Count} user collections from canister.");
+                return rawResult;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"❌ Failed to fetch collections from getAllCollections: {e.Message}\nStackTrace: {e.StackTrace}");
+                return new List<(Principal, List<(long, Principal, string, string, string)>)>();
+            }
+        }
+
+        public async Task FetchAllCollections()
+        {
+            Debug.Log("🔄 Starting FetchAllCollections...");
+            var rawCollections = await GetAllCollections();
 
             _collectionsDict.Clear();
+            Debug.Log("🔍 Processing fetched collections...");
 
             foreach (var (userPrincipal, nftList) in rawCollections)
             {
@@ -113,7 +134,7 @@ namespace IC.GameKit
             return _collectionsDict.Values.SelectMany(c => c).ToList();
         }
 
-        public async Task FetchCurrentUserCollections()
+        public async Task FetchCurrentUserCollections(string userPrincipal = null)
         {
             if (!_isInitialized || _greetingClient == null)
             {
@@ -122,17 +143,18 @@ namespace IC.GameKit
             }
 
             Debug.Log("🔄 Fetching Current User's NFT Collections...");
-
-            CurrentUserPrincipal = await _greetingClient.GetPrincipal();
+            CurrentUserPrincipal = userPrincipal ?? await _greetingClient.GetPrincipal();
             Debug.Log($"🔹 Current User Principal: {CurrentUserPrincipal}");
 
-            var rawCollections = await _greetingClient.GetAllCollections();
+            Debug.Log("🔍 Fetching all collections for user filtering...");
+            var rawCollections = await GetAllCollections();
 
             _userCollections.Clear();
+            Debug.Log("🔍 Processing collections for current user...");
 
-            foreach (var (userPrincipal, nftList) in rawCollections)
+            foreach (var (userPrincipalFromCanister, nftList) in rawCollections)
             {
-                string userId = userPrincipal.ToText();
+                string userId = userPrincipalFromCanister.ToText();
                 _userCollections[userId] = new List<NFTCollection>();
 
                 foreach (var (timestamp, canisterId, name, symbol, metadata) in nftList)
@@ -153,12 +175,12 @@ namespace IC.GameKit
 
             if (_userCollections.TryGetValue(CurrentUserPrincipal, out var userCollections))
             {
-                Debug.Log($"✅ Found {userCollections.Count} collections for the current user.");
+                Debug.Log($"✅ Found {userCollections.Count} collections for the current user ({CurrentUserPrincipal}).");
                 OnCollectionsUpdated?.Invoke(userCollections);
             }
             else
             {
-                Debug.LogWarning("⚠️ No NFT collections found for the current user.");
+                Debug.LogWarning($"⚠️ No NFT collections found for the current user ({CurrentUserPrincipal}).");
                 OnCollectionsUpdated?.Invoke(new List<NFTCollection>());
             }
         }

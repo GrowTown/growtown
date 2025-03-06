@@ -17,7 +17,7 @@ namespace IC.GameKit
 {
     public class DeepLinkPlugin : MonoBehaviour
     {
-        TestICPAgent mTestICPAgent = null;
+        private TestICPAgent mTestICPAgent = null;
         private static DeepLinkPlugin instance;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -33,18 +33,9 @@ namespace IC.GameKit
 
         private void Awake()
         {
-#if UNITY_ANDROID || UNITY_IOS
-            Debug.Log("✅ Registering deep link event for Native App.");
-            Application.deepLinkActivated += OnDeepLinkActivated;
-
-            if (!string.IsNullOrEmpty(Application.absoluteURL))
-            {
-                Debug.Log("🔗 App opened via deep link: " + Application.absoluteURL);
-                OnDeepLinkActivated(Application.absoluteURL);
-            }
-#endif
             if (instance != null && instance != this)
             {
+                Debug.LogWarning("⚠ Duplicate DeepLinkPlugin found. Destroying this instance.");
                 Destroy(gameObject);
                 return;
             }
@@ -57,6 +48,17 @@ namespace IC.GameKit
                 Debug.LogError("❌ TestICPAgent not found in scene during Awake!");
             }
             Debug.Log($"✅ DeepLinkPlugin Awake on GameObject: {gameObject.name}");
+
+#if UNITY_ANDROID || UNITY_IOS
+            Debug.Log("✅ Registering deep link event for Native App.");
+            Application.deepLinkActivated += OnDeepLinkActivated;
+
+            if (!string.IsNullOrEmpty(Application.absoluteURL))
+            {
+                Debug.Log("🔗 App opened via deep link: " + Application.absoluteURL);
+                OnDeepLinkActivated(Application.absoluteURL);
+            }
+#endif
         }
 
         public void OpenBrowser()
@@ -260,4 +262,6 @@ namespace IC.GameKit
 #endif
         }
     }
+
+    
 }
