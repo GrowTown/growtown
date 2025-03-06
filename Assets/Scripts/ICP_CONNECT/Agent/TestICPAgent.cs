@@ -20,6 +20,8 @@ namespace IC.GameKit
         public string greetFrontend = "https://s6dkc-nyaaa-aaaac-albta-cai.icp0.io/";
         public string greetBackendCanister = "7nk3o-laaaa-aaaac-ahmga-cai";
         public string icHost = "https://icp0.io";
+
+        public bool isSceneLoaded =false;
         private Ed25519Identity mEd25519Identity = null;
         private DelegationIdentity mDelegationIdentity = null;
 
@@ -31,7 +33,10 @@ namespace IC.GameKit
             set
             {
                 mDelegationIdentity = value;
-                StartCoroutine(EnableButtonsCoroutine());
+                if (!isSceneLoaded){
+StartCoroutine(EnableButtonsCoroutine());
+isSceneLoaded = true;
+                }
             }
         }
 
@@ -201,39 +206,40 @@ namespace IC.GameKit
                 {
                     await Task.Delay(2000); // Wait 2 seconds per attempt
                     Debug.Log($"⏳ Attempt {attempts + 1}/{maxAttempts}: Fetching collections...");
-                    allCollections = await API_Manager.Instance.GetAllCollections();
-                    if (allCollections.Any(c => c.Item1.ToText() == userPrincipalString))
-                    {
-                        Debug.Log($"✅ Found {allCollections.Count} collections for user {userPrincipalString}");
-                        break;
-                    }
-                    attempts++;
-                    Debug.Log($"⚠ No collections found yet for {userPrincipalString}");
+                    await API_Manager.Instance.FetchAllCollections();
+
+                    // if (allCollections.Any(c => c.Item1.ToText() == userPrincipalString))
+                    // {
+                    //     Debug.Log($"✅ Found {allCollections.Count} collections for user {userPrincipalString}");
+                    //     break;
+                    // }
+                    // attempts++;
+                    Debug.Log($"collection are fetching");
                 }
 
-                if (allCollections != null && allCollections.Any())
-                {
-                    foreach ((Principal principal, List<(long, Principal, string, string, string)> collections) in allCollections) // Explicit types added
-                    {
-                        Debug.Log($"User: {principal.ToText()}, Collections: {collections.Count}");
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"⚠ No collections found for {userPrincipalString} after {maxAttempts} attempts.");
-                }
+                // if (allCollections != null && allCollections.Any())
+                // {
+                //     foreach ((Principal principal, List<(long, Principal, string, string, string)> collections) in allCollections) // Explicit types added
+                //     {
+                //         Debug.Log($"User: {principal.ToText()}, Collections: {collections.Count}");
+                //     }
+                // }
+                // else
+                // {
+                //     Debug.LogWarning($"⚠ No collections found for {userPrincipalString} after {maxAttempts} attempts.");
+                // }
 
-                Debug.Log("🔟 Fetching user collections...");
-                try
-                {
-                    await API_Manager.Instance.FetchCurrentUserCollections(userPrincipalString);
-                    Debug.Log("✅ User collections fetched successfully.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"❌ Failed to fetch user collections: {ex.Message}");
-                    Debug.LogWarning("⚠ Proceeding without user collections...");
-                }
+                // Debug.Log("🔟 Fetching user collections...");
+                // try
+                // {
+                //     await API_Manager.Instance.FetchAllCollections();
+                //     Debug.Log("✅ User collections fetched successfully.");
+                // }
+                // catch (Exception ex)
+                // {
+                //     Debug.LogError($"❌ Failed to fetch user collections: {ex.Message}");
+                //     Debug.LogWarning("⚠ Proceeding without user collections...");
+                // }
 
                 Debug.Log("🔚 Starting game...");
                 StartGameFun();

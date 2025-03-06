@@ -58,8 +58,7 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
             {
                 Debug.Log("🔄 Calling getAllCollections...");
                 CandidArg arg = CandidArg.FromCandid();
-                QueryResponse response = await this.Agent.QueryAsync(this.CanisterId, "getAllCollections", arg);
-                CandidArg reply = response.ThrowOrGetReply();
+                CandidArg reply = await this.Agent.CallAsynchronousAndWaitAsync(this.CanisterId, "getAllCollections", arg);
                 var rawResult = reply.ToObjects<List<(Principal, List<(long, Principal, string, string, string)>)>>(this.Converter) 
                     ?? new List<(Principal, List<(long, Principal, string, string, string)>)>();
                 Debug.Log($"✅ Successfully retrieved {rawResult.Count} user collections.");
