@@ -1,23 +1,27 @@
 using UnityEngine;
 using UnityEngine.UI;
 using EdjCase.ICP.Agent.Agents;
+using EdjCase.ICP.Agent.Agents.Http;
 using EdjCase.ICP.Agent.Identities;
 using EdjCase.ICP.Candid.Models;
 using System;
-using System.Runtime.InteropServices;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Collections.Generic;
+using System.Linq; // Added this line to resolve 'Any' errors
 
 namespace IC.GameKit
 {
     public class TestICPAgent : MonoBehaviour
     {
         public Button exitButton;
-        public string sceneToLoad = "GrowTownGameScene";         
+        public string sceneToLoad = "GrowTownGameScene";
         public string greetFrontend = "https://s6dkc-nyaaa-aaaac-albta-cai.icp0.io/";
         public string greetBackendCanister = "7nk3o-laaaa-aaaac-ahmga-cai";
-
-        Ed25519Identity mEd25519Identity = null;
-        DelegationIdentity mDelegationIdentity = null;
+        public string icHost = "https://icp0.io";
+        private Ed25519Identity mEd25519Identity = null;
+        private DelegationIdentity mDelegationIdentity = null;
 
         public Ed25519Identity TestIdentity => mEd25519Identity;
 
@@ -27,31 +31,30 @@ namespace IC.GameKit
             set
             {
                 mDelegationIdentity = value;
-                EnableButtons();
+                StartCoroutine(EnableButtonsCoroutine());
             }
         }
 
-        private bool isSceneLoading = false; // Track scene loading state
+        private bool isSceneLoading = false;
+
+        public static TestICPAgent Instance { get; private set; }
 
         void Awake()
         {
-            // Ensure only one instance exists
             TestICPAgent[] agents = FindObjectsOfType<TestICPAgent>();
             if (agents.Length > 1)
             {
+                Debug.LogWarning("⚠ Duplicate TestICPAgent found. Destroying this instance.");
                 Destroy(gameObject);
                 return;
             }
-            DontDestroyOnLoad(gameObject); // Persist across scenes
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
 
         void Start()
         {
-#if UNITY_WEBGL
-            Debug.Log("ℹ️ Skipping Wasmtime on WebGL.");
-#else
-            WasmtimeLoader.LoadWasmtime();
-#endif
+            Debug.Log("ℹ️ Starting TestICPAgent...");
             exitButton.onClick.AddListener(ExitGame);
             mEd25519Identity = Ed25519Identity.Generate();
         }
@@ -67,7 +70,7 @@ namespace IC.GameKit
             }
             else
             {
-                Debug.LogWarning("Scene " + sceneToLoad + " is already loaded, loading, or rendering failed. Skipping load.");
+                Debug.LogWarning($"Scene {sceneToLoad} is already loaded, loading, or rendering failed. Skipping load.");
             }
         }
 
@@ -85,119 +88,181 @@ namespace IC.GameKit
 #endif
         }
 
-        public void EnableButtons()
+        private System.Collections.IEnumerator EnableButtonsCoroutine()
+        {
+            yield return EnableButtonsAsync().AsCoroutine();
+        }
+
+        public async Task EnableButtonsAsync()
         {
             if (mDelegationIdentity != null)
             {
                 Debug.Log("✅ Delegation Identity is set. Calling AutoCreateUser...");
-                AutoCreateUser();
+                await AutoCreateUserAsync();
             }
             else
             {
-                Debug.LogWarning("⚠ DelegationIdentity is null. Cannot enable buttons.");
+                Debug.LogWarning("⚠ DelegationIdentity is null. Proceeding with anonymous identity...");
+                await AutoCreateUserAsync(true);
             }
         }
 
-        private async void AutoCreateUser()
+        private async Task AutoCreateUserAsync(bool useAnonymous = false)
         {
-            if (DelegationIdentity == null)
+            Debug.Log("1️⃣ Creating HttpAgent...");
+            var httpClient = new HttpClient { BaseAddress = new Uri(icHost) };
+            var agentHttpClient = new DefaultHttpClient(httpClient);
+            IAgent agent = new HttpAgent(
+                httpClient: agentHttpClient,
+                identity: useAnonymous || mDelegationIdentity == null ? null : mDelegationIdentity
+            );
+            Debug.Log($"Agent Identity: {(agent.Identity != null ? agent.Identity.GetPrincipal().ToText() : "Anonymous")}");
+
+            Debug.Log("2️⃣ Setting canisterId...");
+            Principal canisterId;
+            try
             {
-                Debug.LogError("❌ DelegationIdentity is NULL, API call cannot proceed!");
-                StartGameFun(); // Fallback, but check for rendering and recursion
+                canisterId = Principal.FromText(greetBackendCanister);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Failed to parse canister ID '{greetBackendCanister}': {ex.Message}");
+                StartGameFun();
                 return;
             }
-            var agent = new HttpAgent(DelegationIdentity);
-            var canisterId = Principal.FromText(greetBackendCanister);
+
+            Debug.Log("3️⃣ Creating GreetingClient...");
             var client = new GreetingClient.GreetingClient(agent, canisterId);
 
-            // Initialize API_Manager explicitly
-            API_Manager.Instance.Initialize(client);
+            Debug.Log("4️⃣ Checking API_Manager.Instance...");
+            if (API_Manager.Instance == null)
+            {
+                Debug.LogError("❌ API_Manager.Instance is null! Creating new instance...");
+                GameObject apiManagerObj = new GameObject("API_Manager");
+                API_Manager apiManager = apiManagerObj.AddComponent<API_Manager>();
+                apiManager.Initialize(client);
+            }
+            else
+            {
+                Debug.Log("5️⃣ Initializing API_Manager...");
+                API_Manager.Instance.Initialize(client);
+            }
 
             try
             {
-                Debug.Log("🔄 Fetching user principal...");
-                string userPrincipalString = await client.GetPrincipal();
-                Principal userPrincipal;
+                Debug.Log("6️⃣ Fetching user principal...");
+                string userPrincipalString;
                 try
                 {
-                    userPrincipal = Principal.FromText(userPrincipalString);
-                    Debug.LogError($" Principal format: {userPrincipalString}");
-                    DataTransfer.UserPrincipal = userPrincipal.ToString();
+                    var principalTask = client.GetPrincipal();
+                    Debug.Log("6.1️⃣ Initiated GetPrincipal call...");
+                    userPrincipalString = await Task.WhenAny(principalTask, Task.Delay(10000)) == principalTask
+                        ? principalTask.Result
+                        : throw new TimeoutException("GetPrincipal timed out after 10s");
+                    Debug.Log("6.2️⃣ GetPrincipal completed.");
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"❌ Invalid Principal format: {userPrincipalString}. Error: {ex.Message}");
-                    StartGameFun(); // Fallback, but check for rendering and recursion
-                    return;
+                    Debug.LogError($"❌ Failed to fetch principal: {ex.Message}");
+                    Debug.LogWarning("⚠ Falling back to anonymous principal...");
+                    userPrincipalString = "2vxsx-fae"; // Anonymous principal
                 }
-                string uuid = GenerateUUID();
-                Debug.Log($"✅ Principal response: {userPrincipal}");
+
+                Principal userPrincipal = Principal.FromText(userPrincipalString);
+                Debug.Log($"✅ Principal: {userPrincipal}");
+                DataTransfer.UserPrincipal = userPrincipal.ToString();
+
+                string uuid = Guid.NewGuid().ToString();
                 Debug.Log($"✅ Generated UUID: {uuid}");
+
+                Debug.Log("7️⃣ Preparing create_user call...");
                 CandidArg arg = CandidArg.FromCandid(
-                    CandidTypedValue.Principal(userPrincipal),
-                    CandidTypedValue.Text(uuid)
+                    CandidTypedValue.FromObject(userPrincipal),
+                    CandidTypedValue.FromObject(uuid)
                 );
-                Debug.Log("🔄 Calling create_user on canister...");
-                CandidArg reply = await agent.CallAsynchronousAndWaitAsync(canisterId, "create_user", arg);
-                Debug.Log($"✅ create_user response: {reply}");
-                await API_Manager.Instance.FetchCurrentUserCollections(); // Fetch collections after user creation
-                StartGameFun(); // Load scene only once after success, if rendering is stable
+
+                Debug.Log("8️⃣ Calling create_user on canister...");
+                try
+                {
+                    CandidArg reply = await agent.CallAsync(canisterId, "create_user", arg);
+                    Debug.Log($"✅ create_user response: {reply}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"❌ Failed to call create_user: {ex.Message}");
+                    Debug.LogWarning("⚠ Skipping create_user due to error...");
+                }
+
+                Debug.Log("9️⃣ Waiting for collections to propagate...");
+                int attempts = 0;
+                const int maxAttempts = 5;
+                List<(Principal, List<(long, Principal, string, string, string)>)> allCollections = null; // Explicitly typed
+                while (attempts < maxAttempts)
+                {
+                    await Task.Delay(2000); // Wait 2 seconds per attempt
+                    Debug.Log($"⏳ Attempt {attempts + 1}/{maxAttempts}: Fetching collections...");
+                    allCollections = await API_Manager.Instance.GetAllCollections();
+                    if (allCollections.Any(c => c.Item1.ToText() == userPrincipalString))
+                    {
+                        Debug.Log($"✅ Found {allCollections.Count} collections for user {userPrincipalString}");
+                        break;
+                    }
+                    attempts++;
+                    Debug.Log($"⚠ No collections found yet for {userPrincipalString}");
+                }
+
+                if (allCollections != null && allCollections.Any())
+                {
+                    foreach ((Principal principal, List<(long, Principal, string, string, string)> collections) in allCollections) // Explicit types added
+                    {
+                        Debug.Log($"User: {principal.ToText()}, Collections: {collections.Count}");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"⚠ No collections found for {userPrincipalString} after {maxAttempts} attempts.");
+                }
+
+                Debug.Log("🔟 Fetching user collections...");
+                try
+                {
+                    await API_Manager.Instance.FetchCurrentUserCollections(userPrincipalString);
+                    Debug.Log("✅ User collections fetched successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"❌ Failed to fetch user collections: {ex.Message}");
+                    Debug.LogWarning("⚠ Proceeding without user collections...");
+                }
+
+                Debug.Log("🔚 Starting game...");
+                StartGameFun();
             }
             catch (Exception e)
             {
-                Debug.LogError($"❌ Failed to create user: {e.Message}\nStackTrace: {e.StackTrace}");
-                StartGameFun(); // Fallback, but check for rendering and recursion
+                Debug.LogError($"❌ Unexpected error in AutoCreateUserAsync: {e.Message}\nStackTrace: {e.StackTrace}");
+                StartGameFun();
             }
         }
 
-        private string GenerateUUID()
-        {
-            return Guid.NewGuid().ToString();
-        }
-
-        // Helper method to check if rendering has failed (based on logcat errors)
         private bool IsRenderingFailed()
         {
-            // This is a simple check; in a real scenario, you might track errors or use Unity’s debug logs
             return Application.HasProLicense() && (Screen.currentResolution.width == 0 || Screen.currentResolution.height == 0);
         }
     }
 
-    public static class WasmtimeLoader
+    public static class TaskExtensions
     {
-#if UNITY_ANDROID
-        private const string WasmtimeLib = "wasmtime";
-#elif UNITY_IOS
-        private const string WasmtimeLib = "__Internal";
-#elif UNITY_STANDALONE_OSX
-        private const string WasmtimeLib = "libwasmtime";
-#else
-        private const string WasmtimeLib = "unsupported";
-#endif
-
-        [DllImport(WasmtimeLib, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr wasmtime_config_new();
-
-        public static void LoadWasmtime()
+        public static System.Collections.IEnumerator AsCoroutine(this Task task)
         {
-#if UNITY_WEBGL
-            Debug.Log("ℹ️ Wasmtime not supported on WebGL. Consider WebAssembly alternative.");
-#else
-            try
+            while (!task.IsCompleted)
             {
-                IntPtr config = wasmtime_config_new();
-                if (config == IntPtr.Zero)
-                {
-                    Debug.LogError("❌ Wasmtime loaded but initialization failed.");
-                    return;
-                }
-                Debug.Log("✅ Wasmtime successfully loaded!");
+                yield return null;
             }
-            catch (Exception e)
+            if (task.IsFaulted)
             {
-                Debug.LogError($"❌ Failed to load Wasmtime: {e.Message}");
+                throw task.Exception;
             }
-#endif
         }
     }
 }

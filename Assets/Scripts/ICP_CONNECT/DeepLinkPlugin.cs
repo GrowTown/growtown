@@ -10,14 +10,14 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
 
 namespace IC.GameKit
 {
     public class DeepLinkPlugin : MonoBehaviour
     {
-        TestICPAgent mTestICPAgent = null;
+        private TestICPAgent mTestICPAgent = null;
         private static DeepLinkPlugin instance;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -33,6 +33,22 @@ namespace IC.GameKit
 
         private void Awake()
         {
+            if (instance != null && instance != this)
+            {
+                Debug.LogWarning("⚠ Duplicate DeepLinkPlugin found. Destroying this instance.");
+                Destroy(gameObject);
+                return;
+            }
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            mTestICPAgent = FindObjectOfType<TestICPAgent>();
+            if (mTestICPAgent == null)
+            {
+                Debug.LogError("❌ TestICPAgent not found in scene during Awake!");
+            }
+            Debug.Log($"✅ DeepLinkPlugin Awake on GameObject: {gameObject.name}");
+
 #if UNITY_ANDROID || UNITY_IOS
             Debug.Log("✅ Registering deep link event for Native App.");
             Application.deepLinkActivated += OnDeepLinkActivated;
@@ -43,26 +59,6 @@ namespace IC.GameKit
                 OnDeepLinkActivated(Application.absoluteURL);
             }
 #endif
-            // Ensure only one instance exists
-            if (instance != null && instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            instance = this;
-            DontDestroyOnLoad(gameObject); // Persist across scenes to handle deep links
-
-            mTestICPAgent = FindObjectOfType<TestICPAgent>(); // Fetch dynamically in Awake
-            if (mTestICPAgent == null)
-            {
-                Debug.LogError("❌ TestICPAgent not found in scene during Awake!");
-            }
-            Debug.Log($"✅ DeepLinkPlugin Awake on GameObject: {gameObject.name}");
-        }
-
-        public void Start()
-        {
-            // Removed mTestICPAgent assignment from Start since it’s now in Awake
         }
 
         public void OpenBrowser()
@@ -113,7 +109,7 @@ namespace IC.GameKit
             }
 
             Debug.Log("✅ Delegation identity successfully created from deep link!");
-            ProcessDelegation(delegationIdentity);
+            StartCoroutine(ProcessDelegationCoroutine(delegationIdentity));
 #endif
         }
 
@@ -125,7 +121,7 @@ namespace IC.GameKit
             if (delegationIdentity != null)
             {
                 Debug.Log("✅ WebGL Delegation identity successfully created!");
-                ProcessDelegation(delegationIdentity);
+                StartCoroutine(ProcessDelegationCoroutine(delegationIdentity));
             }
             else
             {
@@ -142,55 +138,48 @@ namespace IC.GameKit
             else
             {
                 Debug.LogError("❌ No active DeepLinkPlugin instance found in scene! Cannot process delegation.");
-                // Prevent recursive scene load by checking if the scene is already loaded and rendering is stable
                 string currentScene = SceneManager.GetActiveScene().name;
                 if (currentScene != "GrowTownGameScene" && !IsRenderingFailed())
                 {
-                    SceneManager.LoadScene("GrowTownGameScene"); // Fallback navigation
-                }
-                else
-                {
-                    Debug.LogWarning("Scene GrowTownGameScene is already loaded or rendering failed. Skipping load.");
+                    SceneManager.LoadScene("GrowTownGameScene");
                 }
             }
         }
 #endif
 
-        private void ProcessDelegation(DelegationIdentity delegationIdentity)
+        private System.Collections.IEnumerator ProcessDelegationCoroutine(DelegationIdentity delegationIdentity)
+        {
+            yield return ProcessDelegationAsync(delegationIdentity).AsCoroutine();
+        }
+
+        private async Task ProcessDelegationAsync(DelegationIdentity delegationIdentity)
         {
             Debug.Log("🔄 Processing delegation...");
             if (mTestICPAgent == null)
             {
-                mTestICPAgent = FindObjectOfType<TestICPAgent>(); // Retry fetch if null
+                mTestICPAgent = FindObjectOfType<TestICPAgent>();
             }
 
             if (mTestICPAgent != null)
             {
                 mTestICPAgent.DelegationIdentity = delegationIdentity;
-                mTestICPAgent.EnableButtons();
+                await mTestICPAgent.EnableButtonsAsync();
                 Debug.Log("✅ Delegation set, starting game...");
-                mTestICPAgent.StartGameFun(); // Only call once per successful delegation
+                mTestICPAgent.StartGameFun();
             }
             else
             {
                 Debug.LogError("❌ TestICPAgent is NULL; cannot assign delegation identity! Forcing scene load...");
-                // Prevent recursive scene load and check rendering
                 string currentScene = SceneManager.GetActiveScene().name;
                 if (currentScene != "GrowTownGameScene" && !IsRenderingFailed())
                 {
-                    SceneManager.LoadScene("GrowTownGameScene"); // Fallback
-                }
-                else
-                {
-                    Debug.LogWarning("Scene GrowTownGameScene is already loaded or rendering failed. Skipping load.");
+                    SceneManager.LoadScene("GrowTownGameScene");
                 }
             }
         }
 
-        // Helper method to check if rendering has failed (based on logcat errors)
         private static bool IsRenderingFailed()
         {
-            // This is a simple check; in a real scenario, you might track errors or use Unity’s debug logs
             return Application.HasProLicense() && (Screen.currentResolution.width == 0 || Screen.currentResolution.height == 0);
         }
 
@@ -273,4 +262,6 @@ namespace IC.GameKit
 #endif
         }
     }
+
+    
 }
