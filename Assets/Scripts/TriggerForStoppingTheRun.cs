@@ -24,6 +24,10 @@ public class TriggerForStoppingTheRun : MonoBehaviour
 
             }
         }
+        else
+        {
+
+        }
     }
 
     private void OnTriggerExit(Collider other)
