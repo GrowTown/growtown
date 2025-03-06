@@ -200,7 +200,7 @@ isSceneLoaded = true;
 
                 Debug.Log("9️⃣ Waiting for collections to propagate...");
                 int attempts = 0;
-                const int maxAttempts = 5;
+                const int maxAttempts = 1;
                 List<(Principal, List<(long, Principal, string, string, string)>)> allCollections = null; // Explicitly typed
                 while (attempts < maxAttempts)
                 {
@@ -213,7 +213,7 @@ isSceneLoaded = true;
                     //     Debug.Log($"✅ Found {allCollections.Count} collections for user {userPrincipalString}");
                     //     break;
                     // }
-                    // attempts++;
+                    attempts++;
                     Debug.Log($"collection are fetching");
                 }
 
