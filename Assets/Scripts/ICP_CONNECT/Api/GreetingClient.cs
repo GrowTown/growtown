@@ -20,20 +20,22 @@ namespace GreetingClient
 
         public GreetingClient(IAgent agent, Principal canisterId)
         {
-            this.CanisterId = canisterId;
-            this.Agent = agent;
-            this.Converter = null;
+            Agent = agent;
+            CanisterId = canisterId;
+            Converter = null;
+            Debug.Log($"✅ GreetingClient initialized with canister: {canisterId}");
         }
 
         public async Task<string> Greet()
-        { 
+        {
+            Debug.Log("🔄 Sending Greet request...");
             try
             {
-                Debug.Log("🔄 Sending Greet request...");
                 CandidArg arg = CandidArg.FromCandid();
-                QueryResponse response = await this.Agent.QueryAsync(this.CanisterId, "greet", arg);
+                QueryResponse response = await Agent.QueryAsync(CanisterId, "greet", arg);
+                Debug.Log("✅ Greet query sent.");
                 CandidArg reply = response.ThrowOrGetReply();
-                string result = reply.ToObjects<string>(this.Converter);
+                string result = reply.ToObjects<string>(Converter);
                 Debug.Log($"✅ Greeting received: {result}");
                 return result;
             }
@@ -43,26 +45,39 @@ namespace GreetingClient
                 return "Error fetching greeting";
             }
         }
-public async Task<string> GetPrincipal() 
-{
-    CandidArg arg = CandidArg.FromCandid();
-    QueryResponse response = await this.Agent.QueryAsync(this.CanisterId, "getPrincipal", arg);
-    CandidArg reply = response.ThrowOrGetReply();
-    return reply.ToObjects<string>(this.Converter);
-}
-   
 
-public async Task<List<(Principal, List<(long, Principal, string, string, string)>)>> GetAllCollections()
+        public async Task<string> GetPrincipal()
         {
+            Debug.Log("🔄 Fetching principal...");
             try
             {
-                Debug.Log("🔄 Calling getAllCollections...");
                 CandidArg arg = CandidArg.FromCandid();
-                CandidArg reply = await this.Agent.CallAsynchronousAndWaitAsync(this.CanisterId, "getAllCollections", arg);
-                var rawResult = reply.ToObjects<List<(Principal, List<(long, Principal, string, string, string)>)>>(this.Converter) 
+                QueryResponse response = await Agent.QueryAsync(CanisterId, "getPrincipal", arg);
+                Debug.Log("✅ GetPrincipal query sent.");
+                CandidArg reply = response.ThrowOrGetReply();
+                string result = reply.ToObjects<string>(Converter);
+                Debug.Log($"✅ Principal fetched: {result}");
+                return result;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"❌ Failed to fetch principal: {e.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<(Principal, List<(long, Principal, string, string, string)>)>> GetAllCollections()
+        {
+            Debug.Log("🔄 Calling getAllCollections...");
+            try
+            {
+                CandidArg arg = CandidArg.FromCandid();
+                CandidArg reply = await Agent.CallAsynchronousAndWaitAsync(CanisterId, "getAllCollections", arg);
+                Debug.Log("✅ getAllCollections call completed.");
+                var result = reply.ToObjects<List<(Principal, List<(long, Principal, string, string, string)>)>>(Converter)
                     ?? new List<(Principal, List<(long, Principal, string, string, string)>)>();
-                Debug.Log($"✅ Successfully retrieved {rawResult.Count} user collections.");
-                return rawResult;
+                Debug.Log($"✅ Retrieved {result.Count} user collections.");
+                return result;
             }
             catch (Exception e)
             {
@@ -73,24 +88,22 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
 
         public async Task<(List<(uint, string, object, string, ulong)>, ulong, ulong)> CountListings(Principal collectionCanisterId, ulong chunkSize, ulong pageNo)
         {
+            Debug.Log($"🔄 Calling countListings for canister {collectionCanisterId}...");
             try
             {
-                Debug.Log("🔄 Calling countListings...");
                 var args = CandidArg.FromCandid(
                     CandidTypedValue.Principal(collectionCanisterId),
                     CandidTypedValue.Nat(chunkSize),
                     CandidTypedValue.Nat(pageNo)
                 );
 
-              CandidArg reply = await this.Agent.CallAsynchronousAndWaitAsync(this.CanisterId, "countlistings", args);
+                CandidArg reply = await Agent.CallAsynchronousAndWaitAsync(CanisterId, "countlistings", args);
+                Debug.Log($"✅ Raw response from countListings: {reply}");
 
-                // Log the raw response for debugging
-                Debug.Log($"✅ Raw response from canister: {reply}");
-
-                var result = reply.ToObjects<Dictionary<string, object>>(this.Converter);
+                var result = reply.ToObjects<Dictionary<string, object>>(Converter);
                 if (result.ContainsKey("err"))
                 {
-                    Debug.LogWarning($"⚠️ Error from canister: {result["err"]}");
+                    Debug.LogWarning($"⚠ Error from canister: {result["err"]}");
                     return (new List<(uint, string, object, string, ulong)>(), 0, 0);
                 }
 
@@ -102,15 +115,14 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
                         return (
                             Convert.ToUInt32(tuple[0]), // TokenIndex
                             tuple[1].ToString()!,       // TokenIdentifier
-                            tuple[2],                   // Listing (kept as object)
+                            tuple[2],                   // Listing
                             tuple[3].ToString()!,       // Metadata
-                            Convert.ToUInt64(tuple[4])  // Price (Nat)
+                            Convert.ToUInt64(tuple[4])  // Price
                         );
                     }).ToList();
 
                 ulong currentPage = Convert.ToUInt64(okResult["current_page"]);
                 ulong totalPages = Convert.ToUInt64(okResult["total_pages"]);
-
                 Debug.Log($"✅ Listings fetched: {data.Count} on page {currentPage}/{totalPages}");
                 return (data, currentPage, totalPages);
             }
@@ -123,9 +135,9 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
 
         public async Task<(bool success, string? error)> PurchaseNft(Principal collectionCanisterId, string tokenId, ulong price, string buyerAccountId)
         {
+            Debug.Log($"🔄 Calling purchaseNft for token {tokenId}...");
             try
             {
-                Debug.Log("🔄 Calling purchaseNft...");
                 var args = CandidArg.FromCandid(
                     CandidTypedValue.Principal(collectionCanisterId),
                     CandidTypedValue.Text(tokenId),
@@ -133,17 +145,17 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
                     CandidTypedValue.Text(buyerAccountId)
                 );
 
-                CandidArg reply = await this.Agent.CallAsynchronousAndWaitAsync(this.CanisterId, "purchaseNft", args);
-                var result = reply.ToObjects<Dictionary<string, object>>(this.Converter);
+                CandidArg reply = await Agent.CallAsynchronousAndWaitAsync(CanisterId, "purchaseNft", args);
+                Debug.Log("✅ purchaseNft call completed.");
+                var result = reply.ToObjects<Dictionary<string, object>>(Converter);
 
                 if (result.ContainsKey("ok"))
                 {
-                    var okResult = (List<object>)result["ok"];
-                    Debug.Log("✅ NFT purchase successful");
+                    Debug.Log("✅ NFT purchase successful.");
                     return (true, null);
                 }
-                
-                Debug.LogWarning($"⚠️ Purchase failed: {result["err"]}");
+
+                Debug.LogWarning($"⚠ Purchase failed: {result["err"]}");
                 return (false, result["err"].ToString());
             }
             catch (Exception e)
@@ -155,24 +167,25 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
 
         public async Task<(bool success, string? error)> SettlePurchase(Principal collectionCanisterId, string paymentAddress)
         {
+            Debug.Log($"🔄 Calling settlepurchase for canister {collectionCanisterId}...");
             try
             {
-                Debug.Log("🔄 Calling settlepurchase...");
                 var args = CandidArg.FromCandid(
                     CandidTypedValue.Principal(collectionCanisterId),
                     CandidTypedValue.Text(paymentAddress)
                 );
 
-                CandidArg reply = await this.Agent.CallAsynchronousAndWaitAsync(this.CanisterId, "settlepurchase", args);
-                var result = reply.ToObjects<Dictionary<string, object>>(this.Converter);
+                CandidArg reply = await Agent.CallAsynchronousAndWaitAsync(CanisterId, "settlepurchase", args);
+                Debug.Log("✅ settlepurchase call completed.");
+                var result = reply.ToObjects<Dictionary<string, object>>(Converter);
 
                 if (result.ContainsKey("ok"))
                 {
-                    Debug.Log("✅ Purchase settled successfully");
+                    Debug.Log("✅ Purchase settled successfully.");
                     return (true, null);
                 }
-                
-                Debug.LogWarning($"⚠️ Settlement failed: {result["err"]}");
+
+                Debug.LogWarning($"⚠ Settlement failed: {result["err"]}");
                 return (false, result["err"].ToString());
             }
             catch (Exception e)
@@ -184,15 +197,15 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
 
         public async Task TriggerBalanceNftSettlement(Principal collectionCanisterId)
         {
+            Debug.Log($"🔄 Triggering balance_nft_settelment for canister {collectionCanisterId}...");
             try
             {
-                Debug.Log("🔄 Triggering balance_nft_settelment...");
                 var args = CandidArg.FromCandid(
                     CandidTypedValue.Principal(collectionCanisterId)
                 );
-                
-                await this.Agent.CallAsynchronousAndWaitAsync(this.CanisterId, "balance_nft_settelment", args);
-                Debug.Log("✅ Balance settlement triggered successfully");
+
+                await Agent.CallAsynchronousAndWaitAsync(CanisterId, "balance_nft_settelment", args);
+                Debug.Log("✅ Balance settlement triggered successfully.");
             }
             catch (Exception e)
             {
@@ -202,22 +215,23 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
 
         public async Task<(List<(uint, string, object, string)>, ulong, ulong)> GetAllUserActivity(string buyerId, ulong chunkSize, ulong pageNo)
         {
+            Debug.Log($"🔄 Calling alluseractivity for buyer {buyerId}...");
             try
             {
-                Debug.Log("🔄 Calling alluseractivity...");
                 var args = CandidArg.FromCandid(
                     CandidTypedValue.Text(buyerId),
                     CandidTypedValue.Nat(chunkSize),
                     CandidTypedValue.Nat(pageNo)
                 );
 
-                QueryResponse response = await this.Agent.QueryAsync(this.CanisterId, "alluseractivity", args);
+                QueryResponse response = await Agent.QueryAsync(CanisterId, "alluseractivity", args);
+                Debug.Log("✅ alluseractivity query sent.");
                 CandidArg reply = response.ThrowOrGetReply();
-                var result = reply.ToObjects<Dictionary<string, object>>(this.Converter);
+                var result = reply.ToObjects<Dictionary<string, object>>(Converter);
 
                 if (result.ContainsKey("err"))
                 {
-                    Debug.LogWarning($"⚠️ Error from canister: {result["err"]}");
+                    Debug.LogWarning($"⚠ Error from canister: {result["err"]}");
                     return (new List<(uint, string, object, string)>(), 0, 0);
                 }
 
@@ -236,7 +250,6 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
 
                 ulong currentPage = Convert.ToUInt64(okResult["current_page"]);
                 ulong totalPages = Convert.ToUInt64(okResult["total_pages"]);
-
                 Debug.Log($"✅ User activities fetched: {data.Count} on page {currentPage}/{totalPages}");
                 return (data, currentPage, totalPages);
             }
@@ -251,9 +264,9 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
                           List<(string, uint, string, string, Principal, ulong?)> unboughtNFTs)> 
             GetUserNFTCollection(Principal collectionCanisterId, string userAccountId, ulong chunkSize, ulong pageNo)
         {
+            Debug.Log($"🔄 Calling userNFTcollection for user {userAccountId}...");
             try
             {
-                Debug.Log("🔄 Calling userNFTcollection...");
                 var args = CandidArg.FromCandid(
                     CandidTypedValue.Principal(collectionCanisterId),
                     CandidTypedValue.Text(userAccountId),
@@ -261,13 +274,14 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
                     CandidTypedValue.Nat(pageNo)
                 );
 
-                QueryResponse response = await this.Agent.QueryAsync(this.CanisterId, "userNFTcollection", args);
+                QueryResponse response = await Agent.QueryAsync(CanisterId, "userNFTcollection", args);
+                Debug.Log("✅ userNFTcollection query sent.");
                 CandidArg reply = response.ThrowOrGetReply();
-                var result = reply.ToObjects<Dictionary<string, object>>(this.Converter);
+                var result = reply.ToObjects<Dictionary<string, object>>(Converter);
 
                 if (result.ContainsKey("err"))
                 {
-                    Debug.LogWarning($"⚠️ Error from canister: {result["err"]}");
+                    Debug.LogWarning($"⚠ Error from canister: {result["err"]}");
                     return (new List<(string, uint, string, string, Principal, ulong?)>(), 
                            new List<(string, uint, string, string, Principal, ulong?)>());
                 }
@@ -291,16 +305,19 @@ public async Task<List<(Principal, List<(long, Principal, string, string, string
             }
         }
 
-        private (string, uint, string, string, Principal, ulong?) ConvertNFTTuple(List<object> tuple)
-        {
-            return (
-                tuple[0].ToString()!,                    // TokenIdentifier
-                Convert.ToUInt32(tuple[1]),             // TokenIndex
-                tuple[2].ToString()!,                    // Metadata
-                tuple[3].ToString()!,                    // CollectionName
-                Principal.FromText(tuple[4].ToString()!), // Principal
-                tuple[5] is null ? null : Convert.ToUInt64(tuple[5]) // Optional Price
-            );
-        }
+       private (string, uint, string, string, Principal, ulong?) ConvertNFTTuple(List<object> tuple)
+{
+    Debug.Log("🔍 Converting NFT tuple...");
+    var result = (
+        tuple[0].ToString()!,                    // TokenIdentifier
+        Convert.ToUInt32(tuple[1]),             // TokenIndex
+        tuple[2].ToString()!,                    // Metadata
+        tuple[3].ToString()!,                    // CollectionName
+        Principal.FromText(tuple[4].ToString()!), // Principal
+        tuple[5] == null ? (ulong?)null : Convert.ToUInt64(tuple[5]) // Optional Price
+    );
+    Debug.Log("✅ NFT tuple converted.");
+    return result;
+}
     }
 }
