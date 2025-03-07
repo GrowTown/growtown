@@ -18,10 +18,15 @@ public class TriggerForStoppingTheRun : MonoBehaviour
             {
                 other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(3);
             }
-            else
+            else if (Tzc.fieldID == 0)
             {
                 other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(4);
 
+            }
+            else
+            {
+                if (!GameManager.Instance.isShowingnewLand)
+                    other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(2);
             }
         }
         else

@@ -58,10 +58,10 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     break;
                 case ZoneType.Market:
                     onPlayerEnter?.Invoke(this);
-                    if (!GameManager.Instance.isShowingnewLand)
+                  /*  if (!GameManager.Instance.isShowingnewLand)
                     {
                         other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(2);
-                    }
+                    }*/
                     break;
             }
         }
