@@ -52,6 +52,7 @@ public class WeaponAttackEvent : MonoBehaviour, IPointerClickHandler
     {
         if (!UI_Manager.Instance.isPlayerInField && !UI_Manager.Instance.starterPackInfoPopUpPanel.activeSelf)
         {
+            AudioManager.Instance.PlaySFX();
             isGunActive = !isGunActive;
             Gungo.SetActive(isGunActive);
             IsSelected = isGunActive;

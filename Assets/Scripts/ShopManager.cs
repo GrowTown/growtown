@@ -278,6 +278,8 @@ public class ShopManager : MonoBehaviour
     bool forStarterPack;
     public void ToBuyTomato()
     {
+        AudioManager.Instance.PlaySFX();
+
         if (!forStarterPack)
         {
             GameManager.Instance.CurrentScore -= 250;
@@ -304,6 +306,8 @@ public class ShopManager : MonoBehaviour
     }
     public void ToBuyStrawberries()
     {
+        AudioManager.Instance.PlaySFX();
+
         if (GameManager.Instance.CurrentScore >= 12)
         {
             GameManager.Instance.CurrentScore -= 12;
@@ -322,6 +326,8 @@ public class ShopManager : MonoBehaviour
     internal bool isPasticidsBought = false;
     public void ToBuyCleaningTool()
     {
+        AudioManager.Instance.PlaySFX();
+
         if (!isCleningToolBought)
         {
             if (GameManager.Instance.CurrentScore >= 5)
@@ -341,6 +347,8 @@ public class ShopManager : MonoBehaviour
 
     public void ToBuyCuttingTool()
     {
+        AudioManager.Instance.PlaySFX();
+
         if (GameManager.Instance.CurrentScore >= 5)
         {
             GameManager.Instance.CurrentScore -= 5;
@@ -357,6 +365,8 @@ public class ShopManager : MonoBehaviour
       
     public void ToBuyPasticide()
     {
+        AudioManager.Instance.PlaySFX();
+
         if (GameManager.Instance.CurrentScore >= 20)
         {
             GameManager.Instance.CurrentScore -= 20;
@@ -371,6 +381,8 @@ public class ShopManager : MonoBehaviour
     }
     public void ToBuyWateringTool()
     {
+        AudioManager.Instance.PlaySFX();
+
         if (GameManager.Instance.CurrentScore >= 5)
         {
             GameManager.Instance.CurrentScore -= 5;
@@ -386,6 +398,8 @@ public class ShopManager : MonoBehaviour
     }
     public void ToBuySuperXp()
     {
+        AudioManager.Instance.PlaySFX();
+
         if (GameManager.Instance.CurrentScore >= 20)
         {
             GameManager.Instance.CurrentScore -= 20;      
@@ -398,6 +412,8 @@ public class ShopManager : MonoBehaviour
     }
     public void ToBuyWheatField()
     {
+        AudioManager.Instance.PlaySFX();
+
         if (GameManager.Instance.CurrentScore >= 20)
         {
             GameManager.Instance.CurrentScore -= 20;
@@ -416,6 +432,8 @@ public class ShopManager : MonoBehaviour
 
     public void ToBuyCarrotField()
     {
+        AudioManager.Instance.PlaySFX();
+
         if (GameManager.Instance.CurrentScore >= 20)
         {
             GameManager.Instance.CurrentScore -= 20;
