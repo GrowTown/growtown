@@ -59,6 +59,7 @@ public class AudioManager : MonoBehaviour
         if (sfxSource != null && sfxMusic != null)
         {
             sfxSource.PlayOneShot(sfxMusic, sfxVolume);
+            hapticFeedbackController.LightFeedback();
         }
     }
 
