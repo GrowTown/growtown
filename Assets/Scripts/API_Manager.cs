@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+
 namespace IC.GameKit
 {
     public class API_Manager : MonoBehaviour
@@ -16,7 +17,7 @@ namespace IC.GameKit
         private string _currentUserPrincipal = "";
         private bool _isInitialized = false;
 
-        internal  List<NFTCollection> _collectionsDict = new();
+        internal List<NFTCollection> _collectionsDict = new();
         private Dictionary<string, List<NFTCollection>> _userCollections = new();
         private Dictionary<string, List<NFTListing>> _marketplaceListings = new();
 
@@ -101,7 +102,6 @@ namespace IC.GameKit
             foreach (var (userPrincipal, nftList) in rawCollections)
             {
                 string principalStr = userPrincipal.ToText();
-               
 
                 foreach (var (timestamp, canisterId, name, symbol, metadata) in nftList)
                 {
@@ -118,7 +118,6 @@ namespace IC.GameKit
             }
 
             Debug.Log($"✅ Loaded {_collectionsDict.Count} users with collections.");
-            // OnCollectionsUpdated?.Invoke(GetAllCollectionsList());
         }
 
         public async Task FetchCurrentUserCollections(string? userPrincipal = null)

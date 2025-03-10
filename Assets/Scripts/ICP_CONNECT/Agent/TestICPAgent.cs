@@ -7,10 +7,8 @@ using EdjCase.ICP.Candid.Models;
 using System;
 using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
-using System.Net.Http;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEditor; // Added this line to resolve 'Any' errors
+using System.Collections;
+using EdjCase.ICP.BLS;
 
 namespace IC.GameKit
 {
@@ -18,13 +16,14 @@ namespace IC.GameKit
     {
         public Button exitButton;
         public string sceneToLoad = "GrowTownGameScene";
-        public string greetFrontend = "https://s6dkc-nyaaa-aaaac-albta-cai.icp0.io/";
+        public string greetFrontend = "https://7kl52-gyaaa-aaaac-ahmgq-cai.icp0.io/";
         public string greetBackendCanister = "7nk3o-laaaa-aaaac-ahmga-cai";
         public string icHost = "https://icp0.io";
 
-        public bool isSceneLoaded = false;
+        private bool isSceneLoaded = false;
         private Ed25519Identity mEd25519Identity = null;
         private DelegationIdentity mDelegationIdentity = null;
+        private bool isProcessingDelegation = false;
 
         public Ed25519Identity TestIdentity => mEd25519Identity;
         internal DelegationIdentity DelegationIdentity
@@ -33,10 +32,17 @@ namespace IC.GameKit
             set
             {
                 mDelegationIdentity = value;
-                if (!isSceneLoaded)
+                if (!isSceneLoaded && mDelegationIdentity != null)
                 {
-                    StartCoroutine(EnableButtonsCoroutine());
-                    isSceneLoaded = true;
+                    if (!isProcessingDelegation)
+                    {
+                        isProcessingDelegation = true;
+                        StartCoroutine(ProcessDelegationAndEnableButtons());
+                    }
+                    else
+                    {
+                        Debug.Log("ℹ️ Delegation already being processed. Waiting for completion...");
+                    }
                 }
             }
         }
@@ -87,6 +93,7 @@ namespace IC.GameKit
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             isSceneLoading = false;
+            isSceneLoaded = true;
             SceneManager.sceneLoaded -= OnSceneLoaded;
             Debug.Log($"✅ Scene loaded: {scene.name}");
         }
@@ -100,10 +107,15 @@ namespace IC.GameKit
 #endif
         }
 
-        private System.Collections.IEnumerator EnableButtonsCoroutine()
+        private IEnumerator ProcessDelegationAndEnableButtons()
         {
-            Debug.Log("🔄 Starting EnableButtonsCoroutine...");
+            Debug.Log("🔄 Starting ProcessDelegationAndEnableButtons...");
             yield return EnableButtonsAsync().AsCoroutine();
+
+            Debug.Log("✅ Delegation processing complete, starting game...");
+            StartGameFun();
+
+            isProcessingDelegation = false;
         }
 
         public async Task EnableButtonsAsync()
@@ -122,133 +134,120 @@ namespace IC.GameKit
         }
 
         private async Task AutoCreateUserAsync(bool useAnonymous = false)
-{
-    Debug.Log("1️⃣ Initializing AutoCreateUserAsync...");
-
-    // Step 1: Create HttpAgent
-    Debug.Log("🔄 Creating HttpAgent...");
-    var httpClient = new HttpClient { BaseAddress = new Uri(icHost) };
-    var agentHttpClient = new DefaultHttpClient(httpClient);
-    IAgent agent = new HttpAgent(
-        httpClient: agentHttpClient,
-        identity: useAnonymous || mDelegationIdentity == null ? null : mDelegationIdentity
-    );
-    Debug.Log($"✅ Agent Identity: {(agent.Identity != null ? agent.Identity.GetPrincipal().ToText() : "Anonymous")}");
-
-    // Step 2: Parse Canister ID
-    Debug.Log($"2️⃣ Parsing canister ID: {greetBackendCanister}");
-    Principal canisterId;
-    try
-    {
-        canisterId = Principal.FromText(greetBackendCanister);
-        Debug.Log($"✅ Canister ID parsed: {canisterId}");
-    }
-    catch (Exception ex)
-    {
-        Debug.LogError($"❌ Failed to parse canister ID '{greetBackendCanister}': {ex.Message}");
-        StartGameFun();
-        return;
-    }
-
-    // Step 3: Create GreetingClient
-    Debug.Log("3️⃣ Creating GreetingClient...");
-    var client = new GreetingClient.GreetingClient(agent, canisterId);
-    Debug.Log("✅ GreetingClient created.");
-
-    // Step 4: Initialize API_Manager
-    Debug.Log("4️⃣ Checking API_Manager.Instance...");
-    if (API_Manager.Instance == null)
-    {
-        Debug.LogWarning("⚠ API_Manager.Instance is null! Creating new instance...");
-        GameObject apiManagerObj = new GameObject("API_Manager");
-        API_Manager apiManager = apiManagerObj.AddComponent<API_Manager>();
-        apiManager.Initialize(client);
-    }
-    else
-    {
-        Debug.Log("✅ Initializing existing API_Manager...");
-        API_Manager.Instance.Initialize(client);
-    }
-
-    try
-    {
-        // Step 5: Fetch Principal
-        Debug.Log("5️⃣ Fetching user principal...");
-        string userPrincipalString;
-        try
         {
-            var principalTask = client.GetPrincipal();
-            Debug.Log("🔄 Initiated GetPrincipal call...");
-            userPrincipalString = await Task.WhenAny(principalTask, Task.Delay(10000)) == principalTask
-                ? principalTask.Result
-                : throw new TimeoutException("GetPrincipal timed out after 10s");
-            Debug.Log($"✅ Principal fetched: {userPrincipalString}");
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"❌ Failed to fetch principal: {ex.Message}");
-            Debug.LogWarning("⚠ Falling back to anonymous principal...");
-            userPrincipalString = "2vxsx-fae"; // Anonymous principal
-        }
+            Debug.Log("1️⃣ Initializing AutoCreateUserAsync...");
 
-        Principal userPrincipal = Principal.FromText(userPrincipalString);
-        Debug.Log($"✅ User Principal set: {userPrincipal}");
-        DataTransfer.UserPrincipal = userPrincipal.ToString();
+            var agent = useAnonymous ? new HttpAgent() : new HttpAgent(DelegationIdentity, null, new DefaultBlsCryptograhy());
+            var canisterId = Principal.FromText(greetBackendCanister);
+            var client = new GreetingClient.GreetingClient(agent, canisterId);
+            Debug.Log("✅ GreetingClient created.");
 
-        // Step 6: Generate UUID
-        string uuid = Guid.NewGuid().ToString();
-        Debug.Log($"✅ Generated UUID: {uuid}");
+            Debug.Log("4️⃣ Checking API_Manager.Instance...");
+            if (API_Manager.Instance == null)
+            {
+                Debug.LogWarning("⚠ API_Manager.Instance is null! Creating new instance...");
+                GameObject apiManagerObj = new GameObject("API_Manager");
+                API_Manager apiManager = apiManagerObj.AddComponent<API_Manager>();
+                apiManager.Initialize(client);
+            }
+            else
+            {
+                Debug.Log("✅ Initializing existing API_Manager...");
+                API_Manager.Instance.Initialize(client);
+            }
 
-        // Step 7: Create User
-        Debug.Log("7️⃣ Preparing create_user call...");
-        CandidArg arg = CandidArg.FromCandid(
-            CandidTypedValue.FromObject(userPrincipal),
-            CandidTypedValue.FromObject(uuid)
-        );
-        Debug.Log("🔄 Calling create_user on canister...");
-        try
-        {
-            CandidArg reply = await agent.CallAsync(canisterId, "create_user", arg);
-            Debug.Log($"✅ create_user response: {reply}");
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"❌ Failed to call create_user: {ex.Message}");
-            Debug.LogWarning("⚠ Skipping create_user due to error...");
-        }
+            try
+            {
+                Debug.Log("5️⃣ Fetching user principal...");
+                string userPrincipalString;
+                try
+                {
+                    var principalTask = client.GetPrincipal();
+                    Debug.Log("🔄 Initiated GetPrincipal call...");
+                    userPrincipalString = await Task.WhenAny(principalTask, Task.Delay(10000)) == principalTask
+                        ? principalTask.Result
+                        : throw new TimeoutException("GetPrincipal timed out after 10s");
+                    Debug.Log($"✅ Principal fetched: {userPrincipalString}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"❌ Failed to fetch principal: {ex.Message}");
+                    Debug.LogWarning("⚠ Falling back to anonymous principal...");
+                    userPrincipalString = "2vxsx-fae";
+                }
 
-        // Step 8: Fetch Collections
-        Debug.Log("8️⃣ Fetching collections...");
-        await API_Manager.Instance.FetchAllCollections();
-        Debug.Log("✅ Collections fetched.");
+                Principal userPrincipal = Principal.FromText(userPrincipalString);
+                Debug.Log($"✅ User Principal set: {userPrincipal}");
+                DataTransfer.UserPrincipal = userPrincipal.ToString();
 
-        // Step 9: Call CountListings with a specific collectionCanisterId
-        Debug.Log("9️⃣ Calling CountListings...");
-        try
-        {
-                // Use the first collection's CanisterId as an example (you can modify this logic)
-                string collectionCanisterIdStr =API_Manager.Instance._collectionsDict[0].CanisterId;
-                Principal collectionCanisterId = Principal.FromText(collectionCanisterIdStr);
-                Debug.Log($"🔄 Using collection canister ID: {collectionCanisterId}");
+                string uuid = Guid.NewGuid().ToString();
+                Debug.Log($"✅ Generated UUID: {uuid}");
 
-                var (listings, currentPage, totalPages) = await client.CountListings(collectionCanisterId, 10UL, 0UL);
-                Debug.Log($"✅ CountListings returned {listings.Count} listings, page {currentPage}/{totalPages}");
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"❌ Failed to call CountListings: {ex.Message}");
+                Debug.Log("7️⃣ Preparing create_user call...");
+                CandidArg arg = CandidArg.FromCandid(
+                    CandidTypedValue.FromObject(userPrincipal),
+                    CandidTypedValue.FromObject(uuid)
+                );
+                Debug.Log("🔄 Calling create_user on canister...");
+                const int maxRetries = 3;
+                for (int attempt = 1; attempt <= maxRetries; attempt++)
+                {
+                    try
+                    {
+                        CandidArg reply = await agent.CallAsync(canisterId, "create_user", arg);
+                        Debug.Log($"✅ create_user response: {reply}");
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"❌ Attempt {attempt}/{maxRetries} Failed to call create_user: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                        if (attempt == maxRetries)
+                        {
+                            Debug.LogWarning("⚠ Max retries reached. Skipping create_user...");
+                        }
+                        else if (ex.Message.Contains("Certificate signature does not match"))
+                        {
+                            Debug.LogWarning("⚠ Certificate mismatch detected. Retrying...");
+                            await Task.Delay(1000);
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
+
+                Debug.Log("8️⃣ Fetching collections...");
+                await API_Manager.Instance.FetchAllCollections();
+                Debug.Log("✅ Collections fetched.");
+
+                Debug.Log("9️⃣ Calling CountListings...");
+                try
+                {
+                    if (API_Manager.Instance._collectionsDict.Count > 0)
+                    {
+                        string collectionCanisterIdStr = API_Manager.Instance._collectionsDict[0].CanisterId;
+                        Principal collectionCanisterId = Principal.FromText(collectionCanisterIdStr);
+                        Debug.Log($"🔄 Using collection canister ID: {collectionCanisterId}");
+                        var (listings, currentPage, totalPages) = await client.CountListings(collectionCanisterId, 10UL, 0UL);
+                        Debug.Log($"✅ CountListings returned {listings.Count} listings, page {currentPage}/{totalPages}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("⚠ No collections available to call CountListings.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"❌ Failed to call CountListings: {ex.Message}");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"❌ Unexpected error in AutoCreateUserAsync: {e.Message}\nStackTrace: {e.StackTrace}");
+            }
         }
 
-        // Step 10: Start Game
-        Debug.Log("🔚 Starting game...");
-        StartGameFun();
-    }
-    catch (Exception e)
-    {
-        Debug.LogError($"❌ Unexpected error in AutoCreateUserAsync: {e.Message}\nStackTrace: {e.StackTrace}");
-        StartGameFun();
-    }
-}
         private bool IsRenderingFailed()
         {
             return Application.HasProLicense() && (Screen.currentResolution.width == 0 || Screen.currentResolution.height == 0);
@@ -257,7 +256,7 @@ namespace IC.GameKit
 
     public static class TaskExtensions
     {
-        public static System.Collections.IEnumerator AsCoroutine(this Task task)
+        public static IEnumerator AsCoroutine(this Task task)
         {
             while (!task.IsCompleted)
             {

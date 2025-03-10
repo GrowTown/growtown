@@ -10,8 +10,8 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 namespace IC.GameKit
 {
@@ -71,7 +71,8 @@ namespace IC.GameKit
 
             string sessionKeyHex = ToHexString(mTestICPAgent.TestIdentity.PublicKey.ToDerEncoding());
             string route = IsRunningOnMobile() ? "/app" : "/";
-            string targetUrl = $"{mTestICPAgent.greetFrontend}{route}?sessionkey={sessionKeyHex}";
+            string maxTimeToLive = "604800000000000"; // 1 week in nanoseconds
+            string targetUrl = $"{mTestICPAgent.greetFrontend}{route}?sessionkey={sessionKeyHex}&maxTimeToLive={maxTimeToLive}";
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log($"🔄 WebGL: Initiating login flow with session key: {sessionKeyHex} at route: {route}");
@@ -149,10 +150,11 @@ namespace IC.GameKit
 
         private System.Collections.IEnumerator ProcessDelegationCoroutine(DelegationIdentity delegationIdentity)
         {
-            yield return ProcessDelegationAsync(delegationIdentity).AsCoroutine();
+            ProcessDelegation(delegationIdentity);
+            yield return null; // Yield to allow TestICPAgent coroutine to start
         }
 
-        private async Task ProcessDelegationAsync(DelegationIdentity delegationIdentity)
+        private void ProcessDelegation(DelegationIdentity delegationIdentity)
         {
             Debug.Log("🔄 Processing delegation...");
             if (mTestICPAgent == null)
@@ -162,10 +164,7 @@ namespace IC.GameKit
 
             if (mTestICPAgent != null)
             {
-                mTestICPAgent.DelegationIdentity = delegationIdentity;
-                await mTestICPAgent.EnableButtonsAsync();
-                Debug.Log("✅ Delegation set, starting game...");
-                mTestICPAgent.StartGameFun();
+                mTestICPAgent.DelegationIdentity = delegationIdentity; // Triggers processing in TestICPAgent
             }
             else
             {
@@ -227,11 +226,12 @@ namespace IC.GameKit
                 }
 
                 var chainPublicKey = SubjectPublicKeyInfo.FromDerEncoding(FromHexString(delegationChainModel.publicKey));
+                Debug.Log($"🔍 Delegation chain public key: {ToHexString(chainPublicKey.ToDerEncoding())}");
                 return new DelegationIdentity(mTestICPAgent.TestIdentity, new DelegationChain(chainPublicKey, delegations));
             }
             catch (Exception ex)
             {
-                Debug.LogError($"❌ Failed to convert JSON to DelegationIdentity: {ex.Message}");
+                Debug.LogError($"❌ Failed to convert JSON to DelegationIdentity: {ex.Message}\nStackTrace: {ex.StackTrace}");
                 return null;
             }
         }
@@ -262,6 +262,4 @@ namespace IC.GameKit
 #endif
         }
     }
-
-    
 }

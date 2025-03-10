@@ -1,8 +1,6 @@
-#nullable enable
 using EdjCase.ICP.Agent.Agents;
 using EdjCase.ICP.Agent.Responses;
 using EdjCase.ICP.Candid.Models;
-using EdjCase.ICP.Candid.Models.Types;
 using EdjCase.ICP.Candid.Models.Values;
 using System;
 using System.Collections.Generic;
@@ -72,7 +70,7 @@ namespace GreetingClient
             try
             {
                 CandidArg arg = CandidArg.FromCandid();
-                CandidArg reply = await Agent.CallAsynchronousAndWaitAsync(CanisterId, "getAllCollections", arg);
+                CandidArg reply = await Agent.CallAsync(CanisterId, "getAllCollections", arg);
                 Debug.Log("✅ getAllCollections call completed.");
                 var result = reply.ToObjects<List<(Principal, List<(long, Principal, string, string, string)>)>>(Converter)
                     ?? new List<(Principal, List<(long, Principal, string, string, string)>)>();
@@ -97,7 +95,7 @@ namespace GreetingClient
                     CandidTypedValue.Nat(pageNo)
                 );
 
-                CandidArg reply = await Agent.CallAsynchronousAndWaitAsync(CanisterId, "countlistings", args);
+                CandidArg reply = await Agent.CallAsync(CanisterId, "countlistings", args);
                 Debug.Log($"✅ Raw response from countListings: {reply}");
 
                 var result = reply.ToObjects<Dictionary<string, object>>(Converter);
@@ -145,7 +143,7 @@ namespace GreetingClient
                     CandidTypedValue.Text(buyerAccountId)
                 );
 
-                CandidArg reply = await Agent.CallAsynchronousAndWaitAsync(CanisterId, "purchaseNft", args);
+                CandidArg reply = await Agent.CallAsync(CanisterId, "purchaseNft", args);
                 Debug.Log("✅ purchaseNft call completed.");
                 var result = reply.ToObjects<Dictionary<string, object>>(Converter);
 
@@ -175,7 +173,7 @@ namespace GreetingClient
                     CandidTypedValue.Text(paymentAddress)
                 );
 
-                CandidArg reply = await Agent.CallAsynchronousAndWaitAsync(CanisterId, "settlepurchase", args);
+                CandidArg reply = await Agent.CallAsync(CanisterId, "settlepurchase", args);
                 Debug.Log("✅ settlepurchase call completed.");
                 var result = reply.ToObjects<Dictionary<string, object>>(Converter);
 
@@ -204,7 +202,7 @@ namespace GreetingClient
                     CandidTypedValue.Principal(collectionCanisterId)
                 );
 
-                await Agent.CallAsynchronousAndWaitAsync(CanisterId, "balance_nft_settelment", args);
+                await Agent.CallAsync(CanisterId, "balance_nft_settelment", args);
                 Debug.Log("✅ Balance settlement triggered successfully.");
             }
             catch (Exception e)
@@ -260,8 +258,7 @@ namespace GreetingClient
             }
         }
 
-        public async Task<(List<(string, uint, string, string, Principal, ulong?)> boughtNFTs, 
-                          List<(string, uint, string, string, Principal, ulong?)> unboughtNFTs)> 
+        public async Task<(List<(string, uint, string, string, Principal, ulong?)>, List<(string, uint, string, string, Principal, ulong?)>)> 
             GetUserNFTCollection(Principal collectionCanisterId, string userAccountId, ulong chunkSize, ulong pageNo)
         {
             Debug.Log($"🔄 Calling userNFTcollection for user {userAccountId}...");
@@ -282,8 +279,7 @@ namespace GreetingClient
                 if (result.ContainsKey("err"))
                 {
                     Debug.LogWarning($"⚠ Error from canister: {result["err"]}");
-                    return (new List<(string, uint, string, string, Principal, ulong?)>(), 
-                           new List<(string, uint, string, string, Principal, ulong?)>());
+                    return (new List<(string, uint, string, string, Principal, ulong?)>(), new List<(string, uint, string, string, Principal, ulong?)>());
                 }
 
                 var okResult = (Dictionary<string, object>)result["ok"];
@@ -300,24 +296,23 @@ namespace GreetingClient
             catch (Exception e)
             {
                 Debug.LogError($"❌ Failed to fetch user NFT collection: {e.Message}");
-                return (new List<(string, uint, string, string, Principal, ulong?)>(), 
-                       new List<(string, uint, string, string, Principal, ulong?)>());
+                return (new List<(string, uint, string, string, Principal, ulong?)>(), new List<(string, uint, string, string, Principal, ulong?)>());
             }
         }
 
-       private (string, uint, string, string, Principal, ulong?) ConvertNFTTuple(List<object> tuple)
-{
-    Debug.Log("🔍 Converting NFT tuple...");
-    var result = (
-        tuple[0].ToString()!,                    // TokenIdentifier
-        Convert.ToUInt32(tuple[1]),             // TokenIndex
-        tuple[2].ToString()!,                    // Metadata
-        tuple[3].ToString()!,                    // CollectionName
-        Principal.FromText(tuple[4].ToString()!), // Principal
-        tuple[5] == null ? (ulong?)null : Convert.ToUInt64(tuple[5]) // Optional Price
-    );
-    Debug.Log("✅ NFT tuple converted.");
-    return result;
-}
+        private (string, uint, string, string, Principal, ulong?) ConvertNFTTuple(List<object> tuple)
+        {
+            Debug.Log("🔍 Converting NFT tuple...");
+            var result = (
+                tuple[0].ToString()!,                    // TokenIdentifier
+                Convert.ToUInt32(tuple[1]),             // TokenIndex
+                tuple[2].ToString()!,                    // Metadata
+                tuple[3].ToString()!,                    // CollectionName
+                Principal.FromText(tuple[4].ToString()!), // Principal
+                tuple[5] == null ? (ulong?)null : Convert.ToUInt64(tuple[5]) // Optional Price
+            );
+            Debug.Log("✅ NFT tuple converted.");
+            return result;
+        }
     }
 }
