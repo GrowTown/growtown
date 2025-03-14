@@ -439,7 +439,7 @@ public class GameManager : MonoBehaviour
         isStarterPackBought = true;
 
     }
-
+ 
     void ActivatingTheJoystick()
     {
         RectTransform joystickRect = UI_Manager.Instance.CharacterMovements.joystick.GetComponent<RectTransform>();

@@ -30,11 +30,15 @@ public class CharacterMovements : MonoBehaviour
     //Walk,Run variables
     public float walkSpeed = 2f;
     public float runSpeed = 4f;
+    public float backRunSpeed = -4f;
+    public float backWalkSpeed = -2f;
+
     public float turnSpeed = 7f;
     public float turnSpeedVelocity = 0.1f;
     public float _charGroundPos = 3f;
     public float SpeedChangeRate = 10.0f;
     private float _speed;
+    public float speedMultiplier = 1f;
     private float _animationBlend;
     public float backwardWalkSpeed = 3f;
     public float backwardRunSpeed = 6f;
@@ -68,13 +72,13 @@ public class CharacterMovements : MonoBehaviour
     public AnimationEventTrigger animationEvents;
 
     [Header("Gun Camera Constraints")]
-    public float gunYawLimit = 60f; // Maximum horizontal rotation when gun is active
-    public float gunPitchLimit = 60; // Maximum vertical rotation when gun is active
+    public float gunYawLimit = 60f; 
+    public float gunPitchLimit = 60; 
 
 
     // Public fields for camera rotation
-    public float CinemachineTargetYaw { get; private set; } // Public getter, private setter
-    public float CinemachineTargetPitch { get; private set; } // Public getter, private set
+    public float CinemachineTargetYaw { get; private set; } 
+    public float CinemachineTargetPitch { get; private set; } 
     public float CameraHeight = 1.5f;
     public float maxCameraHeight = 1.6f;
     private float currentYawLimit = 0f;
@@ -88,7 +92,6 @@ public class CharacterMovements : MonoBehaviour
 
     private bool isAndroid;
 
-
     //Getting Character is Moving or Not
     private Vector3 lastPosition;
     private float idleTime = 0f;
@@ -100,7 +103,6 @@ public class CharacterMovements : MonoBehaviour
     [SerializeField] private GameObject CinemachineCameraTarget;
     public float CameraAngleOverride = 0.0f;
     public bool LockCameraPosition = false;
-
 
     private void Start()
     {
@@ -125,7 +127,6 @@ public class CharacterMovements : MonoBehaviour
         CinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
         CinemachineTargetPitch = CinemachineCameraTarget.transform.rotation.eulerAngles.x;
     }
-
 
     void Update()
     {
@@ -339,33 +340,227 @@ public class CharacterMovements : MonoBehaviour
         }
     }
 
-    private void CharMovements()
+    /*private void CharMovements()
     {
         float moveHorizontal;
         float moveVertical;
 
         if (isAndroid && joystick != null)
         {
-            // Use Joystick for Android
             moveHorizontal = joystick.Horizontal;
             moveVertical = joystick.Vertical;
         }
         else
         {
-            // Use Keyboard for PC/WebGL
             moveHorizontal = Input.GetAxis("Horizontal");
             moveVertical = Input.GetAxis("Vertical");
         }
 
         Vector3 cameraForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
         Vector3 cameraRight = Vector3.Scale(cam.right, new Vector3(1, 0, 1)).normalized;
-
         Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
 
         bool isGunActive = UI_Manager.Instance.WeaponAttackEvent.isGunActive;
         float joystickMagnitude = new Vector2(joystick.Horizontal, joystick.Vertical).magnitude;
+        bool isRunning = isAndroid ? joystickMagnitude >= 0.9f && !UI_Manager.Instance.IsPlayerInSecondZone
+                                   : Input.GetKey(KeyCode.LeftShift) && !UI_Manager.Instance.IsPlayerInSecondZone;
+        bool isMovingBackwards = moveVertical < 0;
+
+        if (animator != null)
+        {
+            if (isGunActive)
+            {
+                animator.SetLayerWeight(2, isRunning ? 1f : 0f);
+                animator.SetLayerWeight(1, isRunning ? 0f : 1f);
+                animator.SetLayerWeight(0, isRunning ? 0f : 1f);
+
+                UI_Manager.Instance.WeaponAttackEvent.leftHandPos.weight = isRunning ? 0f : 1f;
+                UI_Manager.Instance.WeaponAttackEvent.aim.weight = isRunning ? 0f : 0.4f;
+            }
+            else
+            {
+                animator.SetLayerWeight(0, 1f);
+                animator.SetLayerWeight(1, 0f);
+                animator.SetLayerWeight(2, 0f);
+
+                if (inputDirection.magnitude > 0)
+                {
+                    if (isMovingBackwards)
+                    {
+                        animator.SetBool("WalkBack", !isRunning);
+                        animator.SetBool("RunBack", isRunning);
+                    }
+                    else
+                    {
+                        animator.SetBool("WalkBack", false);
+                        animator.SetBool("RunBack", false);
+                    }
+                }
+            }
+        }
+
+        float targetSpeed = inputDirection == Vector3.zero ? 0f
+                           : (isRunning ? (isMovingBackwards ? backRunSpeed : runSpeed)
+                                        : (isMovingBackwards ? backWalkSpeed : walkSpeed));
+
+        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+        if (Mathf.Abs(currentHorizontalSpeed - targetSpeed) > 0.1f)
+        {
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed, Time.deltaTime * SpeedChangeRate);
+            _speed = Mathf.Round(_speed * 1000f) / 1000f;
+        }
+        else
+        {
+            _speed = targetSpeed;
+        }
+
+        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+        if (_animationBlend < 0.01f) _animationBlend = 0f;
+
+        Vector3 moveDirection = inputDirection * _speed;
+        _controller.Move(moveDirection * Time.deltaTime);
+
+        if (inputDirection.magnitude > 0f && !UI_Manager.Instance.WeaponAttackEvent.isGunActive)
+        {
+            Quaternion toRotation = Quaternion.LookRotation(inputDirection, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
+        }
+
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", _animationBlend);
+            animator.SetFloat("MotionSpeed", inputDirection.magnitude);
+        }
+
+        UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, UI_Manager.Instance.IsPlayerInSecondZone);
+    }*/
+
+    /* private void CharMovements()
+     {
+         float moveHorizontal;
+         float moveVertical;
+
+         if (isAndroid && joystick != null)
+         {
+             // Use Joystick for Android
+             moveHorizontal = joystick.Horizontal;
+             moveVertical = joystick.Vertical;
+         }
+         else
+         {
+             // Use Keyboard for PC/WebGL
+             moveHorizontal = Input.GetAxis("Horizontal");
+             moveVertical = Input.GetAxis("Vertical");
+         }
+
+         Vector3 cameraForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
+         Vector3 cameraRight = Vector3.Scale(cam.right, new Vector3(1, 0, 1)).normalized;
+
+         Vector3 inputDirection = (cameraForward * moveVertical + cameraRight * moveHorizontal).normalized;
+
+         bool isGunActive = UI_Manager.Instance.WeaponAttackEvent.isGunActive;
+         float joystickMagnitude = new Vector2(joystick.Horizontal, joystick.Vertical).magnitude;
+         //bool isRunning = joystickMagnitude >= 0.9f;
+         bool isRunning = isAndroid ? joystickMagnitude >= 0.9f && !UI_Manager.Instance.IsPlayerInSecondZone : Input.GetKey(KeyCode.LeftShift) && !UI_Manager.Instance.IsPlayerInSecondZone;
+
+         if (animator != null)
+         {
+             if (isGunActive)
+             {
+                 if (isRunning)
+                 {
+
+                     animator.SetLayerWeight(2, 1f);
+                     animator.SetLayerWeight(1, 0f);
+                     animator.SetLayerWeight(0, 0f);
+                     UI_Manager.Instance.WeaponAttackEvent.leftHandPos.weight = 0f;
+                     UI_Manager.Instance.WeaponAttackEvent.aim.weight = 0f;
+                 }
+                 else
+                 {
+
+                     animator.SetLayerWeight(1, 1f);
+                     animator.SetLayerWeight(2, 0f);
+                     animator.SetLayerWeight(0, 1f);
+                     UI_Manager.Instance.WeaponAttackEvent.leftHandPos.weight = 1f;
+                     UI_Manager.Instance.WeaponAttackEvent.aim.weight = 0.4f;
+                 }
+             }
+             else
+             {
+
+                 animator.SetLayerWeight(0, 1f);
+                 animator.SetLayerWeight(1, 0f);
+                 animator.SetLayerWeight(2, 0f);
+             }
+
+
+         }
+
+         // bool isRunning = isAndroid ? joystickMagnitude > 0.9f : Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone; 
+         float targetSpeed = inputDirection == Vector3.zero ? 0f : (isRunning ? runSpeed : walkSpeed);
+
+         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+         if (currentHorizontalSpeed < targetSpeed - 0.1f || currentHorizontalSpeed > targetSpeed + 0.1f)
+         {
+             _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed, Time.deltaTime * SpeedChangeRate);
+             _speed = Mathf.Round(_speed * 1000f) / 1000f;
+         }
+         else
+         {
+             _speed = targetSpeed;
+         }
+
+         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+         if (_animationBlend < 0.01f) _animationBlend = 0f;
+
+         Vector3 moveDirection = inputDirection * _speed;
+         _controller.Move(moveDirection * Time.deltaTime);
+
+         if (inputDirection.magnitude > 0f && !UI_Manager.Instance.WeaponAttackEvent.isGunActive)
+         {
+             Quaternion toRotation = Quaternion.LookRotation(inputDirection, Vector3.up);
+             transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
+         }
+
+         if (animator != null)
+         {
+             animator.SetFloat("Speed", _animationBlend);
+             animator.SetFloat("MotionSpeed", inputDirection.magnitude);
+         }
+
+         UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, UI_Manager.Instance.IsPlayerInSecondZone);
+     }*/
+
+    private void CharMovements()
+    {
+        float moveHorizontal;
+        float moveVertical;
+
+        // Get input from joystick or keyboard
+        if (isAndroid && joystick != null)
+        {
+            moveHorizontal = joystick.Horizontal;
+            moveVertical = joystick.Vertical;
+        }
+        else
+        {
+            moveHorizontal = Input.GetAxis("Horizontal");
+            moveVertical = Input.GetAxis("Vertical");
+        }
+        Debug.Log("Horizontal: " + moveHorizontal + " | Vertical: " + moveVertical);
+        // Direct movement based purely on input — no camera influence
+        Vector3 inputDirection = new Vector3(moveHorizontal, 0f, moveVertical).normalized;
+
+        bool isGunActive = UI_Manager.Instance.WeaponAttackEvent.isGunActive;
+        float joystickMagnitude = new Vector2(joystick.Horizontal, joystick.Vertical).magnitude;
         //bool isRunning = joystickMagnitude >= 0.9f;
-        bool isRunning = isAndroid ? joystickMagnitude >= 0.9f && !UI_Manager.Instance.IsPlayerInSecondZone : Input.GetKey(KeyCode.LeftShift) && !UI_Manager.Instance.IsPlayerInSecondZone;
+
+        // Determine running or walking speed
+        bool isRunning = isAndroid
+            ? new Vector2(joystick.Horizontal, joystick.Vertical).magnitude >= 0.9f && !UI_Manager.Instance.IsPlayerInSecondZone
+            : Input.GetKey(KeyCode.LeftShift) && !UI_Manager.Instance.IsPlayerInSecondZone;
+       
 
         if (animator != null)
         {
@@ -401,40 +596,36 @@ public class CharacterMovements : MonoBehaviour
 
         }
 
-        // bool isRunning = isAndroid ? joystickMagnitude > 0.9f : Input.GetKey(KeyCode.LeftShift) && !GameManager.Instance.checkPlayerInZone; 
-        float targetSpeed = inputDirection == Vector3.zero ? 0f : (isRunning ? runSpeed : walkSpeed);
 
-        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-        if (currentHorizontalSpeed < targetSpeed - 0.1f || currentHorizontalSpeed > targetSpeed + 0.1f)
-        {
-            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed, Time.deltaTime * SpeedChangeRate);
-            _speed = Mathf.Round(_speed * 1000f) / 1000f;
-        }
-        else
-        {
-            _speed = targetSpeed;
-        }
+        // Adjust movement speed
+        float targetSpeed = inputDirection == Vector3.zero ? 0f :
+                            (isRunning ? runSpeed * speedMultiplier : walkSpeed * speedMultiplier);
 
-        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-        if (_animationBlend < 0.01f) _animationBlend = 0f;
+        // Smooth speed adjustment
+        float currentSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+        _speed = Mathf.Lerp(currentSpeed, targetSpeed, Time.deltaTime * SpeedChangeRate);
 
+        // Move the player in the correct direction
         Vector3 moveDirection = inputDirection * _speed;
+        Debug.Log("Horizontal: " + moveDirection);
         _controller.Move(moveDirection * Time.deltaTime);
 
-        if (inputDirection.magnitude > 0f&&!UI_Manager.Instance.WeaponAttackEvent.isGunActive)
+        // Rotate player to face movement direction
+        if (inputDirection.magnitude > 0f)
         {
-            Quaternion toRotation = Quaternion.LookRotation(inputDirection, Vector3.up);
+            Quaternion toRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
         }
 
+        // Update animations
         if (animator != null)
         {
-            animator.SetFloat("Speed", _animationBlend);
+            animator.SetFloat("Speed", _speed);
             animator.SetFloat("MotionSpeed", inputDirection.magnitude);
         }
-
         UpdateDogBehavior(inputDirection.magnitude > 0, isRunning, UI_Manager.Instance.IsPlayerInSecondZone);
     }
+
     internal Vector3 GetPlayerMovementDirection()
     {
         float moveHorizontal;

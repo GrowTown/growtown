@@ -1,15 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-
+[System.Serializable]
+public class LevelThreshold
+{
+    public int level;
+    public int xpThreshold;
+}
 public class PlayerLevel : MonoBehaviour
 {
+    [SerializeField] private List<LevelThreshold> levelThresholds = new List<LevelThreshold>();
+    [SerializeField] private TextMeshProUGUI _previousLevel;
+    [SerializeField] private TextMeshProUGUI _nextLevel;
+    [SerializeField] private Slider _xpSlider;
+    private Dictionary<int, int> _levelThresholds;
     int _levelOfPlayer=1;
     private const int ThresholdMargin = 5;
-    Levels plevel;
-    private Dictionary<int, int> _levelThresholds = new Dictionary<int, int>();
-    private HashSet<int> _levelsAchieved = new HashSet<int>(); 
+    private HashSet<int> _levelsAchieved = new HashSet<int>();
+    
 
     public int CurrentPlayerLevel
     {
@@ -17,10 +28,11 @@ public class PlayerLevel : MonoBehaviour
         set
         {
             _levelOfPlayer = value;
+            _previousLevel.text = UI_Manager.Instance.currentplayerLevelTxt.text;
             UI_Manager.Instance.currentplayerLevelTxt.text=_levelOfPlayer.ToString();
+            _nextLevel.text = UI_Manager.Instance.currentplayerLevelTxt.text;
             UI_Manager.Instance.ShopManager.OnLevelChanged(_levelOfPlayer);
         }
-
     }
 
     private void Start()
@@ -28,14 +40,12 @@ public class PlayerLevel : MonoBehaviour
         InitializeLevelThresholds();
         UI_Manager.Instance.currentplayerLevelTxt.text = _levelOfPlayer.ToString();
     }
-    bool isLevel1=false;
-    bool isLevel2=false;
 
     private void InitializeLevelThresholds()
     {
-        for (int level = 2; level <= 10; level++)
+        foreach (var threshold in levelThresholds)
         {
-            _levelThresholds[level] = level * 50; 
+            _levelThresholds[threshold.level] = threshold.xpThreshold;
         }
     }
 
@@ -55,9 +65,8 @@ public class PlayerLevel : MonoBehaviour
             }
         }
     }
+
+
+
 }
-public enum Levels
-{
-     level1=100,
-    level2=150,
-}
+
