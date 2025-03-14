@@ -16,7 +16,8 @@ public class PlayerLevel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _previousLevel;
     [SerializeField] private TextMeshProUGUI _nextLevel;
     [SerializeField] private Slider _xpSlider;
-    private Dictionary<int, int> _levelThresholds;
+    private Dictionary<int, int> _levelThresholds=new Dictionary<int, int>();
+    
     int _levelOfPlayer=1;
     private const int ThresholdMargin = 5;
     private HashSet<int> _levelsAchieved = new HashSet<int>();
@@ -31,7 +32,7 @@ public class PlayerLevel : MonoBehaviour
             _previousLevel.text = UI_Manager.Instance.currentplayerLevelTxt.text;
             UI_Manager.Instance.currentplayerLevelTxt.text=_levelOfPlayer.ToString();
             _nextLevel.text = UI_Manager.Instance.currentplayerLevelTxt.text;
-            UI_Manager.Instance.ShopManager.OnLevelChanged(_levelOfPlayer);
+           // UI_Manager.Instance.ShopManager.OnLevelChanged(_levelOfPlayer);
         }
     }
 
@@ -58,8 +59,8 @@ public class PlayerLevel : MonoBehaviour
             if (xp >= xpRequired && xp <= xpRequired + ThresholdMargin && !_levelsAchieved.Contains(level))
             {
                 CurrentPlayerLevel = level;
-                _levelsAchieved.Add(level); 
-
+                _levelsAchieved.Add(level);
+                UI_Manager.Instance.ShopManager.OnLevelChanged(_levelOfPlayer);
                 UI_Manager.Instance.RewardsForLevel.LevelRewards($"level{level}");
                 Debug.Log($"Level increased to {CurrentPlayerLevel} for XP: {xp}");
             }
