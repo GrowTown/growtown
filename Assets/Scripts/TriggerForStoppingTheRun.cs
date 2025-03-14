@@ -8,7 +8,7 @@ public class TriggerForStoppingTheRun : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             UI_Manager.Instance.IsPlayerInSecondZone = true;
-            var Tzc = this.gameObject.transform.GetChild(0).gameObject.GetComponent<TriggerZoneCallBacks>();
+          /*  var Tzc = this.gameObject.transform.GetChild(0).gameObject.GetComponent<TriggerZoneCallBacks>();
             if (Tzc.fieldID == 2)
             {
                 other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
@@ -26,7 +26,7 @@ public class TriggerForStoppingTheRun : MonoBehaviour
             {
                 if (!GameManager.Instance.isShowingnewLand)
                     other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(2);
-            }
+            }*/
         }
         else
         {
@@ -40,10 +40,10 @@ public class TriggerForStoppingTheRun : MonoBehaviour
         {
             UI_Manager.Instance.IsPlayerInSecondZone = false;
 
-            var CamSwitch = other.gameObject.GetComponent<CamerasSwitch>();
+           /* var CamSwitch = other.gameObject.GetComponent<CamerasSwitch>();
             var newPos = CamSwitch.activeCamera.transform.position;
             CamSwitch.SwitchToCam(0);
-            CamSwitch.activeCamera.transform.position = newPos;
+            CamSwitch.activeCamera.transform.position = newPos;*/
         }
     }
 }

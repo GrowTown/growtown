@@ -7,8 +7,10 @@ using UnityEngine.UI;
 public class CharacterMovements : MonoBehaviour
 {
     public Transform cam;
-    [SerializeField]
-    CinemachineFreeLook virtualCam;
+    [SerializeField] CinemachineFreeLook freeLookCam;
+    [SerializeField]private float normalRotationSpeed = 100f;
+    [SerializeField]private float slowedRotationSpeed = 50f;
+   
     public Animator animator;
     public Joystick joystick;
     Animator _dogAnimator;
@@ -113,6 +115,7 @@ public class CharacterMovements : MonoBehaviour
             isAndroid = false;
 #endif
 
+       
         // Disable joystick if not on Android
         if (!isAndroid && joystick != null)
         {
@@ -550,17 +553,21 @@ public class CharacterMovements : MonoBehaviour
         }
         Debug.Log("Horizontal: " + moveHorizontal + " | Vertical: " + moveVertical);
         Vector3 inputDirection = new Vector3(moveHorizontal, 0f, moveVertical).normalized;
-        if (UI_Manager.Instance.IsPlayerInSecondZone) 
-        {
-            //inputDirection = new Vector3(moveVertical, 0f, -moveHorizontal);
-            //inputDirection = Quaternion.AngleAxis(cam.rotation.eulerAngles.y, Vector3.up) * inputDirection.normalized;
-        }
-        else
-        {
-
-        }
           inputDirection = Quaternion.AngleAxis(cam.rotation.eulerAngles.y, Vector3.up) * inputDirection.normalized;
-       
+        if (freeLookCam != null)
+        {
+            if (UI_Manager.Instance.IsPlayerInSecondZone)
+            {
+                freeLookCam.m_XAxis.m_MaxSpeed = slowedRotationSpeed;
+               // freeLookCam.m_YAxis.m_MaxSpeed = slowedRotationSpeed;
+            }
+            else
+            {
+                freeLookCam.m_XAxis.m_MaxSpeed = normalRotationSpeed;
+                //freeLookCam.m_YAxis.m_MaxSpeed = normalRotationSpeed;
+            }
+        }
+
 
         bool isGunActive = UI_Manager.Instance.WeaponAttackEvent.isGunActive;
         float joystickMagnitude = new Vector2(joystick.Horizontal, joystick.Vertical).magnitude;
