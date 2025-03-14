@@ -549,16 +549,25 @@ public class CharacterMovements : MonoBehaviour
             moveVertical = Input.GetAxis("Vertical");
         }
         Debug.Log("Horizontal: " + moveHorizontal + " | Vertical: " + moveVertical);
-        // Direct movement based purely on input — no camera influence
         Vector3 inputDirection = new Vector3(moveHorizontal, 0f, moveVertical).normalized;
+        if (UI_Manager.Instance.IsPlayerInSecondZone) 
+        {
+            //inputDirection = new Vector3(moveVertical, 0f, -moveHorizontal);
+            //inputDirection = Quaternion.AngleAxis(cam.rotation.eulerAngles.y, Vector3.up) * inputDirection.normalized;
+        }
+        else
+        {
+
+        }
+          inputDirection = Quaternion.AngleAxis(cam.rotation.eulerAngles.y, Vector3.up) * inputDirection.normalized;
+       
 
         bool isGunActive = UI_Manager.Instance.WeaponAttackEvent.isGunActive;
         float joystickMagnitude = new Vector2(joystick.Horizontal, joystick.Vertical).magnitude;
         //bool isRunning = joystickMagnitude >= 0.9f;
 
         // Determine running or walking speed
-        bool isRunning = isAndroid
-            ? new Vector2(joystick.Horizontal, joystick.Vertical).magnitude >= 0.9f && !UI_Manager.Instance.IsPlayerInSecondZone
+        bool isRunning = isAndroid ? new Vector2(joystick.Horizontal, joystick.Vertical).magnitude >= 0.9f && !UI_Manager.Instance.IsPlayerInSecondZone
             : Input.GetKey(KeyCode.LeftShift) && !UI_Manager.Instance.IsPlayerInSecondZone;
        
 
@@ -607,6 +616,7 @@ public class CharacterMovements : MonoBehaviour
 
         // Move the player in the correct direction
         Vector3 moveDirection = inputDirection * _speed;
+        
         Debug.Log("Horizontal: " + moveDirection);
         _controller.Move(moveDirection * Time.deltaTime);
 
