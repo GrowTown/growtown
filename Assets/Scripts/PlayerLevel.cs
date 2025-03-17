@@ -28,8 +28,8 @@ public class PlayerLevel : MonoBehaviour
         get=>_levelOfPlayer;
         set
         {
-            _levelOfPlayer = value;
             _previousLevel.text = UI_Manager.Instance.currentplayerLevelTxt.text;
+            _levelOfPlayer = value;
             UI_Manager.Instance.currentplayerLevelTxt.text=_levelOfPlayer.ToString();
             _nextLevel.text = UI_Manager.Instance.currentplayerLevelTxt.text;
            // UI_Manager.Instance.ShopManager.OnLevelChanged(_levelOfPlayer);
