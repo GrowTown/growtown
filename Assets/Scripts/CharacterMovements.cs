@@ -551,7 +551,7 @@ public class CharacterMovements : MonoBehaviour
             moveHorizontal = Input.GetAxis("Horizontal");
             moveVertical = Input.GetAxis("Vertical");
         }
-        Debug.Log("Horizontal: " + moveHorizontal + " | Vertical: " + moveVertical);
+        
         Vector3 inputDirection = new Vector3(moveHorizontal, 0f, moveVertical).normalized;
           inputDirection = Quaternion.AngleAxis(cam.rotation.eulerAngles.y, Vector3.up) * inputDirection.normalized;
         if (freeLookCam != null)
@@ -609,7 +609,6 @@ public class CharacterMovements : MonoBehaviour
                 animator.SetLayerWeight(2, 0f);
             }
 
-
         }
 
 
@@ -623,8 +622,6 @@ public class CharacterMovements : MonoBehaviour
 
         // Move the player in the correct direction
         Vector3 moveDirection = inputDirection * _speed;
-        
-        Debug.Log("Horizontal: " + moveDirection);
         _controller.Move(moveDirection * Time.deltaTime);
 
         // Rotate player to face movement direction

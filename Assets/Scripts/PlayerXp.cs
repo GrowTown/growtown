@@ -17,8 +17,7 @@ public  class PlayerXp:MonoBehaviour
     
     internal void AddingXP(int xp)
     {
-        CurrentPlayerXpPoints += xp;
-       
+        CurrentPlayerXpPoints += xp; 
     }
 
     public void SuperXp(int Xp)

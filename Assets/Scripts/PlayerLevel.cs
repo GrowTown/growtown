@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Cinemachine.DocumentationSortingAttribute;
 
 [System.Serializable]
 public class LevelThreshold
@@ -17,7 +18,9 @@ public class PlayerLevel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _nextLevel;
     [SerializeField] private Slider _xpSlider;
     private Dictionary<int, int> _levelThresholds=new Dictionary<int, int>();
-    
+    private int _currentXP = 0;
+    private int _xpForCurrentLevel = 0;
+    private int _xpForNextLevel = 0;
     int _levelOfPlayer=1;
     private const int ThresholdMargin = 5;
     private HashSet<int> _levelsAchieved = new HashSet<int>();
@@ -28,10 +31,9 @@ public class PlayerLevel : MonoBehaviour
         get=>_levelOfPlayer;
         set
         {
-            _previousLevel.text = UI_Manager.Instance.currentplayerLevelTxt.text;
             _levelOfPlayer = value;
-            UI_Manager.Instance.currentplayerLevelTxt.text=_levelOfPlayer.ToString();
-            _nextLevel.text = UI_Manager.Instance.currentplayerLevelTxt.text;
+            _previousLevel.text = _levelOfPlayer.ToString();
+            UI_Manager.Instance.currentplayerLevelTxt.text=_levelOfPlayer.ToString();   
            // UI_Manager.Instance.ShopManager.OnLevelChanged(_levelOfPlayer);
         }
     }
@@ -39,7 +41,14 @@ public class PlayerLevel : MonoBehaviour
     private void Start()
     {
         InitializeLevelThresholds();
+        UpdateLevelXP();
+        _xpSlider.minValue = 0;
+        _xpSlider.value = 0;
+        _xpSlider.maxValue = _xpForNextLevel - _xpForCurrentLevel;
         UI_Manager.Instance.currentplayerLevelTxt.text = _levelOfPlayer.ToString();
+        _previousLevel.text = _levelOfPlayer.ToString();
+        _nextLevel.text = (_levelOfPlayer + 1).ToString();
+
     }
 
     private void InitializeLevelThresholds()
@@ -52,6 +61,9 @@ public class PlayerLevel : MonoBehaviour
 
     internal void UpdatePlayerLevel(int xp)
     {
+        int xpInCurrentLevel = xp - _xpForCurrentLevel;
+        _xpSlider.value = Mathf.Clamp(xpInCurrentLevel, 0, _xpSlider.maxValue);
+
         foreach (var threshold in _levelThresholds)
         {
             int level = threshold.Key;
@@ -60,6 +72,8 @@ public class PlayerLevel : MonoBehaviour
             {
                 CurrentPlayerLevel = level;
                 _levelsAchieved.Add(level);
+                _nextLevel.text =(level+1).ToString();
+                UpdateLevelXP();
                 UI_Manager.Instance.ShopManager.OnLevelChanged(_levelOfPlayer);
                 UI_Manager.Instance.RewardsForLevel.LevelRewards($"level{level}");
                 Debug.Log($"Level increased to {CurrentPlayerLevel} for XP: {xp}");
@@ -67,7 +81,12 @@ public class PlayerLevel : MonoBehaviour
         }
     }
 
-
+    private void UpdateLevelXP()
+    {
+        _xpForCurrentLevel = _levelThresholds.ContainsKey(_levelOfPlayer) ? _levelThresholds[_levelOfPlayer] : 0;
+        _xpForNextLevel = _levelThresholds.ContainsKey(_levelOfPlayer + 1) ? _levelThresholds[_levelOfPlayer + 1] : _xpForCurrentLevel + 100;
+        _xpSlider.maxValue = _xpForNextLevel - _xpForCurrentLevel;
+    }
 
 }
 
