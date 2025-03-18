@@ -644,22 +644,22 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.marketPopUpPanel.SetActive(false);
         if (landname == "wheat")
         {
-            Cam.SwitchToCam(3);
-            Cam.activeCamera.LookAt = UI_Manager.Instance.wheatFieldArea.transform;
+           Cam.SwitchToCam(3);
+            //Cam.activeCamera.LookAt = UI_Manager.Instance.wheatFieldArea.transform;
         }
         else
         {
             Cam.SwitchToCam(4);
-            Cam.activeCamera.LookAt = UI_Manager.Instance.carrotFieldArea.transform;
+           // Cam.activeCamera.LookAt = UI_Manager.Instance.carrotFieldArea.transform;
         }
 
 
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(5f);
         //Cam.virtualCams[3].LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
         isShowingnewLand = false;
         UI_Manager.Instance.marketPopUpPanel.SetActive(true);
-        Cam.SwitchToCam(2);
-        Cam.activeCamera.LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
+        Cam.SwitchToCam(0);
+        //Cam.activeCamera.LookAt = UI_Manager.Instance.CharacterMovements.gameObject.transform;
 
     }
 

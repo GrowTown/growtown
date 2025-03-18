@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
 
@@ -30,7 +31,7 @@ public class ShopManager : MonoBehaviour
         shopItems.Add(ItemType.Seeds, new List<ShopItem>());
         shopItems.Add(ItemType.Tools, new List<ShopItem>());
         shopItems.Add(ItemType.PowerUps, new List<ShopItem>());
-        shopItems.Add(ItemType.NFTs , new List<ShopItem>());
+        shopItems.Add(ItemType.NFTs, new List<ShopItem>());
 
         foreach (var item in items)
         {
@@ -39,25 +40,25 @@ public class ShopManager : MonoBehaviour
         //API_Manager.Instance.OnUserNFTListingsUpdated += UpdateNFTShop;
     }
 
-   /* private void UpdateNFTShop(List<NFTListing> nftListings)
-    {
-        shopItems[ItemType.NFTs].Clear(); // Clear previous NFTs to avoid duplication
+    /* private void UpdateNFTShop(List<NFTListing> nftListings)
+     {
+         shopItems[ItemType.NFTs].Clear(); // Clear previous NFTs to avoid duplication
 
-        foreach (var nft in nftListings)
-        {
-            ShopItem newNFT = ScriptableObject.CreateInstance<ShopItem>();
+         foreach (var nft in nftListings)
+         {
+             ShopItem newNFT = ScriptableObject.CreateInstance<ShopItem>();
 
-            // Extract NFT Metadata
-            newNFT.itemName = nft.Metadata.name;
-            newNFT.icon = LoadNFTIcon(nft.Metadata.image);  // Load image from URL
-            newNFT.price = (int)nft.Price;
-            newNFT.type = ItemType.NFTs;
+             // Extract NFT Metadata
+             newNFT.itemName = nft.Metadata.name;
+             newNFT.icon = LoadNFTIcon(nft.Metadata.image);  // Load image from URL
+             newNFT.price = (int)nft.Price;
+             newNFT.type = ItemType.NFTs;
 
-            shopItems[ItemType.NFTs].Add(newNFT);
-        }
+             shopItems[ItemType.NFTs].Add(newNFT);
+         }
 
-        RefreshNFTUI(); // Update UI with new NFT items
-    }*/
+         RefreshNFTUI(); // Update UI with new NFT items
+     }*/
 
 
     private Sprite LoadNFTIcon(string url)
@@ -130,8 +131,8 @@ public class ShopManager : MonoBehaviour
         if (buttons.ContainsKey("WaterPoints"))
         {
             UI_Manager.Instance.waterBuyBT = buttons["WaterPoints"];
-        } 
-        if(buttons.ContainsKey("CleaningTool")) UI_Manager.Instance.cleaningWeaponBT = buttons["CleaningTool"];
+        }
+        if (buttons.ContainsKey("CleaningTool")) UI_Manager.Instance.cleaningWeaponBT = buttons["CleaningTool"];
         if (buttons.ContainsKey("CuttingTool")) UI_Manager.Instance.sickleWeaponBT = buttons["CuttingTool"];
         if (buttons.ContainsKey("WateringTool")) UI_Manager.Instance.wateringWeaponBT = buttons["WateringTool"];
 
@@ -169,7 +170,7 @@ public class ShopManager : MonoBehaviour
                     buttonActions[itemName]();
                     var shopItemHolder = FindShopItemHolder(itemName);
                     UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(animICON, shopItemHolder.GetComponent<RectTransform>(), invetoryBagPos);
-    
+
                     if (shopItemHolder != null)
                     {
                         UI_Manager.Instance.InventoryManager.AddToInventory(shopItemHolder);
@@ -195,10 +196,10 @@ public class ShopManager : MonoBehaviour
             foreach (Transform child in content)
             {
                 ShopItemHolder holder = child.GetComponent<ShopItemHolder>();
-                if (holder != null && holder.Item!=null)
+                if (holder != null && holder.Item != null)
                 {
-                     if(holder.Item.itemName == itemName)
-                    return holder;
+                    if (holder.Item.itemName == itemName)
+                        return holder;
                 }
             }
         }
@@ -362,7 +363,7 @@ public class ShopManager : MonoBehaviour
             //Debug.Log("You didn't have enough money");
         }
     }
-      
+
     public void ToBuyPasticide()
     {
         AudioManager.Instance.PlaySFX();
@@ -402,7 +403,7 @@ public class ShopManager : MonoBehaviour
 
         if (GameManager.Instance.CurrentScore >= 20)
         {
-            GameManager.Instance.CurrentScore -= 20;      
+            GameManager.Instance.CurrentScore -= 20;
         }
         else
         {
@@ -452,17 +453,21 @@ public class ShopManager : MonoBehaviour
 
     internal void SellHarvest()
     {
-        foreach (var item in UI_Manager.Instance.ListOfHarvestCount)
+        if (GameManager.Instance.isHarvestCompleted)
         {
-            GameManager.Instance.CounttheHarvest(item.Value.Count);
-        }
 
-        UI_Manager.Instance.sellPopupPanel.SetActive(false);
-        UI_Manager.Instance.marketPopUp.SetActive(true);
-        GameManager.Instance.isHarvestCompleted = false; 
-        UI_Manager.Instance.ListOfHarvestCount.Clear();
-        GameManager.Instance.HarvestCount = 0;
-        UI_Manager.Instance.GrowthStartedPlants.Clear();
+            foreach (var item in UI_Manager.Instance.ListOfHarvestCount)
+            {
+                GameManager.Instance.CounttheHarvest(item.Value.Count);
+            }
+            UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.scoreUIAnimation, UI_Manager.Instance.sellInventoryBT.GetComponent<RectTransform>(), UI_Manager.Instance.score.GetComponent<RectTransform>(), 20);
+            UI_Manager.Instance.sellPopupPanel.SetActive(false);
+            UI_Manager.Instance.marketPopUp.SetActive(true);
+            GameManager.Instance.isHarvestCompleted = false;
+            UI_Manager.Instance.ListOfHarvestCount.Clear();
+            GameManager.Instance.HarvestCount = 0;
+            UI_Manager.Instance.GrowthStartedPlants.Clear();
+        }
     }
     #endregion
 }

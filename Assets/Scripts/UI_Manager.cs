@@ -53,6 +53,7 @@ public class UI_Manager : MonoBehaviour
     public Transform cropTimerHolder;
     public RectTransform xpTargetPlace;
     public RectTransform xpStartPlace;
+    public RectTransform scoreTargetPlace;
     
 
     [Header("Effects")]
@@ -64,6 +65,7 @@ public class UI_Manager : MonoBehaviour
     public Sprite tomatoUIAnimation;
     public Sprite wheatUIAnimation;
     public Sprite beanUIAnimation;
+    public Sprite scoreUIAnimation;
 
 
     [Header("Buttons")]
@@ -425,6 +427,7 @@ public class UI_Manager : MonoBehaviour
             AudioManager.Instance.PlaySFX();
             // sellPopupPanel.SetActive(true);
             ShopManager.SellHarvest();
+            
         });
 
         wheatSeedBT.onClick.AddListener(() =>

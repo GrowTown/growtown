@@ -319,7 +319,7 @@ public class PlantGrowth : MonoBehaviour
                         {
 
                         }
-                            UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.tomatoUIAnimation, UI_Manager.Instance.CharacterMovements.transform, UI_Manager.Instance.ShopManager.invetoryBagPos, 4);
+                         UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.tomatoUIAnimation, UI_Manager.Instance.CharacterMovements.transform, UI_Manager.Instance.ShopManager.invetoryBagPos, 4);
 
                     }
                 }
