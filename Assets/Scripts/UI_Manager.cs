@@ -45,15 +45,25 @@ public class UI_Manager : MonoBehaviour
     public GameObject shotGunSpawnPoint;
     public GameObject inventoryHolder;
     public GameObject cropTimerPrefab;
+   
 
 
     [Header("Transforms")]
     public Transform lhHolderTransform;
     public Transform cropTimerHolder;
+    public RectTransform xpTargetPlace;
+    public RectTransform xpStartPlace;
+    
 
     [Header("Effects")]
     public GameObject waterEffect;
     public GameObject cleanigEffect;
+
+    [Header("Sprites")]
+    public Sprite xpUIAnimation;
+    public Sprite tomatoUIAnimation;
+    public Sprite wheatUIAnimation;
+    public Sprite beanUIAnimation;
 
 
     [Header("Buttons")]

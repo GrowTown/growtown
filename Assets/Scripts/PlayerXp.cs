@@ -17,13 +17,13 @@ public  class PlayerXp:MonoBehaviour
     
     internal void AddingXP(int xp)
     {
-        CurrentPlayerXpPoints += xp; 
+        CurrentPlayerXpPoints += xp;
     }
 
     public void SuperXp(int Xp)
     {
         if (!UI_Manager.Instance.isSuperXpEnable)
-        {
+        { 
             AddingXP(Xp);
         }
         else
@@ -31,5 +31,6 @@ public  class PlayerXp:MonoBehaviour
             Xp += Xp;
             AddingXP(Xp);
         }
+       UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.xpUIAnimation, UI_Manager.Instance.CharacterMovements.transform, UI_Manager.Instance.xpTargetPlace,Xp);
     }
 }

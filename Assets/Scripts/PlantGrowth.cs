@@ -262,6 +262,7 @@ public class PlantGrowth : MonoBehaviour
             {
                 this.gameObject.transform.DOMoveY(cuttingHight, 0.1f);
                 GameManager.Instance.isHarvestCompleted = true;
+                var fieldID = UI_Manager.Instance.FieldManager.CurrentFieldID;
                 /*
                                 if (UI_Manager.Instance.GrownPlantsToCut.Contains(this.gameObject))
                                 {
@@ -272,27 +273,25 @@ public class PlantGrowth : MonoBehaviour
                 if (UI_Manager.Instance.GrownPlantsToCut.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID))
                 {
                     // Access the list for the current field
-                    List<GameObject> plantList = UI_Manager.Instance.GrownPlantsToCut[UI_Manager.Instance.FieldManager.CurrentFieldID];
+                    List<GameObject> plantList = UI_Manager.Instance.GrownPlantsToCut[fieldID];
 
 
                     // Loop through the plants associated with tiles
                     foreach (var entry in UI_Manager.Instance.spawnPlantsForGrowth)
                     {
-                        GameObject tile = entry.Key; // Tile GameObject
-                        List<GameObject> plants = entry.Value; // List of plants on this tile
+                        GameObject tile = entry.Key; 
+                        List<GameObject> plants = entry.Value; 
 
-                        if (plants.Contains(this.gameObject)) // Check if this plant is part of the current tile
+                        if (plants.Contains(this.gameObject)) 
                         {
-                            plants.Remove(this.gameObject); // Remove the plant from the list
+                            plants.Remove(this.gameObject); 
 
-                            // Check if all plants for this tile are destroyed
                             if (plants.Count == 0)
                             {
-                                // Change the tile color (or mark it as covered)
                                 UI_Manager.Instance.FieldGrid.AddCoveredTile(tile);
                             }
 
-                            break; // Exit the loop once the plant is handled
+                            break;   
                         }
                     }
 
@@ -303,11 +302,24 @@ public class PlantGrowth : MonoBehaviour
                         if (plantList.Count == 0)
                         {
                            
-                            UI_Manager.Instance.GrownPlantsToCut.Remove(UI_Manager.Instance.FieldManager.CurrentFieldID);
-                            GameManager.Instance.ReSetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID);
+                            UI_Manager.Instance.GrownPlantsToCut.Remove(fieldID);
+                            GameManager.Instance.ReSetCropTimerBar(fieldID);
                              
                         }
                         Destroy(this.gameObject); // Destroy the GameObject
+                        if (fieldID == 0)
+                        {
+
+                        }
+                        else if (fieldID == 1)
+                        {
+
+                        }
+                        else
+                        {
+
+                            UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.tomatoUIAnimation, UI_Manager.Instance.CharacterMovements.transform, UI_Manager.Instance.ShopManager.invetoryBagPos, 4);
+                        }
 
                     }
                 }

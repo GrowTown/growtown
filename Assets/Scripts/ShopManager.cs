@@ -13,7 +13,7 @@ public class ShopManager : MonoBehaviour
     Dictionary<string, Action> buttonActions;
     public Dictionary<string, Button> buttons = new Dictionary<string, Button>();
     [SerializeField] private GameObject itemPrefab;
-    [SerializeField] private RectTransform invetoryBagPos;
+    [SerializeField] internal RectTransform invetoryBagPos;
     [SerializeField] private Sprite animICON;
 
     private void Start()
@@ -168,7 +168,7 @@ public class ShopManager : MonoBehaviour
                 {
                     buttonActions[itemName]();
                     var shopItemHolder = FindShopItemHolder(itemName);
-                    UI_Manager.Instance.UIAnimationM.PlayMoveToInventoryAnimation(animICON, shopItemHolder.GetComponent<RectTransform>(), invetoryBagPos);
+                    UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(animICON, shopItemHolder.GetComponent<RectTransform>(), invetoryBagPos);
     
                     if (shopItemHolder != null)
                     {
@@ -238,7 +238,7 @@ public class ShopManager : MonoBehaviour
                             {
                                 buttonActions[item.itemName]();
                                 var shopItemHolder = FindShopItemHolder(item.itemName);
-                                UI_Manager.Instance.UIAnimationM.PlayMoveToInventoryAnimation(animICON, shopItemHolder.GetComponent<RectTransform>(), invetoryBagPos);
+                                UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(animICON, shopItemHolder.GetComponent<RectTransform>(), invetoryBagPos);
 
                                 if (shopItemHolder != null)
                                 {
