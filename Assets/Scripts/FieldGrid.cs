@@ -97,7 +97,7 @@ public class FieldGrid : MonoBehaviour
               coveredtiles.Add(tileGo);
               TochangetheTileColor(tileGo);
             }
-            Debug.Log("Tile added: " + tileGo);
+            
         }
         else if (UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
         {

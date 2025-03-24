@@ -40,7 +40,7 @@ public class PlayerInteraction : MonoBehaviour
             GameObject hitTileGameObject = hit.collider.gameObject;
             // Get the tile position for the player and try to add it
             //Vector2Int playerTile = UI_Manager.Instance.FieldGrid.GetPlayerTile();
-            if (UI_Manager.Instance.FieldManager.CurrentStepID != 2 && UI_Manager.Instance.FieldManager.CurrentStepID != 3)
+            if (UI_Manager.Instance.FieldManager.CurrentStepID ==1)
             {
                 UI_Manager.Instance.FieldGrid.AddCoveredTile(hitTileGameObject);
             }
@@ -50,6 +50,7 @@ public class PlayerInteraction : MonoBehaviour
    
             if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
             {
+
                 if (UI_Manager.Instance.FieldManager.CurrentStepID == 3)
                 {
                     ChangetheValues();

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
 
@@ -14,8 +13,10 @@ public class ShopManager : MonoBehaviour
     Dictionary<string, Action> buttonActions;
     public Dictionary<string, Button> buttons = new Dictionary<string, Button>();
     [SerializeField] private GameObject itemPrefab;
+    [SerializeField] private GameObject sellItemPrefab;
     [SerializeField] internal RectTransform invetoryBagPos;
     [SerializeField] private Sprite animICON;
+    [SerializeField] private Sprite tomatoICON;
 
     private void Start()
     {
@@ -451,22 +452,75 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    internal void SellHarvest()
+    public void InstantiateSellPrefab(int count, string name)
     {
-        if (GameManager.Instance.isHarvestCompleted)
-        {
+        Transform container = UI_Manager.Instance.sellContainerTransForm;
 
-            foreach (var item in UI_Manager.Instance.ListOfHarvestCount)
+        foreach (Transform child in container)
+        {
+            var sellPref = child.GetComponent<SellItemProperties>();
+            if (sellPref.itemName == name)
             {
-                GameManager.Instance.CounttheHarvest(item.Value.Count);
+                sellPref.countTx.text = count.ToString();
+                return;
             }
+        }
+
+        var newSellItem = Instantiate(sellItemPrefab, container).GetComponent<SellItemProperties>();
+        newSellItem.itemName = name;
+        newSellItem.countTx.text = count.ToString();
+        newSellItem.seedIcon.sprite = tomatoICON;
+        newSellItem.sellBT.onClick.AddListener(() =>
+        {
+            int value = int.Parse(newSellItem.inputFieldCountTx.text);
+            int cValue = int.Parse(newSellItem.countTx.text);
+            if (cValue >= value && value > 0)
+            {
+                int updatedCvalue = cValue - value;
+                newSellItem.countTx.text = updatedCvalue.ToString();
+                SellHarvest(newSellItem.itemName, value, updatedCvalue);
+            }
+            else
+            {
+                Debug.Log("InputField Value Is Higher Than The Actuall Count,Please Select Within The Limit");
+            }
+        });
+
+    }
+
+
+    internal void SellHarvest(string Pname, int Hcount, int OgCount)
+    {
+        if (OgCount > 0)
+        {
+            if (Hcount > 0)
+            {
+                GameManager.Instance.CounttheHarvest(Hcount);
+            }
+            else
+            {
+
+                if (UI_Manager.Instance.ListOfHarvestCount1.ContainsKey(Pname))
+                    GameManager.Instance.CounttheHarvest(UI_Manager.Instance.ListOfHarvestCount1[Pname].Count);
+            }
+
+            /* foreach (var item in UI_Manager.Instance.ListOfHarvestCount1)
+             {
+
+                 GameManager.Instance.CounttheHarvest(item.Count);
+             }*/
             UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.scoreUIAnimation, UI_Manager.Instance.sellInventoryBT.GetComponent<RectTransform>(), UI_Manager.Instance.score.GetComponent<RectTransform>(), 20);
-            UI_Manager.Instance.sellPopupPanel.SetActive(false);
-            UI_Manager.Instance.marketPopUp.SetActive(true);
+            /*UI_Manager.Instance.sellPopupPanel.SetActive(false);
+            UI_Manager.Instance.marketPopUp.SetActive(true);*/
             GameManager.Instance.isHarvestCompleted = false;
             UI_Manager.Instance.ListOfHarvestCount.Clear();
             GameManager.Instance.HarvestCount = 0;
             UI_Manager.Instance.GrowthStartedPlants.Clear();
+            if (OgCount < 0)
+            {
+                UI_Manager.Instance.ListOfHarvestCount1.Remove(Pname);
+                UI_Manager.Instance.GrowthStartedPlants1.Remove(Pname);
+            }
         }
     }
     #endregion

@@ -54,6 +54,7 @@ public class UI_Manager : MonoBehaviour
     public RectTransform xpTargetPlace;
     public RectTransform xpStartPlace;
     public RectTransform scoreTargetPlace;
+    public Transform sellContainerTransForm;
     
 
     [Header("Effects")]
@@ -171,7 +172,9 @@ public class UI_Manager : MonoBehaviour
     internal Dictionary<GameObject, List<GameObject>> spawnPlantsForGrowth = new Dictionary<GameObject, List<GameObject>>();
     internal Dictionary<List<GameObject>, GameObject> spawnPlantsAndTile = new Dictionary<List<GameObject>, GameObject>();
     internal Dictionary<int, List<int>> ListOfHarvestCount = new Dictionary<int, List<int>>();
+    internal Dictionary<string, List<int>> ListOfHarvestCount1 = new Dictionary<string, List<int>>();
     internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
+    internal Dictionary<string ,List<GameObject>> GrowthStartedPlants1 = new Dictionary<string, List<GameObject>>();
     internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
     internal Dictionary<int, List<GameObject>> GrownPlantsToCut = new Dictionary<int, List<GameObject>>();
     [SerializeField]
@@ -404,14 +407,14 @@ public class UI_Manager : MonoBehaviour
         pasticideNormalHealthUseBT.onClick.AddListener(() => 
         {
             AudioManager.Instance.PlaySFX();
-            GameManager.Instance.ToIncreaseLandHealthUsePasticide(UI_Manager.Instance.FieldManager.CurrentFieldID, 100);
+            GameManager.Instance.ToIncreaseLandHealthUsePasticide(FieldManager.CurrentFieldID, 100);
             pasticidePopUpPanel.SetActive(false);
         });
         pasticideBuyBT.onClick.AddListener(() => { AudioManager.Instance.PlaySFX(); ShopManager.ToBuyPasticide(); });
 
         pasticideUseBT.onClick.AddListener(() =>
         {
-            GameManager.Instance.ToIncreaseLandHealthUsePasticide(UI_Manager.Instance.FieldManager.CurrentFieldID,100);
+            GameManager.Instance.ToIncreaseLandHealthUsePasticide(FieldManager.CurrentFieldID,100);
             pasticidePopUpPanel.SetActive(false);
         });
 
@@ -426,7 +429,7 @@ public class UI_Manager : MonoBehaviour
         {
             AudioManager.Instance.PlaySFX();
             // sellPopupPanel.SetActive(true);
-            ShopManager.SellHarvest();
+            //ShopManager.SellHarvest();
             
         });
 

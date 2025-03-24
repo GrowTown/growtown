@@ -10,6 +10,7 @@ TagManager:
   - sickle
   - hammer
   - enemy
+  - Tool
   layers:
   - Default
   - TransparentFX
@@ -24,7 +25,7 @@ TagManager:
   - Projectile
   - Enemy
   - Dog
-  - 
+  - Tile
   - 
   - 
   - 

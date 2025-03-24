@@ -270,7 +270,7 @@ public class PlantGrowth : MonoBehaviour
                                     Destroy(this.gameObject); 
                                 }*/
 
-                if (UI_Manager.Instance.GrownPlantsToCut.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID))
+                if (UI_Manager.Instance.GrownPlantsToCut.ContainsKey(fieldID))
                 {
                     // Access the list for the current field
                     List<GameObject> plantList = UI_Manager.Instance.GrownPlantsToCut[fieldID];

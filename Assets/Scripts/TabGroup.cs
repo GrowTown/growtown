@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TabGroup : MonoBehaviour
 {
 
     public List<Tab_Button> tabButtons;
+    public Button BuyPanelBT;
     public List<GameObject> objectsToSwap;
     public Tab_Button selectedTab;
     public float selectedScaleForBT = 1.5f; 
@@ -14,6 +16,16 @@ public class TabGroup : MonoBehaviour
     private void Start()
     {
         if (tabButtons.Count > 0)
+        {
+            OnTabSelected(tabButtons[0]);
+        }
+
+        BuyPanelBT.onClick.AddListener(()=> { SellToBuyPanel(); });
+    }
+
+    public void SellToBuyPanel()
+    {
+        if (objectsToSwap[4].activeSelf)
         {
             OnTabSelected(tabButtons[0]);
         }
@@ -37,7 +49,7 @@ public class TabGroup : MonoBehaviour
         }
         selectedTab = button;
         selectedTab.ScaleButton(selectedScaleForBT, scaleDuration); 
-        int index = button.transform.GetSiblingIndex();
+        int index =  tabButtons.IndexOf(button);
         for (int i = 0; i < objectsToSwap.Count; i++)
         {
             if (i == index)
@@ -46,6 +58,7 @@ public class TabGroup : MonoBehaviour
             }
             else
             {
+               
                 objectsToSwap[i].SetActive(false);
             }
         }

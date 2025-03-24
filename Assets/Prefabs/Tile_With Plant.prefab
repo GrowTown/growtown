@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3272846013109985330}
   - component: {fileID: 4074833449217781156}
   - component: {fileID: 7364506785481390703}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tomato 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1050628281387537385}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SpawnPoint (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,7 +124,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1457041323425263785}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SpawnPoint1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -156,7 +156,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7789921766678100817}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +188,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7596936093911182070}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SpawnPoint1 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,7 +220,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8626609713397440702}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SpawnPoint (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -254,7 +254,7 @@ GameObject:
   - component: {fileID: 8342917476087323815}
   - component: {fileID: 2804919119017352900}
   - component: {fileID: 9189184326186112202}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tomato 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: 6082057147659964466}
   - component: {fileID: 3179426693202602220}
   - component: {fileID: 6091149119067431094}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tomato 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -420,7 +420,7 @@ GameObject:
   - component: {fileID: 6254052178043048809}
   - component: {fileID: 6028142383117195728}
   - component: {fileID: 3730123110318148795}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: TomatoHolder1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -469,6 +469,7 @@ MonoBehaviour:
   - {fileID: 1050628281387537385}
   initialgrowthTime: 2
   AfterWateredgrowthTime: 2
+  AfterHarvestWitherTime: 1
 --- !u!136 &3730123110318148795
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -501,7 +502,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1193462967778299368}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SpawnPoint (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -534,7 +535,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6053020933564894203}
   - component: {fileID: 1924461057208988210}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tomatoplant (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -625,7 +626,7 @@ GameObject:
   - component: {fileID: 2777648656406795578}
   - component: {fileID: 1413323780619578646}
   - component: {fileID: 3388202671530429256}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tile_With Plant
   m_TagString: Field
   m_Icon: {fileID: 0}
@@ -643,7 +644,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.0924, y: 0.001, z: -1.144}
   m_LocalScale: {x: 0.08, y: 0.08, z: 0.08}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7965391852748304927}
   - {fileID: 1457041323425263785}
@@ -679,7 +680,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a17bfe6ccda96e34e961d61d7b2b6b78, type: 2}
+  - {fileID: 2100000, guid: 8f89b6ba6e4f61b46bd28d0d877e6dec, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -740,6 +741,11 @@ MonoBehaviour:
   - {fileID: 1457041323425263785}
   - {fileID: 7596936093911182070}
   - {fileID: 8498328617529672712}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 8192
+  paintColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  baseTexture: {fileID: 2800000, guid: 4fa46b1ed61f5d14ea020fd676ffebb5, type: 3}
 --- !u!1 &4357317031822606374
 GameObject:
   m_ObjectHideFlags: 0
@@ -750,7 +756,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7376312924992044239}
   - component: {fileID: 6928125580113007440}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tomatoplant (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -839,7 +845,7 @@ GameObject:
   - component: {fileID: 4112327407443384758}
   - component: {fileID: 9184736828510569265}
   - component: {fileID: 8639589744191329910}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tomato 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -920,7 +926,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 64435555927029205}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SpawnPoint (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -953,7 +959,7 @@ GameObject:
   m_Component:
   - component: {fileID: 587998271565232350}
   - component: {fileID: 4113097941724596480}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tomatoplant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1040,7 +1046,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7965391852748304927}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SpawnPoint1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1075,7 +1081,7 @@ GameObject:
   - component: {fileID: 4470083935235254344}
   - component: {fileID: 5247621004154912086}
   - component: {fileID: 2799881316662965966}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tomato 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1158,7 +1164,7 @@ GameObject:
   - component: {fileID: 5038087444845394252}
   - component: {fileID: 2100891674392079785}
   - component: {fileID: 6733231015244625286}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tomato_Plant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1266,7 +1272,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8601293379496432547}
   - component: {fileID: 6135452250715952495}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tomatoplant (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1353,7 +1359,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8498328617529672712}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SpawnPoint1 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class TileInfo : MonoBehaviour
 {
@@ -11,10 +12,26 @@ public class TileInfo : MonoBehaviour
     internal bool isCuttingStarted = false;
     private MeshRenderer _renderer;
     internal bool _hasColorChanged = false;
+    private MaterialPropertyBlock _propBlock;
+    private float brushRadius = 0.1f; // Adjust the area of effect
+    private Texture2D texture;
+    public LayerMask layerMask;
+    public Color paintColor = Color.gray; // The color to apply
+    public Texture2D baseTexture; // Assign the base texture in Inspector
+    private Texture2D paintableTexture;
 
     private void Start()
     {
         _renderer = GetComponent<MeshRenderer>();
+
+       /* // Create a copy of the base texture manually
+        paintableTexture = new Texture2D(baseTexture.width, baseTexture.height, TextureFormat.RGB24, false);
+
+        // Copy pixel data manually to avoid mipmap mismatch
+        paintableTexture.SetPixels(baseTexture.GetPixels());
+        paintableTexture.Apply(); // Apply chang
+
+        _renderer.material.SetTexture("_BaseMap", paintableTexture);*/
     }
     public void OnPlayerEnter()
     {
@@ -64,10 +81,10 @@ public class TileInfo : MonoBehaviour
 
             Quaternion[] rotations = new Quaternion[]
             {
-            Quaternion.Euler(0, 0, 0), 
-            Quaternion.Euler(0, 45, 0), 
+            Quaternion.Euler(0, 0, 0),
+            Quaternion.Euler(0, 45, 0),
             Quaternion.Euler(0, 90, 0),
-            Quaternion.Euler(0, 270, 0) 
+            Quaternion.Euler(0, 270, 0)
             };
 
             int index = 0;
@@ -121,6 +138,47 @@ public class TileInfo : MonoBehaviour
 
         _renderer.material.color = targetColor;
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Tool"))
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(other.transform.position, Vector3.down, out hit, 4, layerMask))
+            {
+                UI_Manager.Instance.FieldGrid.AddCoveredTile(this.gameObject);
+                /*Vector2 pixelUV = hit.textureCoord;
+                pixelUV.x *= paintableTexture.width;
+                pixelUV.y *= paintableTexture.height;
+
+                Debug.Log($"Tile: {gameObject.name}, UV: {pixelUV}");
+
+                ApplyBrush((int)pixelUV.x, (int)pixelUV.y);*/
+            }
+        }
+    }
+
+    private void ApplyBrush(int x, int y)
+    {
+        int brushSize = 5;
+        var color = new Color(1f, 0.9188f, 0.9188f, 1f);
+
+        for (int i = -brushSize; i <= brushSize; i++)
+        {
+            for (int j = -brushSize; j <= brushSize; j++)
+            {
+                if (x + i >= 0 && x + i < paintableTexture.width && y + j >= 0 && y + j < paintableTexture.height)
+                {
+                    paintableTexture.SetPixel(x + i, y + j, color);
+                }
+            }
+        }
+        paintableTexture.Apply();
+        _renderer.material.mainTexture = paintableTexture;  
+
+    }
+
+
+
 
 }
 

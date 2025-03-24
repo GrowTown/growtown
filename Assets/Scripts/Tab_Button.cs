@@ -9,7 +9,7 @@ public class Tab_Button : MonoBehaviour, IPointerClickHandler
 
     void Start()
     {
-        tabGroup.Subscribe(this);
+        //tabGroup.Subscribe(this);
     }
 
     public void OnPointerClick(PointerEventData eventData)
