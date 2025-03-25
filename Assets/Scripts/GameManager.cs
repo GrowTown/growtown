@@ -347,7 +347,7 @@ public class GameManager : MonoBehaviour
                         else
                         {
                             if (!UI_Manager.Instance.GrowthStartedPlants1.ContainsKey("TomatoHarvest"))
-                            UI_Manager.Instance.GrowthStartedPlants1["TomatoHarvest"] = new List<GameObject>();
+                                UI_Manager.Instance.GrowthStartedPlants1["TomatoHarvest"] = new List<GameObject>();
                             if (!UI_Manager.Instance.GrowthStartedPlants1["TomatoHarvest"].Contains(item))
                             {
                                 UI_Manager.Instance.GrowthStartedPlants1["TomatoHarvest"].Add(item);
@@ -382,9 +382,16 @@ public class GameManager : MonoBehaviour
     }
     public void CounttheHarvest(int growPC)
     {
-        int grownPlantCount = growPC;
 
-        if (grownPlantCount == 100)
+        int pointsPerGrowPC = 10 / 4;
+        int grownPlantCount = growPC * pointsPerGrowPC;
+        CurrentScore += grownPlantCount;
+        Debug.Log($"Plant ====> {growPC}");
+        Debug.Log($"PlantScore ====> {grownPlantCount}");
+
+
+
+        /*if (grownPlantCount == 100)
         {
             CurrentScore += 250;
         }
@@ -407,7 +414,7 @@ public class GameManager : MonoBehaviour
         else
         {
             CurrentScore += 0;
-        }
+        }*/
 
     }
     public void HarvestDeductEnergy(GameObject tilego)
@@ -468,15 +475,15 @@ public class GameManager : MonoBehaviour
 
         UI_Manager.Instance.ShopManager.InstantiateSellPrefab(UI_Manager.Instance.GrowthStartedPlants1[harvestName].Count, harvestName);
 
-      /*  if (!UI_Manager.Instance.ListOfHarvestCount.ContainsKey(HarvestCount))
-        {
-            UI_Manager.Instance.ListOfHarvestCount[HarvestCount] = new List<int>();
-        }
+        /*  if (!UI_Manager.Instance.ListOfHarvestCount.ContainsKey(HarvestCount))
+          {
+              UI_Manager.Instance.ListOfHarvestCount[HarvestCount] = new List<int>();
+          }
 
-        for (int i = 0; i < UI_Manager.Instance.GrowthStartedPlants.Count; i++)
-        {
-            UI_Manager.Instance.ListOfHarvestCount[HarvestCount].Add(i);
-        }*/
+          for (int i = 0; i < UI_Manager.Instance.GrowthStartedPlants.Count; i++)
+          {
+              UI_Manager.Instance.ListOfHarvestCount[HarvestCount].Add(i);
+          }*/
 
     }
 
@@ -863,7 +870,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-  
+
 
     #endregion
 

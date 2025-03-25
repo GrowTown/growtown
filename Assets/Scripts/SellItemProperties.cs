@@ -9,5 +9,7 @@ public class SellItemProperties: MonoBehaviour
     [SerializeField] internal Image seedIcon;
     [SerializeField] internal TMP_InputField inputFieldCountTx ;
     [SerializeField] internal Button sellBT;
+    [SerializeField] internal Button increaseBT;
+    [SerializeField] internal Button decreaseBT;
   
 }

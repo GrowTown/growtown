@@ -452,6 +452,7 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+    int hCountToSell;
     public void InstantiateSellPrefab(int count, string name)
     {
         Transform container = UI_Manager.Instance.sellContainerTransForm;
@@ -468,13 +469,23 @@ public class ShopManager : MonoBehaviour
 
         var newSellItem = Instantiate(sellItemPrefab, container).GetComponent<SellItemProperties>();
         newSellItem.itemName = name;
-        newSellItem.countTx.text = count.ToString();
+        newSellItem.countTx.text = count.ToString() ;
         newSellItem.seedIcon.sprite = tomatoICON;
+        newSellItem.increaseBT.onClick.AddListener(() =>
+        { 
+            hCountToSell += 1;
+            newSellItem.inputFieldCountTx.text=hCountToSell.ToString();
+        });
+        newSellItem.decreaseBT.onClick.AddListener(() =>
+        {
+            hCountToSell -= 1;
+            newSellItem.inputFieldCountTx.text = hCountToSell.ToString();
+        });
         newSellItem.sellBT.onClick.AddListener(() =>
         {
             int value = int.Parse(newSellItem.inputFieldCountTx.text);
             int cValue = int.Parse(newSellItem.countTx.text);
-            if (cValue >= value && value > 0)
+            if (cValue >= value && value >= 0)
             {
                 int updatedCvalue = cValue - value;
                 newSellItem.countTx.text = updatedCvalue.ToString();
@@ -491,18 +502,17 @@ public class ShopManager : MonoBehaviour
 
     internal void SellHarvest(string Pname, int Hcount, int OgCount)
     {
-        if (OgCount > 0)
-        {
+      
             if (Hcount > 0)
             {
                 GameManager.Instance.CounttheHarvest(Hcount);
             }
-            else
+            /*else
             {
 
                 if (UI_Manager.Instance.ListOfHarvestCount1.ContainsKey(Pname))
                     GameManager.Instance.CounttheHarvest(UI_Manager.Instance.ListOfHarvestCount1[Pname].Count);
-            }
+            }*/
 
             /* foreach (var item in UI_Manager.Instance.ListOfHarvestCount1)
              {
@@ -521,7 +531,7 @@ public class ShopManager : MonoBehaviour
                 UI_Manager.Instance.ListOfHarvestCount1.Remove(Pname);
                 UI_Manager.Instance.GrowthStartedPlants1.Remove(Pname);
             }
-        }
+        
     }
     #endregion
 }
