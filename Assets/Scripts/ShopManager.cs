@@ -38,7 +38,7 @@ public class ShopManager : MonoBehaviour
         {
             shopItems[item.type].Add(item);
         }
-        //API_Manager.Instance.OnUserNFTListingsUpdated += UpdateNFTShop;
+      
     }
 
     /* private void UpdateNFTShop(List<NFTListing> nftListings)
@@ -216,6 +216,7 @@ public class ShopManager : MonoBehaviour
             ItemType key = shopItems.Keys.ToArray()[i];
             for (int j = 0; j < shopItems[key].Count; j++)
             {
+
                 ShopItem item = shopItems[key][j];
                 if (item.level == LVinfo)
                 {
@@ -255,6 +256,7 @@ public class ShopManager : MonoBehaviour
                     }
 
                     spItemList.Clear();
+
                     if (buttons.ContainsKey("SuperXp") && !UI_Manager.Instance.isButtonsInitialized)
                     {
                         UI_Manager.Instance.superXpBuyBT = buttons["SuperXp"];
