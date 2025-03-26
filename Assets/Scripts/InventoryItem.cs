@@ -23,6 +23,7 @@ public class InventoryItem : MonoBehaviour
 
         Itemcount += count;
         iconImage.sprite = item.iconImage.sprite;
+        
 
     }
 

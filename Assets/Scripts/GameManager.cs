@@ -390,7 +390,6 @@ public class GameManager : MonoBehaviour
         Debug.Log($"PlantScore ====> {grownPlantCount}");
 
 
-
         /*if (grownPlantCount == 100)
         {
             CurrentScore += 250;

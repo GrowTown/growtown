@@ -45,6 +45,8 @@ public class UI_Manager : MonoBehaviour
     public GameObject shotGunSpawnPoint;
     public GameObject inventoryHolder;
     public GameObject cropTimerPrefab;
+    public GameObject levelUpPopUpPanel;
+    public GameObject levelUpPopUpPrefab;
    
 
 
@@ -55,6 +57,7 @@ public class UI_Manager : MonoBehaviour
     public RectTransform xpStartPlace;
     public RectTransform scoreTargetPlace;
     public Transform sellContainerTransForm;
+    public Transform levelUpContainerTransForm;
     
 
     [Header("Effects")]
@@ -109,6 +112,7 @@ public class UI_Manager : MonoBehaviour
     public TextMeshProUGUI pasticideCount;
     public TextMeshProUGUI contentOfNotBuyPasticedMsgTxt;
     public TextMeshProUGUI currentplayerLevelTxt;
+    public TextMeshProUGUI levelUpPopupTxt;
 
     [Header("References")]
     [SerializeField]

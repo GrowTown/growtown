@@ -8,7 +8,7 @@ public class RewardsForLevel : MonoBehaviour
         public List<Reward> Rewards { get; set; } = new List<Reward>();
     }
 
-    private Dictionary<string, LevelReward> _levelRewards;
+    internal  Dictionary<string, LevelReward> _levelRewards;
 
     private void Start()
     {
@@ -35,9 +35,9 @@ public class RewardsForLevel : MonoBehaviour
                 {
                     Rewards = new List<Reward>
                     {
-                       new Reward { RewardType = "Unlock", Name = "WheatLand" },
+                       new Reward { RewardType = "Unlock", Name = "WheatLand",Value=1 },
                        new Reward { RewardType = "Seed", Name = "Wheat", Value = 50 },
-                       new Reward {RewardType="Unlock",Name="SuperXp"}
+                       new Reward {RewardType="Unlock",Name="SuperXp",Value=1}
                     }
                 }
             },
@@ -57,7 +57,7 @@ public class RewardsForLevel : MonoBehaviour
                 {
                     Rewards = new List<Reward>
                     {
-                        new Reward { RewardType = "Unlock", Name = "CarrotLand" }
+                        new Reward { RewardType = "Unlock", Name = "CarrotLand",Value=1 }
                     }
                 }
             },
@@ -109,6 +109,14 @@ public class RewardsForLevel : MonoBehaviour
         };
     }
 
+    public List<Reward> GetRewardsForLevel(string levelKey)
+    {
+        if (_levelRewards.TryGetValue(levelKey, out LevelReward levelReward))
+        {
+            return levelReward.Rewards;
+        }
+        return null;
+    }
     internal void LevelRewards(string level)
     {
         if (_levelRewards.TryGetValue(level, out var levelReward))
@@ -120,7 +128,7 @@ public class RewardsForLevel : MonoBehaviour
                     case "Item":
                         Debug.Log($"Player received {reward.Name} x{reward.Value}");
                         AddItemToInventory(reward.Name, reward.Value);
-                        break;
+                         break;
 
                     case "Energy":
                         Debug.Log($"Player gained {reward.Value} energy");
@@ -237,7 +245,7 @@ public class RewardsForLevel : MonoBehaviour
 
 public class Reward
 {
-    public string RewardType { get; set; } // e.g., "Item", "Ability", "Healing"
-    public string Name { get; set; }       // Name of the reward, e.g., "Hammer", "Special Ability"
-    public int Value { get; set; }         // Reward value, e.g., healing amount, or leave 0 for items
+    public string RewardType { get; set; }
+    public string Name { get; set; }
+    public int Value { get; set; } 
 }

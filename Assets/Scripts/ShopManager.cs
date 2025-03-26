@@ -38,7 +38,7 @@ public class ShopManager : MonoBehaviour
         {
             shopItems[item.type].Add(item);
         }
-      
+
     }
 
     /* private void UpdateNFTShop(List<NFTListing> nftListings)
@@ -206,33 +206,62 @@ public class ShopManager : MonoBehaviour
         }
         return null;
     }
-
+    bool isLevelPopItemInstantiated = false;
     internal void OnLevelChanged(int LVinfo)
     {
+        isLevelPopItemInstantiated = false;
         for (int i = 0; i < shopItems.Keys.Count; i++)
         {
             var spItemParent = UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0);
             List<ShopItemHolder> spItemList = new List<ShopItemHolder>();
             ItemType key = shopItems.Keys.ToArray()[i];
+            for (int k = 0; k < spItemParent.childCount; k++)
+            {
+                var shopItem = spItemParent.GetChild(k).gameObject.GetComponent<ShopItemHolder>();
+                if (shopItem != null)
+                {
+                    spItemList.Add(shopItem);
+                }
+            }
             for (int j = 0; j < shopItems[key].Count; j++)
             {
 
                 ShopItem item = shopItems[key][j];
                 if (item.level == LVinfo)
                 {
-                    for (int k = 0; k < spItemParent.childCount; k++)
-                    {
-                        var shopItem = spItemParent.GetChild(k).gameObject.GetComponent<ShopItemHolder>();
-                        if (shopItem != null)
-                        {
-                            spItemList.Add(shopItem);
-                        }
-                    }
+
 
                     var existingItem = spItemList.Find(x => x.Item.itemName == item.itemName);
                     if (existingItem != null)
                     {
                         existingItem.UnlockItem();
+                        if (!isLevelPopItemInstantiated)
+                        {
+
+                            for (int k = 0; k < UI_Manager.Instance.levelUpContainerTransForm.childCount; k++)
+                            {
+                                var go = UI_Manager.Instance.levelUpContainerTransForm.GetChild(k).gameObject;
+                                Destroy(go);
+                            }
+
+                            var rdl = UI_Manager.Instance.RewardsForLevel;
+                            rdl.LevelRewards($"level{existingItem.Item.level}");
+                            var levelRewards = rdl.GetRewardsForLevel($"level{existingItem.Item.level}");
+                            foreach (var reward in levelRewards)
+                            {
+                                if (reward.Value >= 1)
+                                {
+
+                                    var rewardItem = Instantiate(UI_Manager.Instance.levelUpPopUpPrefab, UI_Manager.Instance.levelUpContainerTransForm).GetComponent<LevelUpPopUpItem>();
+                                    rewardItem.Initialize(existingItem, reward.Value);
+
+                                }
+                            }
+                            UI_Manager.Instance.levelUpPopupTxt.text = existingItem.Item.level.ToString();
+                            UI_Manager.Instance.levelUpPopUpPanel.SetActive(true);
+                            isLevelPopItemInstantiated = true;
+                        }
+
                         existingItem.buyBT.gameObject.SetActive(true);
                         buttons.Add(item.itemName, existingItem.buyBT);
                         if (buttonActions.ContainsKey(item.itemName))
@@ -471,12 +500,12 @@ public class ShopManager : MonoBehaviour
 
         var newSellItem = Instantiate(sellItemPrefab, container).GetComponent<SellItemProperties>();
         newSellItem.itemName = name;
-        newSellItem.countTx.text = count.ToString() ;
+        newSellItem.countTx.text = count.ToString();
         newSellItem.seedIcon.sprite = tomatoICON;
         newSellItem.increaseBT.onClick.AddListener(() =>
-        { 
+        {
             hCountToSell += 1;
-            newSellItem.inputFieldCountTx.text=hCountToSell.ToString();
+            newSellItem.inputFieldCountTx.text = hCountToSell.ToString();
         });
         newSellItem.decreaseBT.onClick.AddListener(() =>
         {
@@ -504,36 +533,36 @@ public class ShopManager : MonoBehaviour
 
     internal void SellHarvest(string Pname, int Hcount, int OgCount)
     {
-      
-            if (Hcount > 0)
-            {
-                GameManager.Instance.CounttheHarvest(Hcount);
-            }
-            /*else
-            {
 
-                if (UI_Manager.Instance.ListOfHarvestCount1.ContainsKey(Pname))
-                    GameManager.Instance.CounttheHarvest(UI_Manager.Instance.ListOfHarvestCount1[Pname].Count);
-            }*/
+        if (Hcount > 0)
+        {
+            GameManager.Instance.CounttheHarvest(Hcount);
+        }
+        /*else
+        {
 
-            /* foreach (var item in UI_Manager.Instance.ListOfHarvestCount1)
-             {
+            if (UI_Manager.Instance.ListOfHarvestCount1.ContainsKey(Pname))
+                GameManager.Instance.CounttheHarvest(UI_Manager.Instance.ListOfHarvestCount1[Pname].Count);
+        }*/
 
-                 GameManager.Instance.CounttheHarvest(item.Count);
-             }*/
-            UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.scoreUIAnimation, UI_Manager.Instance.sellInventoryBT.GetComponent<RectTransform>(), UI_Manager.Instance.score.GetComponent<RectTransform>(), 20);
-            /*UI_Manager.Instance.sellPopupPanel.SetActive(false);
-            UI_Manager.Instance.marketPopUp.SetActive(true);*/
-            GameManager.Instance.isHarvestCompleted = false;
-            UI_Manager.Instance.ListOfHarvestCount.Clear();
-            GameManager.Instance.HarvestCount = 0;
-            UI_Manager.Instance.GrowthStartedPlants.Clear();
-            if (OgCount < 0)
-            {
-                UI_Manager.Instance.ListOfHarvestCount1.Remove(Pname);
-                UI_Manager.Instance.GrowthStartedPlants1.Remove(Pname);
-            }
-        
+        /* foreach (var item in UI_Manager.Instance.ListOfHarvestCount1)
+         {
+
+             GameManager.Instance.CounttheHarvest(item.Count);
+         }*/
+        UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.scoreUIAnimation, UI_Manager.Instance.sellInventoryBT.GetComponent<RectTransform>(), UI_Manager.Instance.score.GetComponent<RectTransform>(), 20);
+        /*UI_Manager.Instance.sellPopupPanel.SetActive(false);
+        UI_Manager.Instance.marketPopUp.SetActive(true);*/
+        GameManager.Instance.isHarvestCompleted = false;
+        UI_Manager.Instance.ListOfHarvestCount.Clear();
+        GameManager.Instance.HarvestCount = 0;
+        UI_Manager.Instance.GrowthStartedPlants.Clear();
+        if (OgCount < 0)
+        {
+            UI_Manager.Instance.ListOfHarvestCount1.Remove(Pname);
+            UI_Manager.Instance.GrowthStartedPlants1.Remove(Pname);
+        }
+
     }
     #endregion
 }

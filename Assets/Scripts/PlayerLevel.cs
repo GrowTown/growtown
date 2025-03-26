@@ -75,7 +75,7 @@ public class PlayerLevel : MonoBehaviour
                 _nextLevel.text =(level+1).ToString();
                 UpdateLevelXP();
                 UI_Manager.Instance.ShopManager.OnLevelChanged(_levelOfPlayer);
-                UI_Manager.Instance.RewardsForLevel.LevelRewards($"level{level}");
+               
                 Debug.Log($"Level increased to {CurrentPlayerLevel} for XP: {xp}");
             }
         }

@@ -12,7 +12,7 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private Transform toolsParent;
     [SerializeField] private Transform powerupsParent;
     [SerializeField] private Transform nftsParent;
-    [SerializeField] private GameObject inventoryItemPrefab;
+    [SerializeField] internal GameObject inventoryItemPrefab;
 
     void Start()
     {
