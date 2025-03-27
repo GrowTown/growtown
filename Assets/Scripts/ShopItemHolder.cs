@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ShopItemHolder : MonoBehaviour
 {
     internal ShopItem Item;
-
+    internal string dummyName=string.Empty;
     //[SerializeField] private TextMeshProUGUI nameText;
     //[SerializeField] private TextMeshProUGUI amountText;
     [SerializeField] internal Image iconImage;
@@ -20,6 +20,11 @@ public class ShopItemHolder : MonoBehaviour
         priceText.text=Item.price.ToString()+"GRC";
         if(Item.level== 1) iconImage.sprite = Item.icon;
        
+    }
+
+    public void InitializetheDummy(string n)
+    {
+        dummyName = n;
     }
 
 

@@ -1,3 +1,4 @@
+using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -121,6 +122,7 @@ public class ShopManager : MonoBehaviour
             {
                 GameObject itemObject = Instantiate(itemPrefab, UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0));
                 var shopIH = itemObject.GetComponent<ShopItemHolder>();
+                shopIH.InitializetheDummy("Dummy");
                 shopIH.buyBT.gameObject.SetActive(false);
             }
         }
@@ -214,64 +216,34 @@ public class ShopManager : MonoBehaviour
         {
             var spItemParent = UI_Manager.Instance.TabGroup.objectsToSwap[i].transform.GetChild(0).GetChild(0);
             List<ShopItemHolder> spItemList = new List<ShopItemHolder>();
-            ItemType key = shopItems.Keys.ToArray()[i];
+
             for (int k = 0; k < spItemParent.childCount; k++)
             {
                 var shopItem = spItemParent.GetChild(k).gameObject.GetComponent<ShopItemHolder>();
-                if (shopItem != null)
+                if (shopItem != null&& string.IsNullOrEmpty(shopItem.dummyName))
                 {
                     spItemList.Add(shopItem);
                 }
             }
+            ItemType key = shopItems.Keys.ToArray()[i];
             for (int j = 0; j < shopItems[key].Count; j++)
             {
 
                 ShopItem item = shopItems[key][j];
                 if (item.level == LVinfo)
                 {
-
-
                     var existingItem = spItemList.Find(x => x.Item.itemName == item.itemName);
                     if (existingItem != null)
                     {
                         existingItem.UnlockItem();
-                        if (!isLevelPopItemInstantiated)
-                        {
-
-                            for (int k = 0; k < UI_Manager.Instance.levelUpContainerTransForm.childCount; k++)
-                            {
-                                var go = UI_Manager.Instance.levelUpContainerTransForm.GetChild(k).gameObject;
-                                Destroy(go);
-                            }
-
-                            var rdl = UI_Manager.Instance.RewardsForLevel;
-                            rdl.LevelRewards($"level{existingItem.Item.level}");
-                            var levelRewards = rdl.GetRewardsForLevel($"level{existingItem.Item.level}");
-                            foreach (var reward in levelRewards)
-                            {
-                                if (reward.Value >= 1)
-                                {
-
-                                    var rewardItem = Instantiate(UI_Manager.Instance.levelUpPopUpPrefab, UI_Manager.Instance.levelUpContainerTransForm).GetComponent<LevelUpPopUpItem>();
-                                    var nameR=spItemList.Find(x => x.Item.itemName == reward.Name);
-
-                                    rewardItem.Initialize(nameR, reward.Value);
-
-                                }
-                            }
-                            UI_Manager.Instance.levelUpPopupTxt.text = existingItem.Item.level.ToString();
-                            UI_Manager.Instance.levelUpPopUpPanel.SetActive(true);
-                            isLevelPopItemInstantiated = true;
-                        }
-
                         existingItem.buyBT.gameObject.SetActive(true);
-                        buttons.Add(item.itemName, existingItem.buyBT);
-                        if (buttonActions.ContainsKey(item.itemName))
+                        buttons.Add(existingItem.Item.itemName, existingItem.buyBT);
+                        if (buttonActions.ContainsKey(existingItem.Item.itemName))
                         {
-                            buttons[item.itemName].onClick.AddListener(() =>
+                            buttons[existingItem.Item.itemName].onClick.AddListener(() =>
                             {
-                                buttonActions[item.itemName]();
-                                var shopItemHolder = FindShopItemHolder(item.itemName);
+                                buttonActions[existingItem.Item.itemName]();
+                                var shopItemHolder = FindShopItemHolder(existingItem.Item.itemName);
                                 UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(animICON, shopItemHolder.GetComponent<RectTransform>(), invetoryBagPos);
 
                                 if (shopItemHolder != null)
@@ -280,13 +252,12 @@ public class ShopManager : MonoBehaviour
                                 }
                                 else
                                 {
-                                    Debug.LogWarning($"No ShopItemHolder found for item: {item.itemName}");
+                                    Debug.LogWarning($"No ShopItemHolder found for item: {existingItem.Item.itemName}");
                                 }
                             });
                         }
                     }
 
-                    spItemList.Clear();
 
                     if (buttons.ContainsKey("SuperXp") && !UI_Manager.Instance.isButtonsInitialized)
                     {
@@ -295,8 +266,64 @@ public class ShopManager : MonoBehaviour
                     }
                 }
             }
+             spItemList.Clear();
         }
+        if (!isLevelPopItemInstantiated)
+        {
+            List<ShopItemHolder> spItemListForrdl = new List<ShopItemHolder>();
+           spItemListForrdl = GetAllItems();
 
+            for (int k = 0; k < UI_Manager.Instance.levelUpContainerTransForm.childCount; k++)
+            {
+                var go = UI_Manager.Instance.levelUpContainerTransForm.GetChild(k).gameObject;
+                Destroy(go);
+            }
+
+            var rdl = UI_Manager.Instance.RewardsForLevel;
+            rdl.LevelRewards($"level{LVinfo}");
+            var levelRewards = rdl.GetRewardsForLevel($"level{LVinfo}");
+
+            foreach (var reward in levelRewards)
+            {
+                if (reward.Value >= 1)
+                {
+
+                    var rewardItem = Instantiate(UI_Manager.Instance.levelUpPopUpPrefab, UI_Manager.Instance.levelUpContainerTransForm).GetComponent<LevelUpPopUpItem>();
+                    var nameR = spItemListForrdl.Find(x => x.Item.itemName == reward.Name);
+
+                    rewardItem.Initialize(nameR, reward.Value);
+
+                }
+            }
+            UI_Manager.Instance.levelUpPopupTxt.text = LVinfo.ToString();
+            UI_Manager.Instance.levelUpPopUpPanel.SetActive(true);
+            isLevelPopItemInstantiated = true;
+
+        }
+    }
+    internal List<ShopItemHolder> GetAllItems()
+    {
+        List<ShopItemHolder> shopItems = new List<ShopItemHolder>();
+
+        foreach (var container in UI_Manager.Instance.TabGroup.objectsToSwap)
+        {
+            Transform spItemParent = container.transform.GetChild(0).GetChild(0);
+            ShopItemHolder[] holders = spItemParent.GetComponentsInChildren<ShopItemHolder>();
+            foreach (var holder in holders)
+            {
+                if (string.IsNullOrEmpty(holder.dummyName)) // Only add valid items
+                 {
+                    shopItems.Add(holder);
+                }
+            }
+           
+        }
+            for (int i = 0; i < shopItems.Count; i++)
+            {
+                Debug.Log($"NameofItem ====>  {shopItems[i].Item.itemName}");
+            }
+
+        return shopItems;
     }
     public void ToBuyWheat()
     {
