@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f29157020cef9f4aaaea659a66f595e, type: 3}
   m_Name: 2_Pasticide
   m_EditorClassIdentifier: 
-  itemName: Pasticide
+  itemName: Pesticide
   icon: {fileID: 21300000, guid: 1190a950a52433a47bcce1268697c1fd, type: 2}
   price: 20
   level: 2

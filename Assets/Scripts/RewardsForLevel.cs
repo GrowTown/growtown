@@ -25,8 +25,8 @@ public class RewardsForLevel : MonoBehaviour
                     Rewards = new List<Reward>
                     {
                         new Reward { RewardType = "Item", Name = "Pesticide", Value = 1 },
-                        new Reward { RewardType = "Energy", Value = 50 },
-                        new Reward { RewardType = "Water", Value = 100 },
+                        new Reward { RewardType = "Energy",Name="EnergyPoints", Value = 50 },
+                        new Reward { RewardType = "Water",Name="WaterPoints",Value = 100 },
                     }
                 }
             },
@@ -36,7 +36,7 @@ public class RewardsForLevel : MonoBehaviour
                     Rewards = new List<Reward>
                     {
                        new Reward { RewardType = "Unlock", Name = "WheatLand",Value=1 },
-                       new Reward { RewardType = "Seed", Name = "Wheat", Value = 50 },
+                       new Reward { RewardType = "Seed", Name = "WheatSeed", Value = 50 },
                        new Reward {RewardType="Unlock",Name="SuperXp",Value=1}
                     }
                 }
@@ -47,8 +47,8 @@ public class RewardsForLevel : MonoBehaviour
                     Rewards = new List<Reward>
                     {
                        new Reward { RewardType = "Item", Name = "Pesticide", Value = 1 },
-                        new Reward { RewardType = "Energy", Value = 50 },
-                        new Reward { RewardType = "Water", Value = 100 },
+                        new Reward { RewardType = "Energy",Name="EnergyPoints", Value = 50 },
+                        new Reward { RewardType = "Water", Name = "WaterPoints", Value = 100 },
                     }
                 }
             },
@@ -57,7 +57,7 @@ public class RewardsForLevel : MonoBehaviour
                 {
                     Rewards = new List<Reward>
                     {
-                        new Reward { RewardType = "Unlock", Name = "CarrotLand",Value=1 }
+                        new Reward { RewardType = "Unlock", Name = "BeansLand",Value=1 }
                     }
                 }
             },

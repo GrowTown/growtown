@@ -253,7 +253,9 @@ public class ShopManager : MonoBehaviour
                                 {
 
                                     var rewardItem = Instantiate(UI_Manager.Instance.levelUpPopUpPrefab, UI_Manager.Instance.levelUpContainerTransForm).GetComponent<LevelUpPopUpItem>();
-                                    rewardItem.Initialize(existingItem, reward.Value);
+                                    var nameR=spItemList.Find(x => x.Item.itemName == reward.Name);
+
+                                    rewardItem.Initialize(nameR, reward.Value);
 
                                 }
                             }
