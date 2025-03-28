@@ -155,6 +155,14 @@ public class TileInfo : MonoBehaviour
                 ApplyBrush((int)pixelUV.x, (int)pixelUV.y);*/
             }
         }
+        else if (other.CompareTag("Seed"))
+        {
+            UI_Manager.Instance.FieldGrid.AddCoveredTile(this.gameObject);
+            UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed(this.gameObject);
+
+            Destroy(other.gameObject);
+        }
+       
     }
 
     private void ApplyBrush(int x, int y)

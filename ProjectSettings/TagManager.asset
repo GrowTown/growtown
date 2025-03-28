@@ -11,6 +11,8 @@ TagManager:
   - hammer
   - enemy
   - Tool
+  - Undefined
+  - Seed
   layers:
   - Default
   - TransparentFX
@@ -26,7 +28,7 @@ TagManager:
   - Enemy
   - Dog
   - Tile
-  - 
+  - Seed
   - 
   - 
   - 

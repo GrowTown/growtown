@@ -53,6 +53,10 @@ public class CharacterMovements : MonoBehaviour
     private float _verticalVelocity;
     private bool _canJump = true;
 
+    //for seed throw
+    public Transform throwPoint;   
+    public float throwForce = 5f;  
+    private int seedsPerThrow = 4;
 
 
     // Ground Check variables
@@ -744,6 +748,21 @@ public class CharacterMovements : MonoBehaviour
 
     }
 
+    public void ThrowSeeds()
+    {
+        for (int i = 0; i < seedsPerThrow; i++)
+        {
+            GameObject seed = Instantiate(UI_Manager.Instance.seed, throwPoint.position, Quaternion.identity);
+            Rigidbody rb = seed.GetComponent<Rigidbody>();
+
+            if (rb != null)
+            {
+                // Apply force with slight variation
+                Vector3 throwDirection = transform.forward + new Vector3(UnityEngine.Random.Range(-0.1f, 0.1f), 0, UnityEngine.Random.Range(-0.1f, 0.1f));
+                rb.AddForce(throwDirection * throwForce, ForceMode.Impulse);
+            }
+        }
+    }
 
 }
 
