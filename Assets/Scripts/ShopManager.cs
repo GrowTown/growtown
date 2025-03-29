@@ -258,7 +258,6 @@ public class ShopManager : MonoBehaviour
                         }
                     }
 
-
                     if (buttons.ContainsKey("SuperXp") && !UI_Manager.Instance.isButtonsInitialized)
                     {
                         UI_Manager.Instance.superXpBuyBT = buttons["SuperXp"];

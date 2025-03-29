@@ -54,6 +54,7 @@ public class CharacterMovements : MonoBehaviour
     private bool _canJump = true;
 
     //for seed throw
+    [Header("For seed throw")]
     public Transform throwPoint;   
     public float throwForce = 5f;  
     private int seedsPerThrow = 4;
@@ -753,6 +754,7 @@ public class CharacterMovements : MonoBehaviour
         for (int i = 0; i < seedsPerThrow; i++)
         {
             GameObject seed = Instantiate(UI_Manager.Instance.seed, throwPoint.position, Quaternion.identity);
+            seed.transform.localScale = Vector3.one * 0.04f;
             Rigidbody rb = seed.GetComponent<Rigidbody>();
 
             if (rb != null)
