@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1626753141292691501}
   - component: {fileID: 2132784165158495799}
   - component: {fileID: 9177688097656878189}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,7 +146,7 @@ GameObject:
   - component: {fileID: 1839672720603825478}
   - component: {fileID: 4658213454746807675}
   - component: {fileID: 6135236146574354515}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -219,7 +219,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7591939940824902618}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UIAnimation_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -234,7 +234,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7276686220869861933}
   m_LocalRotation: {x: -0, y: -0, z: 1.7763566e-15, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -9.398056}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -244,6 +244,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -467.36154, y: -36.325836}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}

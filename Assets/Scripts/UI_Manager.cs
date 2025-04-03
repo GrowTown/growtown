@@ -70,6 +70,7 @@ public class UI_Manager : MonoBehaviour
     public Sprite wheatUIAnimation;
     public Sprite beanUIAnimation;
     public Sprite scoreUIAnimation;
+    
 
 
     [Header("Buttons")]
