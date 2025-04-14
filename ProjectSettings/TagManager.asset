@@ -13,6 +13,7 @@ TagManager:
   - Tool
   - Undefined
   - Seed
+  - Arrow
   layers:
   - Default
   - TransparentFX

@@ -47,6 +47,8 @@ public class UI_Manager : MonoBehaviour
     public GameObject cropTimerPrefab;
     public GameObject levelUpPopUpPanel;
     public GameObject levelUpPopUpPrefab;
+    public GameObject mapPanel;
+    public GameObject pathCancelPopUp;
    
 
 
@@ -149,6 +151,9 @@ public class UI_Manager : MonoBehaviour
     [SerializeField]
     private LocalSaveManager _localSaveManager;
     private PlayerLevel _playerLevel;
+    private  Unit _unit;
+    [SerializeField] 
+    private  MapHandler _mapHandler;
 
     internal int oldcurrentStep = -1;
     public int currentIndex;
@@ -192,6 +197,11 @@ public class UI_Manager : MonoBehaviour
 
     #region Properties
 
+    public MapHandler MapHandler
+    {
+        get => _mapHandler;
+        set => _mapHandler = value;
+    }
     public LocalSaveManager LocalSaveManager
     {
         get => _localSaveManager;
@@ -275,6 +285,14 @@ public class UI_Manager : MonoBehaviour
     {
         get => _characterMovements;
         set => _characterMovements = value;
+    }
+    public Unit Unit
+    {
+        get
+        {
+            return _unit = CharacterMovements.gameObject.GetComponent<Unit>();
+        }
+        set => _unit = value;
     }
     public FieldGrid FieldGrid
     {
