@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class TileInfo : MonoBehaviour
 {
@@ -19,19 +18,20 @@ public class TileInfo : MonoBehaviour
     public Color paintColor = Color.gray; // The color to apply
     public Texture2D baseTexture; // Assign the base texture in Inspector
     private Texture2D paintableTexture;
+    internal bool isTileHasSeed = false;
 
     private void Start()
     {
         _renderer = GetComponent<MeshRenderer>();
 
-       /* // Create a copy of the base texture manually
-        paintableTexture = new Texture2D(baseTexture.width, baseTexture.height, TextureFormat.RGB24, false);
+        /* // Create a copy of the base texture manually
+         paintableTexture = new Texture2D(baseTexture.width, baseTexture.height, TextureFormat.RGB24, false);
 
-        // Copy pixel data manually to avoid mipmap mismatch
-        paintableTexture.SetPixels(baseTexture.GetPixels());
-        paintableTexture.Apply(); // Apply chang
+         // Copy pixel data manually to avoid mipmap mismatch
+         paintableTexture.SetPixels(baseTexture.GetPixels());
+         paintableTexture.Apply(); // Apply chang
 
-        _renderer.material.SetTexture("_BaseMap", paintableTexture);*/
+         _renderer.material.SetTexture("_BaseMap", paintableTexture);*/
     }
     public void OnPlayerEnter()
     {
@@ -155,14 +155,18 @@ public class TileInfo : MonoBehaviour
                 ApplyBrush((int)pixelUV.x, (int)pixelUV.y);*/
             }
         }
-        else if (other.CompareTag("Seed"))
+        /*else if (other.CompareTag("Seed"))
         {
-            UI_Manager.Instance.FieldGrid.AddCoveredTile(this.gameObject);
-            UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed(this.gameObject);
+           *//* if (!isTileHasSeed)
+            {
+                UI_Manager.Instance.FieldGrid.AddCoveredTile(this.gameObject);
+                OnThrowSeed(this.gameObject);
+                isTileHasSeed = true;
+            }
 
-            Destroy(other.gameObject);
-        }
-       
+            Destroy(other.gameObject);*//*
+        }*/
+
     }
 
     private void ApplyBrush(int x, int y)
@@ -181,11 +185,39 @@ public class TileInfo : MonoBehaviour
             }
         }
         paintableTexture.Apply();
-        _renderer.material.mainTexture = paintableTexture;  
+        _renderer.material.mainTexture = paintableTexture;
 
     }
 
 
+    public void OnThrowSeed(GameObject coveredTile)
+    {
+        if (UI_Manager.Instance.seed != null && GameManager.Instance.isThroughingseeds)
+        {
+          
+            if (coveredTile != null&& !isTileHasSeed)
+            {
+                UI_Manager.Instance.FieldGrid.AddCoveredTile(coveredTile);
+                isTileHasSeed = true;
+                OnPlayerEnter();
+                Debug.Log("Seed spawned on tile");
+                SpawnPlantWithDelay(coveredTile);
+            }
+            coveredTile = null;
+        }
+    }
+
+    private void SpawnPlantWithDelay(GameObject tilego)
+    {
+
+        if (UI_Manager.Instance.plantHolder != null)
+        {
+            UI_Manager.Instance.isPlanted = true;
+            SpawnPlant(tilego);
+            Debug.Log("Plant spawned after delay");
+        }
+
+    }
 
 
 }

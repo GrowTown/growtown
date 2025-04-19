@@ -6,7 +6,7 @@ using UnityEngine;
 public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
 {
     private bool isHandInBag = false; 
-    internal bool isTileHasSeed = false;
+    
     private bool isShotGunInHand = false;
     GameObject spawnObject;
   
@@ -53,9 +53,9 @@ public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
     }
 
     // This method will be called by the animation event for the throw
-    public void OnThrowSeed()
+  /*  public void OnThrowSeed()
     {
-        /*if (isHandInBag && UI_Manager.Instance.seed!= null)
+        *//*if (isHandInBag && UI_Manager.Instance.seed!= null)
         {
              Destroy(spawnObject);
             // Instantiate seed at tile position
@@ -75,35 +75,9 @@ public class SeedSpawnerandSeedsBagTrigger : MonoBehaviour
             
             // Reset flag
             isHandInBag = false;
-        }*/
-    }
-    public void OnThrowSeed(GameObject coveredTile)
-    {
-        if (UI_Manager.Instance.seed!= null&& GameManager.Instance.isThroughingseeds)
-        {
-            if (coveredTile != null && !isTileHasSeed)
-            {
-                isTileHasSeed = true;
-                coveredTile.GetComponent<TileInfo>().OnPlayerEnter();
-                Debug.Log("Seed spawned on tile");
-                SpawnPlantWithDelay(coveredTile);
-            }
-             coveredTile = null;
-        }
-    }
-
-    private void SpawnPlantWithDelay(GameObject tilego)
-    {
-      
-        if (UI_Manager.Instance.plantHolder != null)
-        {
-            UI_Manager.Instance.isPlanted=true;
-            tilego.GetComponent<TileInfo>().SpawnPlant(tilego);
-            Debug.Log("Plant spawned after delay");
-        }
-     
-    }
-
+        }*//*
+    }*/
+  
 }
 
 

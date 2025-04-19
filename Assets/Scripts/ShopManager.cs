@@ -310,26 +310,26 @@ public class ShopManager : MonoBehaviour
             ShopItemHolder[] holders = spItemParent.GetComponentsInChildren<ShopItemHolder>();
             foreach (var holder in holders)
             {
-                if (string.IsNullOrEmpty(holder.dummyName)) // Only add valid items
+                if (string.IsNullOrEmpty(holder.dummyName)) 
                  {
                     shopItems.Add(holder);
                 }
             }
            
         }
-            for (int i = 0; i < shopItems.Count; i++)
+            /*for (int i = 0; i < shopItems.Count; i++)
             {
                 Debug.Log($"NameofItem ====>  {shopItems[i].Item.itemName}");
-            }
+            }*/
 
         return shopItems;
     }
     public void ToBuyWheat()
     {
-        if (GameManager.Instance.CurrentScore >= 8)
+        if (GameManager.Instance.CurrentScore >= 40)
         {
-            GameManager.Instance.CurrentScore -= 8;
-            GameManager.Instance.CurrentWheatSeedCount += 1;
+            GameManager.Instance.CurrentScore -= 40;
+            GameManager.Instance.CurrentWheatSeedCount += 5;
         }
         else
         {
@@ -343,7 +343,7 @@ public class ShopManager : MonoBehaviour
 
         if (!forStarterPack)
         {
-            GameManager.Instance.CurrentScore -= 250;
+            GameManager.Instance.CurrentScore -= 200;
             GameManager.Instance.CurrentTomatoSeedCount += 50;
             GameManager.Instance.HasNotEnoughSeeds = false;
             GameManager.Instance.cropseedingStarted = false;
@@ -351,10 +351,10 @@ public class ShopManager : MonoBehaviour
         }
         else
         {
-            if (GameManager.Instance.CurrentScore >= 5)
+            if (GameManager.Instance.CurrentScore >= 16)
             {
-                GameManager.Instance.CurrentScore -= 5;
-                GameManager.Instance.CurrentTomatoSeedCount += 1;
+                GameManager.Instance.CurrentScore -= 16;
+                GameManager.Instance.CurrentTomatoSeedCount += 5;
                 GameManager.Instance.HasNotEnoughSeeds = false;
                 GameManager.Instance.cropseedingStarted = false;
             }
@@ -369,10 +369,10 @@ public class ShopManager : MonoBehaviour
     {
         AudioManager.Instance.PlaySFX();
 
-        if (GameManager.Instance.CurrentScore >= 12)
+        if (GameManager.Instance.CurrentScore >= 15)
         {
-            GameManager.Instance.CurrentScore -= 12;
-            GameManager.Instance.CurrentStrawberriesSeedCount += 1;
+            GameManager.Instance.CurrentScore -= 75;
+            GameManager.Instance.CurrentStrawberriesSeedCount += 5;
         }
         else
         {
@@ -578,7 +578,7 @@ public class ShopManager : MonoBehaviour
 
              GameManager.Instance.CounttheHarvest(item.Count);
          }*/
-        UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.scoreUIAnimation, UI_Manager.Instance.sellInventoryBT.GetComponent<RectTransform>(), UI_Manager.Instance.score.GetComponent<RectTransform>(), 20);
+        UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.scoreUIAnimation, UI_Manager.Instance.sellInventoryBT.GetComponent<RectTransform>(), UI_Manager.Instance.score.GetComponent<RectTransform>(), 10);
         /*UI_Manager.Instance.sellPopupPanel.SetActive(false);
         UI_Manager.Instance.marketPopUp.SetActive(true);*/
         GameManager.Instance.isHarvestCompleted = false;

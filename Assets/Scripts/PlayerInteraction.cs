@@ -40,10 +40,11 @@ public class PlayerInteraction : MonoBehaviour
             GameObject hitTileGameObject = hit.collider.gameObject;
             // Get the tile position for the player and try to add it
             //Vector2Int playerTile = UI_Manager.Instance.FieldGrid.GetPlayerTile();
-            /*if (UI_Manager.Instance.FieldManager.CurrentStepID ==1)
+            if (UI_Manager.Instance.FieldManager.CurrentStepID ==1)
             {
-                UI_Manager.Instance.FieldGrid.AddCoveredTile(hitTileGameObject);
-            }*/
+                hitTileGameObject.GetComponent<TileInfo>().OnThrowSeed(hitTileGameObject);
+                //UI_Manager.Instance.FieldGrid.AddCoveredTile(hitTileGameObject);
+            }
           //  UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed(hitTileGameObject);
             if (GameManager.Instance.isCutting)
                 GameManager.Instance.HarvestDeductEnergy(hitTileGameObject);

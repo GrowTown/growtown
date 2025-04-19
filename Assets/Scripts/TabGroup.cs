@@ -27,6 +27,7 @@ public class TabGroup : MonoBehaviour
     {
         if (objectsToSwap[4].activeSelf)
         {
+            selectedTab.ScaleButton(selectedScaleForBT, scaleDuration, BuyPanelBT);
             OnTabSelected(tabButtons[0]);
         }
     }
@@ -54,6 +55,10 @@ public class TabGroup : MonoBehaviour
         {
             if (i == index)
             {
+                if (i == 4)
+                {
+                    selectedTab.ScaleButton(normalScale, scaleDuration, BuyPanelBT);
+                }
                 objectsToSwap[i].SetActive(true);
             }
             else

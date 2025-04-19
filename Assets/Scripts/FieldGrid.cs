@@ -126,11 +126,8 @@ public class FieldGrid : MonoBehaviour
                 Debug.Log("Cleanig");
                 break;
             case PlayerAction.Seed:
-                if (UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed)
-                {
+             
                     tileGo.GetComponent<TileInfo>().ChangeColor(new Color(0.7095f, 0.7095f, 0.7095f, 1f));
-                    UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
-                }
                 // Debug.Log("Seeding");
                 break;
             case PlayerAction.Water:

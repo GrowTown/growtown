@@ -33,7 +33,9 @@ public class FieldManager : MonoBehaviour
             if (CurrentStepID < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length)
             {
                 Debug.Log("index :::  " + CurrentStepID);
-                GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[CurrentStepID]);
+
+                  GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[CurrentStepID]);
+             
 
                 /*// Handle seed count decrement if the action involves throwing seeds
                 if (GameManager.Instance.isThroughingseeds)

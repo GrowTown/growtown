@@ -1,6 +1,7 @@
 using Cinemachine;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -751,6 +752,7 @@ public class CharacterMovements : MonoBehaviour
 
     public void ThrowSeeds()
     {
+        List<GameObject>seedtoDestroy = new List<GameObject>();
         for (int i = 0; i < seedsPerThrow; i++)
         {
             GameObject seed = Instantiate(UI_Manager.Instance.seed, throwPoint.position, Quaternion.identity);
@@ -763,7 +765,14 @@ public class CharacterMovements : MonoBehaviour
                 Vector3 throwDirection = transform.forward + new Vector3(UnityEngine.Random.Range(-0.1f, 0.1f), 0, UnityEngine.Random.Range(-0.1f, 0.1f));
                 rb.AddForce(throwDirection * throwForce, ForceMode.Impulse);
             }
+            seedtoDestroy.Add(seed);
         }
+
+       for (int i = 0; i < seedtoDestroy.Count; i++)
+        {
+            Destroy(seedtoDestroy[i]);
+        }
+
     }
 
 }

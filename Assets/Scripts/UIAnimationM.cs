@@ -40,16 +40,15 @@ public class UIAnimationM : MonoBehaviour
             itemImage.sprite = itemSprite;
 
             // Set initial position inside UI Canvas
-            movingItemRect.position = startTransform.position;
-            Vector2 startOffset = new Vector2(Random.Range(-20f, 20f), Random.Range(-10f, 10f));
-            movingItemRect.anchoredPosition += startOffset;
+            movingItemRect.anchoredPosition = startTransform.anchoredPosition;
+          
             // Calculate a curved path (Bezier-like motion)
             Vector3 midPoint = (startTransform.position + targetUIPosition.position) / 2;
-            midPoint.y += Random.Range(80f, 120f);
+            midPoint.y +=80f;
             /*midPoint.y += Random.Range(50f, 100f); // Add height for arc effect
             midPoint.x += Random.Range(-30f, 30f); // Add variation in x-axis
 */
-            Vector3[] path = new Vector3[] { startTransform.position, midPoint, targetUIPosition.position };
+            Vector3[] path = new Vector3[] { startTransform.anchoredPosition, midPoint, targetUIPosition.anchoredPosition };
 
             // Animate using a curved path
             movingItemRect.DOPath(path, 0.8f, PathType.CatmullRom).SetEase(Ease.InOutQuad).SetDelay(i * 0.1f).OnComplete(() =>

@@ -37,7 +37,7 @@ public class AnimationEventTrigger : MonoBehaviour
     }
     public void TriggerAnimationEvent()
     {
-        UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed();
+        //UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed();
     }
     public void TriggerAnimationEvent1()
     {

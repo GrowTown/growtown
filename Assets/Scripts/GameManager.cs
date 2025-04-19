@@ -234,7 +234,6 @@ public class GameManager : MonoBehaviour
                 if (!HasEnoughPoints(2, 10)) return;
                 checkForEnoughSeeds = true;
                 UI_Manager.Instance.wateringTool.SetActive(true);
-                UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().isTileHasSeed = false;
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 1);
 
                 break;
@@ -628,6 +627,7 @@ public class GameManager : MonoBehaviour
             tile.plantgrowth = false;
             tile.isCuttingStarted = false;
             tile._hasColorChanged = false;
+            tile.isTileHasSeed = false;
         }
         IsHarvestCount = false;
         IsTomatoHarvestCount = false;
