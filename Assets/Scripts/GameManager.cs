@@ -393,7 +393,20 @@ public class GameManager : MonoBehaviour
         {
             UI_Manager.Instance.ListOfHarvestCount1[fGrid.fieldName] = new List<int>();
         }
-        int plantCount = UI_Manager.Instance.GrowthStartedPlants1[fGrid.fieldName].Count;
+        if (!UI_Manager.Instance.GrownPlantForHarvest.ContainsKey(fGrid.fieldName))
+        {
+            UI_Manager.Instance.GrownPlantForHarvest[fGrid.fieldName]= new List<GameObject>();
+        }
+        for (int i = 0; i < UI_Manager.Instance.GrowthStartedPlants1[fGrid.fieldName].Count; i++)
+        {
+            var pg = UI_Manager.Instance.GrowthStartedPlants1[fGrid.fieldName][i];
+            if (!fGrid.witheredPlants.Contains(pg))
+            {
+                UI_Manager.Instance.GrownPlantForHarvest[fGrid.fieldName].Add(pg);
+            }
+        }
+        
+        int plantCount = UI_Manager.Instance.GrownPlantForHarvest[fGrid.fieldName].Count;
         int pointsToAdd = plantCount / 5; 
 
         for (int i = 0; i < pointsToAdd; i++)

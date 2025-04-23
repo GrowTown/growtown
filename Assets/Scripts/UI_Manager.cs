@@ -200,6 +200,7 @@ public class UI_Manager : MonoBehaviour
     internal Dictionary<string, List<int>> ListOfHarvestCount1 = new Dictionary<string, List<int>>();
     //internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
     internal Dictionary<string, List<GameObject>> GrowthStartedPlants1 = new Dictionary<string, List<GameObject>>();
+    internal Dictionary<string, List<GameObject>> GrownPlantForHarvest = new Dictionary<string, List<GameObject>>();
     //internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
     internal Dictionary<int, List<GameObject>> GrownPlantsToCut = new Dictionary<int, List<GameObject>>();
     [SerializeField]

@@ -210,10 +210,10 @@ public class PlantGrowth : MonoBehaviour
         {
             if (this.gameObject != null)
             {
-                if (!GameManager.Instance.witheredPlants.Contains(this.gameObject))
+                if (!transform.parent.parent.GetComponentInParent<TileInfo>().fieldGrid.witheredPlants.Contains(this.gameObject))
                 {
                     plantMesh.material.color = Color.red;
-                    GameManager.Instance.witheredPlants.Add(this.gameObject);
+                    transform.parent.parent.GetComponentInParent<TileInfo>().fieldGrid.witheredPlants.Add(this.gameObject);
                 }
             }
             _afterHarvestWitherTimer.StopTimer();
