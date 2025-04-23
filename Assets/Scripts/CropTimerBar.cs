@@ -62,6 +62,8 @@ public class CropTimerBar : MonoBehaviour
         }
     }
 
+
+
     public string CurrentCropName
     {
         get => _name;

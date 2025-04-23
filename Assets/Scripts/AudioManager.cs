@@ -1,8 +1,11 @@
 using CandyCoded.HapticFeedback;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class AudioManager : MonoBehaviour
 {
+
     public static AudioManager Instance;
 
     [Header("Audio Sources")]
@@ -13,9 +16,15 @@ public class AudioManager : MonoBehaviour
     public AudioClip bgMusic;
     public AudioClip sfxMusic;
 
-    [Header("Volume Settings")]
+    [Header("Volume Settings (0–1 Internally)")]
     [Range(0, 1)] public float musicVolume = 1f;
     [Range(0, 1)] public float sfxVolume = 1f;
+
+    [Header("UI References")]
+    [SerializeField] private Slider _sliderBG;
+    [SerializeField] private Slider _sliderSFX;
+    [SerializeField] private TextMeshProUGUI _musicValueText;
+    [SerializeField] private TextMeshProUGUI _sfxValueText;
 
     public HapticFeedbackController hapticFeedbackController;
 
@@ -33,15 +42,29 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
 
     private void Start()
     {
+        LoadVolumeSettings();
+        SetMusicVolume(musicVolume);
+        SetSFXVolume(sfxVolume);
         PlayBackgroundMusic();
-
     }
 
+    public void OnMusicVolumeSliderChanged(float volume)
+    {
+        float normalizedVolume = volume / 100f; // Convert from 0–100 to 0–1
+        SetMusicVolume(normalizedVolume);
+        _musicValueText.text = ((int)volume).ToString(); // Update UI text
+    }
+
+    public void OnSFXVolumeSliderChanged(float volume)
+    {
+        float normalizedVolume = volume / 100f; // Convert from 0–100 to 0–1
+        SetSFXVolume(normalizedVolume);
+        _sfxValueText.text = ((int)volume).ToString(); // Update UI text
+    }
 
     public void PlayBackgroundMusic()
     {
@@ -59,7 +82,7 @@ public class AudioManager : MonoBehaviour
         if (sfxSource != null && sfxMusic != null)
         {
             sfxSource.PlayOneShot(sfxMusic, sfxVolume);
-            //hapticFeedbackController.LightFeedback();
+            // hapticFeedbackController.LightFeedback();
         }
     }
 
@@ -86,8 +109,11 @@ public class AudioManager : MonoBehaviour
     public void SetSFXVolume(float volume)
     {
         sfxVolume = Mathf.Clamp01(volume);
+        if (sfxSource != null)
+        {
+            sfxSource.volume = sfxVolume;
+        }
 
-        // Save to PlayerPrefs
         PlayerPrefs.SetFloat(SFXVolumeKey, sfxVolume);
         PlayerPrefs.Save();
     }
@@ -102,6 +128,14 @@ public class AudioManager : MonoBehaviour
         {
             sfxVolume = PlayerPrefs.GetFloat(SFXVolumeKey);
         }
-    }
 
+        float musicSliderValue = musicVolume * 100f;
+        float sfxSliderValue = sfxVolume * 100f;
+
+        _sliderBG.value = musicSliderValue;
+        _sliderSFX.value = sfxSliderValue;
+
+        _musicValueText.text = ((int)musicSliderValue).ToString();
+        _sfxValueText.text = ((int)sfxSliderValue).ToString();
+    }
 }

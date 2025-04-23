@@ -17,16 +17,16 @@ public class WaterCollision : MonoBehaviour
             {
                 if (GameManager.Instance.isPlantStartGrowing)
                 {
-                    GameManager.Instance.OnWaterTile(tile.gameObject);
+                    tile.GetComponentInParent<FieldGrid>().OnWaterTile(tile.gameObject);
                 }
 
-                UI_Manager.Instance.FieldGrid.AddCoveredTile(tile.gameObject);
+                tile.GetComponentInParent<FieldGrid>().AddCoveredTile(tile.gameObject);
           
-                if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
+                if (tile.GetComponentInParent<FieldGrid>().IsCoverageComplete())
                 {
-                    UI_Manager.Instance.FieldGrid.StopCoverageTracking();
+                    tile.GetComponentInParent<FieldGrid>().StopCoverageTracking();
                     Debug.Log("All Collected");
-                    UI_Manager.Instance.TriggerZoneCallBacks.CompleteAction();
+                    tile.GetComponentInParent<FieldGrid>().CompleteAction();
                 }
                 tile._hasColorChanged = true;
             }

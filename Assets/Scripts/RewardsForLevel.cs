@@ -57,7 +57,8 @@ public class RewardsForLevel : MonoBehaviour
                 {
                     Rewards = new List<Reward>
                     {
-                        new Reward { RewardType = "Unlock", Name = "BeansLand",Value=1 }
+                        new Reward { RewardType = "Unlock", Name = "BeansLand",Value=1 },
+                        new Reward { RewardType = "Seed", Name = "BeansSeed", Value = 50 }
                     }
                 }
             },
@@ -205,14 +206,14 @@ public class RewardsForLevel : MonoBehaviour
     {
         switch (seedName)
         {
-            case "Wheat":
+            case "WheatSeed":
                 GameManager.Instance.CurrentWheatSeedCount += quantity;
                 break;
-            case "Tomato":
+            case "TomatoSeed":
                 GameManager.Instance.CurrentTomatoSeedCount += quantity;
                 break;
-            case "Carrot":
-                GameManager.Instance.CurrentStrawberriesSeedCount += quantity;
+            case "BeansSeed":
+                GameManager.Instance.CurrentBeansSeedCount += quantity;
                 break;
 
             default:

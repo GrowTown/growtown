@@ -12,17 +12,20 @@ public class TileInfo : MonoBehaviour
     private MeshRenderer _renderer;
     internal bool _hasColorChanged = false;
     private MaterialPropertyBlock _propBlock;
-    private float brushRadius = 0.1f; // Adjust the area of effect
+    private float brushRadius = 0.1f; 
     private Texture2D texture;
     public LayerMask layerMask;
-    public Color paintColor = Color.gray; // The color to apply
-    public Texture2D baseTexture; // Assign the base texture in Inspector
+    public Color paintColor = Color.gray; 
+    public Texture2D baseTexture; 
     private Texture2D paintableTexture;
     internal bool isTileHasSeed = false;
+
+    internal FieldGrid fieldGrid;
 
     private void Start()
     {
         _renderer = GetComponent<MeshRenderer>();
+        fieldGrid=this.GetComponentInParent<FieldGrid>();
 
         /* // Create a copy of the base texture manually
          paintableTexture = new Texture2D(baseTexture.width, baseTexture.height, TextureFormat.RGB24, false);
@@ -37,12 +40,12 @@ public class TileInfo : MonoBehaviour
     {
         if (!seedsSpawned)
         {
-            if (!GameManager.Instance.HasEnoughPoints(5, 0)) return;
+            if (!GameManager.Instance.HasEnoughPoints(5, 0,fieldGrid)) return;
             SpawnSeeds();
             seedsSpawned = true;
             GameManager.Instance.DeductEnergyPoints(5);
             UI_Manager.Instance.PlayerXp.SuperXp(2);
-            GameManager.Instance.ForCropSeedDEduction();
+            fieldGrid.ForCropSeedDEduction();
         }
     }
 
@@ -51,8 +54,11 @@ public class TileInfo : MonoBehaviour
         // Spawn a seed at each spawn point
         foreach (Transform spawnPoint in spawnPoints)
         {
-            var instace = Instantiate(UI_Manager.Instance.seed, spawnPoint.position, Quaternion.identity);
-            UI_Manager.Instance.spawnedSeed.Add(instace);
+            var instance = Instantiate(UI_Manager.Instance.seed, spawnPoint.position, Quaternion.identity);
+           // Vector3 scaleMultiplier = new Vector3(0.003f, 0.003f, 0.003f);
+           // instance.transform.localScale = scaleMultiplier;
+            instance.transform.SetParent(spawnPoint);
+            fieldGrid.spawnedSeed.Add(instance);
         }
     }
 
@@ -74,9 +80,9 @@ public class TileInfo : MonoBehaviour
     {
         if (!plantSpawned)
         {
-            if (!UI_Manager.Instance.spawnPlantsForGrowth.ContainsKey(tilego))
+            if (!fieldGrid.spawnPlantsForGrowth.ContainsKey(tilego))
             {
-                UI_Manager.Instance.spawnPlantsForGrowth[tilego] = new List<GameObject>();
+                fieldGrid.spawnPlantsForGrowth[tilego] = new List<GameObject>();
             }
 
             Quaternion[] rotations = new Quaternion[]
@@ -94,18 +100,19 @@ public class TileInfo : MonoBehaviour
                 var rotation = rotations[index % rotations.Length];
 
                 // Instantiate the plant with the specific rotation
-                var instance = Instantiate(UI_Manager.Instance.plantHolder, spawnPoint.position, rotation);
+                var instance = Instantiate(fieldGrid.fieldPlantPrefab, spawnPoint.position, rotation);
+                instance.transform.SetParent(spawnPoint);
 
                 // Add the instance to the respective lists
-                UI_Manager.Instance.spawnPlantsForGrowth[tilego].Add(instance);
-                UI_Manager.Instance.spawnPlantsForInitialGrowth.Add(instance);
+                fieldGrid.spawnPlantsForGrowth[tilego].Add(instance);
+                fieldGrid.spawnPlantsForInitialGrowth.Add(instance);
 
-                if (!UI_Manager.Instance.GrownPlantsToCut.ContainsKey(UI_Manager.Instance.FieldManager.CurrentFieldID))
+                if (!UI_Manager.Instance.GrownPlantsToCut.ContainsKey(fieldGrid.fieldID))
                 {
-                    UI_Manager.Instance.GrownPlantsToCut[UI_Manager.Instance.FieldManager.CurrentFieldID] = new List<GameObject>();
+                    UI_Manager.Instance.GrownPlantsToCut[fieldGrid.fieldID] = new List<GameObject>();
                 }
 
-                UI_Manager.Instance.GrownPlantsToCut[UI_Manager.Instance.FieldManager.CurrentFieldID].Add(instance);
+                UI_Manager.Instance.GrownPlantsToCut[fieldGrid.fieldID].Add(instance);
 
                 // Increment the index for the next rotation
                 index++;
@@ -145,7 +152,7 @@ public class TileInfo : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(other.transform.position, Vector3.down, out hit, 4, layerMask))
             {
-                UI_Manager.Instance.FieldGrid.AddCoveredTile(this.gameObject);
+                fieldGrid.AddCoveredTile(this.gameObject);
                 /*Vector2 pixelUV = hit.textureCoord;
                 pixelUV.x *= paintableTexture.width;
                 pixelUV.y *= paintableTexture.height;
@@ -192,12 +199,12 @@ public class TileInfo : MonoBehaviour
 
     public void OnThrowSeed(GameObject coveredTile)
     {
-        if (UI_Manager.Instance.seed != null && GameManager.Instance.isThroughingseeds)
+        if (UI_Manager.Instance.seed != null && fieldGrid.isThroughingseeds)
         {
           
             if (coveredTile != null&& !isTileHasSeed)
             {
-                UI_Manager.Instance.FieldGrid.AddCoveredTile(coveredTile);
+                fieldGrid.AddCoveredTile(coveredTile);
                 isTileHasSeed = true;
                 OnPlayerEnter();
                 Debug.Log("Seed spawned on tile");

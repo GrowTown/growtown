@@ -75,6 +75,54 @@ public class InventoryManager : MonoBehaviour
             }
         }
     }
+    public void AddToInventory(ShopItemHolder item,int count)
+
+    {
+        Transform parent = GetParentTransform(item.Item.type);
+        if (inventoryItems.ContainsKey(item.Item.itemName))
+        {
+            if (item.Item.itemName != "TomatoSeed" || item.Item.itemName != "WheatSeed" || item.Item.itemName != "BeansSeed")
+            {
+
+                inventoryItems[item.Item.itemName].Itemcount += 1;
+            }
+            else
+            {
+                inventoryItems[item.Item.itemName].Itemcount += count;
+            }
+        }
+        else
+        {
+            if (item.Item.itemName == "TomatoSeed")
+            {
+
+                GameObject newItem = Instantiate(inventoryItemPrefab, parent);
+                InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
+                inventoryItem.Initialize(item, 50);
+                inventoryItem.useBT.gameObject.SetActive(false);
+                inventoryItems.Add(item.Item.itemName, inventoryItem);
+            }
+            else if (item.Item.itemName == "SuperXp")
+            {
+                GameObject newItem = Instantiate(inventoryItemPrefab, parent);
+                InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
+                inventoryItem.Initialize(item, 1);
+                inventoryItems.Add(item.Item.itemName, inventoryItem);
+                if (inventoryButtonActions.ContainsKey(item.Item.itemName))
+                {
+                    inventoryItem.useBT.onClick.AddListener(() => inventoryButtonActions[item.Item.itemName]());
+                }
+            }
+            else
+            {
+                GameObject newItem = Instantiate(inventoryItemPrefab, parent);
+                InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
+                inventoryItem.Initialize(item, count);
+                inventoryItem.useBT.gameObject.SetActive(false);
+                inventoryItems.Add(item.Item.itemName, inventoryItem);
+            }
+        }
+    }
 
     private Transform GetParentTransform(ItemType type)
     {

@@ -10,7 +10,7 @@ public class LandHealth : MonoBehaviour
     [SerializeField]
     private Slider _landHealthBar;
     [SerializeField]
-    private int _landHealth = 100;
+    private int _landHealth;
     [SerializeField]
     private TextMeshProUGUI _landHealthTxt;
     [SerializeField]
@@ -51,7 +51,7 @@ public class LandHealth : MonoBehaviour
     private void Start()
     {
         _landNameTxt.text = _landName;
-        CurrentLandHealth = _landHealth;
+        //CurrentLandHealth = _landHealth;
     }
 
     internal void LandHealthIncrease(int lh)

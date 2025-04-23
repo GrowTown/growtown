@@ -14,6 +14,8 @@ public class POPSelectionFunctionality : MonoBehaviour, IPointerClickHandler
     private string _name;
     internal bool _hasBeenClicked;
 
+    internal FieldGrid fieldGrid;
+
     /// <summary>
     /// Property to manage the background's active state
     /// </summary>
@@ -29,19 +31,19 @@ public class POPSelectionFunctionality : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-       
+
         if (UI_Manager.Instance.currentIndex == 3)
         {
-            if (!UI_Manager.Instance.WeaponAttackEvent.isGunActive && UI_Manager.Instance.isPlantGrowthCompleted)
+            if (!UI_Manager.Instance.WeaponAttackEvent.isGunActive && fieldGrid.isPlantGrowthCompleted || fieldGrid.isAllPlantsWithered)
             {
                 Check();
             }
         }
         else
         {
-           Check();
+            Check();
         }
-
+       
     }
 
     void Check()

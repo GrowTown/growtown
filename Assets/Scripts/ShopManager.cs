@@ -254,6 +254,7 @@ public class ShopManager : MonoBehaviour
                                 {
                                     Debug.LogWarning($"No ShopItemHolder found for item: {existingItem.Item.itemName}");
                                 }
+                                if (existingItem.Item.itemName == "WheatLand" || existingItem.Item.itemName == "BeansLand") existingItem.buyBT.interactable = false;
                             });
                         }
                     }
@@ -291,6 +292,8 @@ public class ShopManager : MonoBehaviour
                     var nameR = spItemListForrdl.Find(x => x.Item.itemName == reward.Name);
 
                     rewardItem.Initialize(nameR, reward.Value);
+                    if(nameR.Item.itemName != "BeansLand"|| nameR.Item.itemName != "WheatLand")
+                    UI_Manager.Instance.InventoryManager.AddToInventory(nameR,reward.Value);
 
                 }
             }
@@ -372,7 +375,7 @@ public class ShopManager : MonoBehaviour
         if (GameManager.Instance.CurrentScore >= 15)
         {
             GameManager.Instance.CurrentScore -= 75;
-            GameManager.Instance.CurrentStrawberriesSeedCount += 5;
+            GameManager.Instance.CurrentBeansSeedCount += 5;
         }
         else
         {
@@ -478,11 +481,10 @@ public class ShopManager : MonoBehaviour
         if (GameManager.Instance.CurrentScore >= 20)
         {
             GameManager.Instance.CurrentScore -= 20;
-            UI_Manager.Instance.wheatFieldArea.SetActive(true);
+            UI_Manager.Instance.FieldManager.InstantiateFields(UI_Manager.Instance.wheatfieldGo);
             GameManager.Instance.isShowingnewLand = true;
-            StartCoroutine(GameManager.Instance.ShowBoughtLand("wheat"));
-            UI_Manager.Instance.wheatlandBuyBT.interactable = false;
-
+            StartCoroutine(GameManager.Instance.ShowBoughtLand("wheat", UI_Manager.Instance.wheatfieldGo.transform.GetChild(4).gameObject));
+            
         }
         else
         {
@@ -498,10 +500,10 @@ public class ShopManager : MonoBehaviour
         if (GameManager.Instance.CurrentScore >= 20)
         {
             GameManager.Instance.CurrentScore -= 20;
-            UI_Manager.Instance.carrotFieldArea.SetActive(true);
+            UI_Manager.Instance.FieldManager.InstantiateFields(UI_Manager.Instance.beansfieldGo);
             GameManager.Instance.isShowingnewLand = true;
-            StartCoroutine(GameManager.Instance.ShowBoughtLand("carrot"));
-            UI_Manager.Instance.carrotlandBuyBT.interactable = false;
+            StartCoroutine(GameManager.Instance.ShowBoughtLand("beans", UI_Manager.Instance.beansfieldGo.transform.GetChild(4).gameObject));
+            //UI_Manager.Instance.carrotlandBuyBT.interactable = false;
 
         }
         else
@@ -544,11 +546,13 @@ public class ShopManager : MonoBehaviour
         {
             int value = int.Parse(newSellItem.inputFieldCountTx.text);
             int cValue = int.Parse(newSellItem.countTx.text);
-            if (cValue >= value && value >= 0)
+            if (cValue >= value && value > 0)
             {
                 int updatedCvalue = cValue - value;
                 newSellItem.countTx.text = updatedCvalue.ToString();
                 SellHarvest(newSellItem.itemName, value, updatedCvalue);
+                UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.scoreUIAnimation, newSellItem.sellBT.GetComponent<RectTransform>(), UI_Manager.Instance.score.GetComponent<RectTransform>(), 10);
+                
             }
             else
             {
@@ -564,7 +568,7 @@ public class ShopManager : MonoBehaviour
 
         if (Hcount > 0)
         {
-            GameManager.Instance.CounttheHarvest(Hcount);
+            GameManager.Instance.CounttheHarvest(Pname,Hcount);
         }
         /*else
         {
@@ -578,13 +582,11 @@ public class ShopManager : MonoBehaviour
 
              GameManager.Instance.CounttheHarvest(item.Count);
          }*/
-        UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.scoreUIAnimation, UI_Manager.Instance.sellInventoryBT.GetComponent<RectTransform>(), UI_Manager.Instance.score.GetComponent<RectTransform>(), 10);
-        /*UI_Manager.Instance.sellPopupPanel.SetActive(false);
-        UI_Manager.Instance.marketPopUp.SetActive(true);*/
+        
         GameManager.Instance.isHarvestCompleted = false;
         UI_Manager.Instance.ListOfHarvestCount.Clear();
         GameManager.Instance.HarvestCount = 0;
-        UI_Manager.Instance.GrowthStartedPlants.Clear();
+        //UI_Manager.Instance.GrowthStartedPlants.Clear();
         if (OgCount < 0)
         {
             UI_Manager.Instance.ListOfHarvestCount1.Remove(Pname);

@@ -2,20 +2,21 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    internal bool isThroughingseeds;
-    internal bool isCutting = false;
+    //internal bool isThroughingseeds;
+   // internal bool isCutting = false;
     internal bool isHarvestCompleted;
     internal bool isOneWorkingActionCompleted = false;
     internal bool isPlantStartGrowing;
     internal bool checkingForSeedingStarted;
-    internal bool isplantGrowthCompleted;
-    internal int spawnedTomatoesCount;
+    //internal bool isplantGrowthCompleted;
+    //internal int spawnedTomatoesCount;
     internal bool checkPlayerInZone;
     internal bool checkForEnoughSeeds;
     internal bool isStarterPackBought;
@@ -62,7 +63,7 @@ public class GameManager : MonoBehaviour
         get => _currentFieldID;
         set => _currentFieldID = value;
     }
-    public int CurrentStrawberriesSeedCount
+    public int CurrentBeansSeedCount
     {
         get => _currentStrawberriesSeedCount;
         set
@@ -206,7 +207,8 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"Loaded data - Energy: {CurrentEnergyCount}, Water: {CurrentWaterCount}, Score: {CurrentScore}, Level: {UI_Manager.Instance.PlayerLevel.CurrentPlayerLevel}");
     }
-    public void StartActionAnimation(PlayerAction action)
+
+    /*public void StartActionAnimation(PlayerAction action)
     {
         switch (action)
         {
@@ -217,7 +219,7 @@ public class GameManager : MonoBehaviour
                 // Debug.Log("Cleaning");
                 break;
             case PlayerAction.Seed:
-                /*   if (!HasEnoughLandHealth(5)) return;*/
+                *//*   if (!HasEnoughLandHealth(5)) return;*//*
                 if (!HasEnoughPoints(5, 0)) return;
                 if (!HasNotEnoughSeed(1)) return;
                 ToDecreaseTHElandHealth(UI_Manager.Instance.FieldManager.CurrentFieldID, 5);
@@ -248,7 +250,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
-
+*/
     public void StopCurrentAnimations()
     {
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(3, 0);
@@ -257,9 +259,9 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(6, 0);
         UI_Manager.Instance.cleaningTool.SetActive(false);
     }
-    public void ShowFieldPopup(PlayerAction currentAction)
+    public void ShowFieldPopup(PlayerAction currentAction,FieldGrid fGrid)
     {
-        UI_Manager.Instance.ShowPopup(currentAction);
+        UI_Manager.Instance.ShowPopup(currentAction,fGrid);
     }
 
     public void HideFieldPopup()
@@ -267,122 +269,42 @@ public class GameManager : MonoBehaviour
         UI_Manager.Instance.HideFieldPopup();
     }
 
-    internal void StartPlayerAction(PlayerAction action)
+    internal void StartPlayerAction(PlayerAction action,FieldGrid fGrid)
     {
         UI_Manager.Instance.TriggerZoneCallBacks.playerInZone = true;
-        UI_Manager.Instance.FieldGrid.StartCoverageTracking(action);
+        fGrid.StartCoverageTracking(action);
     }
 
-    public void StopCurrentAction()
+    public void StopCurrentAction(FieldGrid fGrid)
     {
-        UI_Manager.Instance.FieldGrid.StopCoverageTracking();
+        fGrid.StopCoverageTracking();
     }
 
     PlantGrowth Pg;
 
     internal bool cropseedingStarted;
     internal bool HasNotEnoughSeeds;
-    internal void ForCropSeedDEduction()
-    {
-        if (CurrentTomatoSeedCount >= 1)
-        {
-            CurrentTomatoSeedCount -= 1;
-        }
-    }
-    public void BeforeWaterTile()
-    {
-        foreach (var item in UI_Manager.Instance.spawnPlantsForInitialGrowth)
-        {
-            var instance = item.GetComponent<PlantGrowth>();
-            instance.InitialCoroutine = StartCoroutine((instance.InitialGrowPlant()));
-        }
-    }
+
 
     internal bool iswateringStarted = false;
-    public void OnWaterTile(GameObject tilego)
-    {
-        if (!HasEnoughPoints(2, 10)) return;
-        if (!UI_Manager.Instance.GrowthStartedOnThisTile.Contains(tilego))
-        {
-
-            if (UI_Manager.Instance.spawnPlantsForGrowth.ContainsKey(tilego))
-            {
-                ToDecreaseTheWaterPoints();
-                DeductEnergyPoints(2);
-                UI_Manager.Instance.PlayerXp.SuperXp(1);
-                foreach (var item in UI_Manager.Instance.spawnPlantsForGrowth[tilego])
-                {
-                    var pg = item.GetComponent<PlantGrowth>();
-
-                    if (!pg.isNotWateredDuringWithering)
-                    {
-                        if (pg._initialGrowTimer != null)
-                        {
-                            pg._initialGrowTimer.StopTimer();
-                            StopCoroutine(pg.InitialCoroutine);
-                            Destroy(pg._initialGrowTimer);
-                        }
-
-                        pg.AfterWateredCoroutine = StartCoroutine(pg.AfterWateredTileGrowth(pg.CurrentTimer));
-                        iswateringStarted = true;
-                        if (UI_Manager.Instance.FieldManager.CurrentFieldID == 0)
-                        {
-                            if (!UI_Manager.Instance.GrowthStartedPlants1.ContainsKey("BeansHarvest"))
-                                UI_Manager.Instance.GrowthStartedPlants1["BeansHarvest"] = new List<GameObject>();
-                            if (!UI_Manager.Instance.GrowthStartedPlants1["BeansHarvest"].Contains(item))
-                            {
-                                UI_Manager.Instance.GrowthStartedPlants1["BeansHarvest"].Add(item);
-                            }
-                        }
-                        else if (UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
-                        {
-                            if (!UI_Manager.Instance.GrowthStartedPlants1.ContainsKey("WheatHarvest"))
-                                UI_Manager.Instance.GrowthStartedPlants1["WheatHarvest"] = new List<GameObject>();
-                            if (!UI_Manager.Instance.GrowthStartedPlants1["WheatHarvest"].Contains(item))
-                            {
-                                UI_Manager.Instance.GrowthStartedPlants1["WheatHarvest"].Add(item);
-                            }
-                        }
-                        else
-                        {
-                            if (!UI_Manager.Instance.GrowthStartedPlants1.ContainsKey("TomatoHarvest"))
-                                UI_Manager.Instance.GrowthStartedPlants1["TomatoHarvest"] = new List<GameObject>();
-                            if (!UI_Manager.Instance.GrowthStartedPlants1["TomatoHarvest"].Contains(item))
-                            {
-                                UI_Manager.Instance.GrowthStartedPlants1["TomatoHarvest"].Add(item);
-                            }
-                        }
-                        if (!UI_Manager.Instance.GrowthStartedPlants.Contains(item))
-                        {
-                            UI_Manager.Instance.GrowthStartedPlants.Add(item);
-                        }
-                    }
-                }
-                // WaveManager.instance.StartEnemyWave();
-            }
-            UI_Manager.Instance.GrowthStartedOnThisTile.Add(tilego);
-        }
-        foreach (var item in UI_Manager.Instance.spawnedSeed)
-        {
-            Destroy(item);
-        }
-    }
+    
     internal List<GameObject> witheredPlants = new List<GameObject>();
-    public void Withering()
+    public void CounttheHarvest(string nameofCrop,int growPC)
     {
-        foreach (var item in UI_Manager.Instance.spawnPlantsForInitialGrowth)
-        {
-            if (!UI_Manager.Instance.GrowthStartedPlants.Contains(item))
-            {
-                item.GetComponent<PlantGrowth>().plantMesh.material.color = Color.red;
-                witheredPlants.Add(item);
-            }
-        }
-    }
-    public void CounttheHarvest(int growPC)
-    {
+        int pointsPerGrowPC = 0;
 
-        int pointsPerGrowPC = 10 / 4;
+        if (nameofCrop== "TomatoField")
+        {
+            pointsPerGrowPC = 7;
+        }
+        else if (nameofCrop == "WheatField")
+        {
+            pointsPerGrowPC = 12;
+        }
+        else
+        {
+            pointsPerGrowPC = 20;
+        }
         int grownPlantCount = growPC * pointsPerGrowPC;
         CurrentScore += grownPlantCount;
         Debug.Log($"Plant ====> {growPC}");
@@ -417,18 +339,23 @@ public class GameManager : MonoBehaviour
     }
     public void HarvestDeductEnergy(GameObject tilego)
     {
-        if (!HasEnoughPoints(3, 0)) return;
         var tileInfo = tilego.GetComponent<TileInfo>();
+        if (!HasEnoughPoints(3, 0,tileInfo.fieldGrid)) return;
+        
         if (!tileInfo.isCuttingStarted)
         {
             DeductEnergyPoints(3);
             UI_Manager.Instance.PlayerXp.SuperXp(4);
             tileInfo.isCuttingStarted = true;
         }
-
-        if (UI_Manager.Instance.FieldManager.CurrentFieldID == 0)
+        if (tileInfo.fieldGrid.IsCoverageComplete())
         {
-            if (UI_Manager.Instance.FieldGrid.IsCoverageComplete() && !IsHarvestCount)
+            SavingHarvestCount(tileInfo.fieldGrid);
+        }
+
+        /*if (UI_Manager.Instance.FieldManager.CurrentFieldID == 0)
+        {
+            if (FieldGrid.Instance.IsCoverageComplete() && !IsHarvestCount)
             {
 
                 SavingHarvestCount("BeansHarvest");
@@ -438,7 +365,7 @@ public class GameManager : MonoBehaviour
         }
         else if (UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
         {
-            if (UI_Manager.Instance.FieldGrid.IsCoverageComplete() && !IsWheatHarvestCount)
+            if (FieldGrid.Instance.IsCoverageComplete() && !IsWheatHarvestCount)
             {
                 SavingHarvestCount("WheatHarvest");
                 IsWheatHarvestCount = true;
@@ -446,12 +373,12 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (UI_Manager.Instance.FieldGrid.IsCoverageComplete() && !IsTomatoHarvestCount)
+            if (FieldGrid.Instance.IsCoverageComplete() && !IsTomatoHarvestCount)
             {
                 SavingHarvestCount("TomatoHarvest");
                 IsTomatoHarvestCount = true;
             }
-        }
+        }*/
 
     }
 
@@ -460,29 +387,21 @@ public class GameManager : MonoBehaviour
     bool IsWheatHarvestCount;
     bool IsHarvestCount;
 
-    public void SavingHarvestCount(string harvestName)
+    public void SavingHarvestCount(FieldGrid fGrid)
     {
-        if (!UI_Manager.Instance.ListOfHarvestCount1.ContainsKey(harvestName))
+        if (!UI_Manager.Instance.ListOfHarvestCount1.ContainsKey(fGrid.fieldName))
         {
-            UI_Manager.Instance.ListOfHarvestCount1[harvestName] = new List<int>();
+            UI_Manager.Instance.ListOfHarvestCount1[fGrid.fieldName] = new List<int>();
         }
-        for (int i = 0; i < UI_Manager.Instance.GrowthStartedPlants1[harvestName].Count; i++)
+        int plantCount = UI_Manager.Instance.GrowthStartedPlants1[fGrid.fieldName].Count;
+        int pointsToAdd = plantCount / 5; 
+
+        for (int i = 0; i < pointsToAdd; i++)
         {
-            UI_Manager.Instance.ListOfHarvestCount1[harvestName].Add(i);
+            UI_Manager.Instance.ListOfHarvestCount1[fGrid.fieldName].Add(1);
         }
 
-        UI_Manager.Instance.ShopManager.InstantiateSellPrefab(UI_Manager.Instance.GrowthStartedPlants1[harvestName].Count, harvestName);
-
-        /*  if (!UI_Manager.Instance.ListOfHarvestCount.ContainsKey(HarvestCount))
-          {
-              UI_Manager.Instance.ListOfHarvestCount[HarvestCount] = new List<int>();
-          }
-
-          for (int i = 0; i < UI_Manager.Instance.GrowthStartedPlants.Count; i++)
-          {
-              UI_Manager.Instance.ListOfHarvestCount[HarvestCount].Add(i);
-          }*/
-
+        UI_Manager.Instance.ShopManager.InstantiateSellPrefab(UI_Manager.Instance.ListOfHarvestCount1[fGrid.fieldName].Count, fGrid.fieldName);
     }
 
 
@@ -616,67 +535,62 @@ public class GameManager : MonoBehaviour
     }
 
     internal bool isResetetValues;
-    public void ResetValues()
+ 
+    public bool HasNotEnoughSeed(int seedRequired,FieldGrid fGrid)
     {
-        cropseedingStarted = false;
-        foreach (var item in UI_Manager.Instance.FieldGrid.coveredtiles)
+        if (fGrid.fieldName == "TomatoField")
         {
-            var tile = item.GetComponent<TileInfo>();
-            tile.seedsSpawned = false;
-            tile.plantSpawned = false;
-            tile.plantgrowth = false;
-            tile.isCuttingStarted = false;
-            tile._hasColorChanged = false;
-            tile.isTileHasSeed = false;
+            if (CurrentTomatoSeedCount < seedRequired)
+            {
+                CheckingEnoughSeedFunction(fGrid);
+                // HasNotEnoughSeeds = true;
+                return false;
+            }
         }
-        IsHarvestCount = false;
-        IsTomatoHarvestCount = false;
-        UI_Manager.Instance.isWentInsideOnce = false;
-        //UI_Manager.Instance.FieldGrid.coveredtiles.Clear();
-        UI_Manager.Instance.spawnPlantsForInitialGrowth.Clear();
-        //UI_Manager.Instance.FieldManager.fieldSteps.Clear();
-        UI_Manager.Instance.GrowthStartedOnThisTile.Clear();
-        UI_Manager.Instance.spawnPlantsForGrowth.Clear();
-        UI_Manager.Instance.oldcurrentStep = -1;
-        UI_Manager.Instance.FieldManager.CurrentStepID = -1;
-        UI_Manager.Instance.FieldManager.fieldSteps[CurrentFieldID].Clear();
-        isCutting = false;
-        //isResetetValues = true;
-        foreach (var item in UI_Manager.Instance.PopupImg)
+        else if (fGrid.fieldName == "WheatField")
         {
-            item.GetComponent<POPSelectionFunctionality>()._hasBeenClicked = false;
+            if (CurrentWheatSeedCount < seedRequired)
+            {
+                CheckingEnoughSeedFunction(fGrid);
+                // HasNotEnoughSeeds = true;
+                return false;
+            }
         }
-        isplantGrowthCompleted = false;
-    }
-    public bool HasNotEnoughSeed(int seedRequired)
-    {
-        if (CurrentTomatoSeedCount < seedRequired)
+        else if (fGrid.fieldName == "BeansField")
         {
-            UI_Manager.Instance.warningPopupPanelSeed.SetActive(true);
-            UI_Manager.Instance.warningTextForSeed.text = "Not Enough Seeds";
-            PanelManager.RegisterPanel(UI_Manager.Instance.warningPopupPanelSeed);
-            HideFieldPopup();
-            StopCurrentAction();
-            checkForEnoughSeeds = false;
-            // HasNotEnoughSeeds = true;
-            return false;
+            if (CurrentBeansSeedCount < seedRequired)
+            {
+                CheckingEnoughSeedFunction(fGrid);
+                // HasNotEnoughSeeds = true;
+                return false;
+            }
         }
         return true;
     }
-    public bool HasEnoughPoints(int energyRequired, int waterRequired)
+    void CheckingEnoughSeedFunction(FieldGrid fGrid)
+    {
+        UI_Manager.Instance.warningPopupPanelSeed.SetActive(true);
+        UI_Manager.Instance.warningTextForSeed.text = "Not Enough Seeds";
+        UI_Manager.Instance.warningCropPopIcon.sprite = fGrid.fieldPlantUIAnimation;
+        PanelManager.RegisterPanel(UI_Manager.Instance.warningPopupPanelSeed);
+        HideFieldPopup();
+        StopCurrentAction(fGrid);
+        checkForEnoughSeeds = false;
+    } 
+    public bool HasEnoughPoints(int energyRequired, int waterRequired,FieldGrid fGrid)
     {
         if (CurrentEnergyCount < energyRequired)
         {
-            UI_Manager.Instance.ShowPopUpNotEnoughPoints("Not enough energy points to perform this action!");
+            UI_Manager.Instance.ShowPopUpNotEnoughPoints("Not enough energy points to perform this action!",UI_Manager.Instance.energyIcon);
             HideFieldPopup();
-            StopCurrentAction();
+            StopCurrentAction(fGrid);
             return false;
         }
         if (CurrentWaterCount < waterRequired)
         {
-            UI_Manager.Instance.ShowPopUpNotEnoughPoints("Not enough water points to perform this action!");
+            UI_Manager.Instance.ShowPopUpNotEnoughPoints("Not enough water points to perform this action!", UI_Manager.Instance.waterIcon);
             HideFieldPopup();
-            StopCurrentAction();
+            StopCurrentAction(fGrid);
             return false;
         }
         return true;
@@ -714,19 +628,19 @@ public class GameManager : MonoBehaviour
     }
 
     internal bool isShowingnewLand = false;
-    internal IEnumerator ShowBoughtLand(string landname)
+    internal IEnumerator ShowBoughtLand(string landname,GameObject fieldView)
     {
         var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
         UI_Manager.Instance.marketPopUpPanel.SetActive(false);
         if (landname == "wheat")
         {
             Cam.SwitchToCam(3);
-            //Cam.activeCamera.LookAt = UI_Manager.Instance.wheatFieldArea.transform;
+            //Cam.activeCamera.LookAt = fieldView.transform;
         }
         else
         {
             Cam.SwitchToCam(4);
-            // Cam.activeCamera.LookAt = UI_Manager.Instance.carrotFieldArea.transform;
+            //Cam.activeCamera.LookAt = fieldView.transform;
         }
 
 

@@ -18,16 +18,16 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    void ChangetheValues()
+    void ChangetheValues(FieldGrid fGrid)
     {
-        UI_Manager.Instance.FieldGrid.StopCoverageTracking();
+       
         Debug.Log("All Collected");
 
-        UI_Manager.Instance.TriggerZoneCallBacks.CompleteAction();
-        if (GameManager.Instance.isCutting)
+        fGrid.CompleteAction();
+        if (fGrid.isCutting)
         {
-            GameManager.Instance.ResetValues();
-            UI_Manager.Instance.TriggerZoneCallBacks.CompleteAction();
+            fGrid.ResetField();
+            fGrid.CompleteAction();
         }
     }
     void OnPlayerInteraction(RaycastHit hit)
@@ -35,7 +35,7 @@ public class PlayerInteraction : MonoBehaviour
 
         Collider other = hit.collider;
 
-        if (other.CompareTag("Field") && UI_Manager.Instance.FieldGrid.isTracking)
+        if (other.CompareTag("Field") && hit.collider.gameObject.GetComponent<TileInfo>().fieldGrid.isTracking)
         {
             GameObject hitTileGameObject = hit.collider.gameObject;
             // Get the tile position for the player and try to add it
@@ -46,19 +46,20 @@ public class PlayerInteraction : MonoBehaviour
                 //UI_Manager.Instance.FieldGrid.AddCoveredTile(hitTileGameObject);
             }
           //  UI_Manager.Instance.seedsBag.GetComponent<SeedSpawnerandSeedsBagTrigger>().OnThrowSeed(hitTileGameObject);
-            if (GameManager.Instance.isCutting)
+            if (hitTileGameObject.GetComponent<TileInfo>().fieldGrid.isCutting)
                 GameManager.Instance.HarvestDeductEnergy(hitTileGameObject);
    
-            if (UI_Manager.Instance.FieldGrid.IsCoverageComplete())
+            if (hitTileGameObject.GetComponent<TileInfo>().fieldGrid.IsCoverageComplete())
             {
 
+                hitTileGameObject.GetComponent<TileInfo>().fieldGrid.StopCoverageTracking();
                 if (UI_Manager.Instance.FieldManager.CurrentStepID == 3)
                 {
-                    ChangetheValues();
+                    ChangetheValues(hitTileGameObject.GetComponent<TileInfo>().fieldGrid);
                 }
                 else
-                {
-                    ChangetheValues();
+                { 
+                    ChangetheValues(hitTileGameObject.GetComponent<TileInfo>().fieldGrid);
                 }
 
             }

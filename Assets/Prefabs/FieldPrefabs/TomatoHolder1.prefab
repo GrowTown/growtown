@@ -93,7 +93,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1578518499832823217}
   - component: {fileID: 5558913327503026516}
-  - component: {fileID: 969358106582315387}
   m_Layer: 0
   m_Name: Tomato_Plant
   m_TagString: Untagged
@@ -170,28 +169,6 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.000045523222, y: 0.00011829473, z: 0.0020124635}
     m_Extent: {x: 0.0018993283, y: 0.0022949209, z: 0.002061867}
   m_DirtyAABB: 0
---- !u!64 &969358106582315387
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1081684895996724645}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &2026520892854647531
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,8 +457,9 @@ MonoBehaviour:
   - {fileID: 2861254937915597891}
   - {fileID: 5829360147328725288}
   - {fileID: 6815761780017649428}
-  initialgrowthTime: 1
-  AfterWateredgrowthTime: 1
+  initialgrowthTime: 3
+  AfterWateredgrowthTime: 3
+  AfterHarvestWitherTime: 1
 --- !u!136 &7189689854157555782
 CapsuleCollider:
   m_ObjectHideFlags: 0

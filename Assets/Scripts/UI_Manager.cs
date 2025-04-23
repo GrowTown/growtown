@@ -49,7 +49,13 @@ public class UI_Manager : MonoBehaviour
     public GameObject levelUpPopUpPrefab;
     public GameObject mapPanel;
     public GameObject pathCancelPopUp;
-   
+    public GameObject cropActionPopUpContainer;
+    public  GameObject fieldCropTimerShowPanel;
+
+    [Header("FieldsGameObjects")]
+    public GameObject tomatofieldGo;
+    public GameObject wheatfieldGo;
+    public GameObject beansfieldGo;
 
 
     [Header("Transforms")]
@@ -60,7 +66,7 @@ public class UI_Manager : MonoBehaviour
     public RectTransform scoreTargetPlace;
     public Transform sellContainerTransForm;
     public Transform levelUpContainerTransForm;
-    
+
 
     [Header("Effects")]
     public GameObject waterEffect;
@@ -72,7 +78,11 @@ public class UI_Manager : MonoBehaviour
     public Sprite wheatUIAnimation;
     public Sprite beanUIAnimation;
     public Sprite scoreUIAnimation;
-    
+    public Sprite energyIcon;
+    public Sprite waterIcon;
+    public Sprite seedIcon;
+
+
 
 
     [Header("Buttons")]
@@ -116,6 +126,13 @@ public class UI_Manager : MonoBehaviour
     public TextMeshProUGUI contentOfNotBuyPasticedMsgTxt;
     public TextMeshProUGUI currentplayerLevelTxt;
     public TextMeshProUGUI levelUpPopupTxt;
+    public  TextMeshProUGUI fieldCropTimer;
+
+    [Header("Image")]
+    public  Image fieldCropTimerIcon;
+    public  Image warningPopIcon;
+    public  Image warningCropPopIcon;
+
 
     [Header("References")]
     [SerializeField]
@@ -124,8 +141,6 @@ public class UI_Manager : MonoBehaviour
     private ShopManager _shopManager;
     [SerializeField]
     private CharacterMovements _characterMovements;
-    [SerializeField]
-    private FieldGrid _fieldGrid;
     [SerializeField]
     private FieldManager _fieldManager;
     [SerializeField]
@@ -151,15 +166,15 @@ public class UI_Manager : MonoBehaviour
     [SerializeField]
     private LocalSaveManager _localSaveManager;
     private PlayerLevel _playerLevel;
-    private  Unit _unit;
-    [SerializeField] 
-    private  MapHandler _mapHandler;
+    private Unit _unit;
+    [SerializeField]
+    private MapHandler _mapHandler;
 
     internal int oldcurrentStep = -1;
     public int currentIndex;
     public bool isPlanted;
     public bool waveStarted;
-    public bool isPlantGrowthCompleted;
+    // public bool isPlantGrowthCompleted;
     public bool isPlayerInField = false;
     internal bool isTimerOn = false;
     internal bool isinitialgrowStarted = false;
@@ -176,19 +191,20 @@ public class UI_Manager : MonoBehaviour
     internal bool isButtonsInitialized = false;
 
     internal bool IsPlayerInSecondZone = false;
-    internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
-    internal List<GameObject> spawnPlantsForInitialGrowth = new List<GameObject>();
+    //internal List<GameObject> spawnTomatosForGrowth = new List<GameObject>();
+    //internal List<GameObject> spawnPlantsForInitialGrowth = new List<GameObject>();
     internal List<GameObject> spawnedSeed = new List<GameObject>();
-    internal Dictionary<GameObject, List<GameObject>> spawnPlantsForGrowth = new Dictionary<GameObject, List<GameObject>>();
+    //internal Dictionary<GameObject, List<GameObject>> spawnPlantsForGrowth = new Dictionary<GameObject, List<GameObject>>();
     internal Dictionary<List<GameObject>, GameObject> spawnPlantsAndTile = new Dictionary<List<GameObject>, GameObject>();
     internal Dictionary<int, List<int>> ListOfHarvestCount = new Dictionary<int, List<int>>();
     internal Dictionary<string, List<int>> ListOfHarvestCount1 = new Dictionary<string, List<int>>();
-    internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
-    internal Dictionary<string ,List<GameObject>> GrowthStartedPlants1 = new Dictionary<string, List<GameObject>>();
-    internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
+    //internal List<GameObject> GrowthStartedPlants = new List<GameObject>();
+    internal Dictionary<string, List<GameObject>> GrowthStartedPlants1 = new Dictionary<string, List<GameObject>>();
+    //internal List<GameObject> GrowthStartedOnThisTile = new List<GameObject>();
     internal Dictionary<int, List<GameObject>> GrownPlantsToCut = new Dictionary<int, List<GameObject>>();
     [SerializeField]
     internal List<ShopItem> shopItems = new List<ShopItem>();
+    internal List<GameObject> fieldPopUpImg=new List<GameObject>();
 
 
     #region Fields
@@ -294,11 +310,7 @@ public class UI_Manager : MonoBehaviour
         }
         set => _unit = value;
     }
-    public FieldGrid FieldGrid
-    {
-        get => _fieldGrid;
-        set => _fieldGrid = value;
-    }
+
 
     #endregion
     public static UI_Manager Instance { get; private set; }
@@ -342,8 +354,23 @@ public class UI_Manager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
-                if (PopupImg[currentPopupIndex].activeSelf)
-                    HandleSelection(currentPlayerAction, currentPopupIndex, currentSelectionFunctionality);
+                if (currentPopupIndex == 3)
+                {
+                    if (currentFGrid.isPlantGrowthCompleted && !WeaponAttackEvent.isGunActive)
+                    {
+                        if (fieldPopUpImg[currentPopupIndex].activeSelf)
+                            HandleSelection(currentPlayerAction, currentPopupIndex, currentSelectionFunctionality);
+                    }
+
+                }
+                else
+                {
+                    if (!WeaponAttackEvent.isGunActive)
+                    {
+                        if (fieldPopUpImg[currentPopupIndex].activeSelf)
+                            HandleSelection(currentPlayerAction, currentPopupIndex, currentSelectionFunctionality);
+                    }
+                }
             }
         }
         HideShowPopUpNotEnoughPoints();
@@ -421,13 +448,13 @@ public class UI_Manager : MonoBehaviour
             marketPopUp.SetActive(false);
             sellPopupPanel.SetActive(false);
         };
-        pasticideNotBoughtBT.onClick.AddListener(() =>
-        {
-            HideFieldPopup();
-            AudioManager.Instance.PlaySFX();
-            GameManager.Instance.StopCurrentAction();
-        });
-        pasticideNormalHealthUseBT.onClick.AddListener(() => 
+        /*  pasticideNotBoughtBT.onClick.AddListener(() =>
+          {
+              HideFieldPopup();
+              AudioManager.Instance.PlaySFX();
+              GameManager.Instance.StopCurrentAction();
+          });*/
+        pasticideNormalHealthUseBT.onClick.AddListener(() =>
         {
             AudioManager.Instance.PlaySFX();
             GameManager.Instance.ToIncreaseLandHealthUsePasticide(FieldManager.CurrentFieldID, 100);
@@ -437,7 +464,7 @@ public class UI_Manager : MonoBehaviour
 
         pasticideUseBT.onClick.AddListener(() =>
         {
-            GameManager.Instance.ToIncreaseLandHealthUsePasticide(FieldManager.CurrentFieldID,100);
+            GameManager.Instance.ToIncreaseLandHealthUsePasticide(FieldManager.CurrentFieldID, 100);
             pasticidePopUpPanel.SetActive(false);
         });
 
@@ -453,7 +480,7 @@ public class UI_Manager : MonoBehaviour
             AudioManager.Instance.PlaySFX();
             // sellPopupPanel.SetActive(true);
             //ShopManager.SellHarvest();
-            
+
         });
 
         wheatSeedBT.onClick.AddListener(() =>
@@ -470,7 +497,7 @@ public class UI_Manager : MonoBehaviour
         });
         strawberriesSeedBT.onClick.AddListener(() => { AudioManager.Instance.PlaySFX(); ShopManager.ToBuyStrawberries(); });
         starterPackBuyBT.onClick.AddListener(() => { AudioManager.Instance.PlaySFX(); GameManager.Instance.StartPackToBuy(); });
-      
+
         wheatlandBuyBT.onClick.AddListener(() =>
         {
             AudioManager.Instance.PlaySFX();
@@ -490,60 +517,89 @@ public class UI_Manager : MonoBehaviour
     private int currentPopupIndex = -1;
     private PlayerAction currentPlayerAction;
     private POPSelectionFunctionality currentSelectionFunctionality;
-    public void ShowPopup(PlayerAction currentAction)
+    FieldGrid currentFGrid;
+    public void ShowPopup(PlayerAction currentAction, FieldGrid fGrid)
     {
         HideFieldPopup();
         int popupIndex = (int)currentAction;
-        if (popupIndex >= 0 && popupIndex < PopupImg.Length)
+        if (popupIndex >= 0 && popupIndex < fieldPopUpImg.Count)
         {
-            var popup = PopupImg[popupIndex];
+            var popup = fieldPopUpImg[popupIndex];
             popup.SetActive(true);
             var selectionFunctionality = popup.GetComponent<POPSelectionFunctionality>();
             currentIndex = popupIndex;
             currentPopupIndex = popupIndex;
             currentPlayerAction = currentAction;
             currentSelectionFunctionality = selectionFunctionality;
+            currentFGrid = fGrid;
             selectionFunctionality.onClick = null;
-            if (popupIndex == 2 && !isWentInsideOnce)
+            if (FieldManager.OldfieldSteps.ContainsKey(fGrid.fieldID) && !GameManager.Instance.isOneWorkingActionCompleted)
             {
-                GameManager.Instance.BeforeWaterTile();
-                isWentInsideOnce = true;
-
-            }
-            if (oldcurrentStep != -1 && FieldManager.fieldSteps.ContainsKey(FieldManager.CurrentFieldID) && !GameManager.Instance.isOneWorkingActionCompleted)
-            {
-                GameManager.Instance.StartPlayerAction(currentAction);
+                GameManager.Instance.StartPlayerAction(currentAction, fGrid);
             }
             else
             {
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    if (popup.activeSelf)
-                        HandleSelection(currentAction, popupIndex, selectionFunctionality);
+                    if (popupIndex == 3)
+                    {
+                        if (currentFGrid.isPlantGrowthCompleted && !WeaponAttackEvent.isGunActive|| currentFGrid.isAllPlantsWithered && !WeaponAttackEvent.isGunActive)
+                        {
+                            if (popup.activeSelf)
+                                HandleSelection(currentAction, popupIndex, selectionFunctionality);
+                        }
+                    }
+                    else
+                    {
+                        if (!WeaponAttackEvent.isGunActive)
+                        {
+                            if (popup.activeSelf)
+                                HandleSelection(currentAction, popupIndex, selectionFunctionality);
+                        }
+                    }
+
                 }
+                selectionFunctionality.fieldGrid = fGrid;
                 selectionFunctionality.onClick = (selected) =>
                 {
-                    HandleSelection(currentAction, popupIndex, selectionFunctionality);
+              
+                    if (popupIndex == 3)
+                    {
+                        if (currentFGrid.isPlantGrowthCompleted && !WeaponAttackEvent.isGunActive||currentFGrid.isAllPlantsWithered)
+                        {
+                            HandleSelection(currentAction, popupIndex, selectionFunctionality);
+                        }
+                    }
+                    else
+                    {
+                        if (!WeaponAttackEvent.isGunActive)
+                        {
+                            HandleSelection(currentAction, popupIndex, selectionFunctionality);
+                        }
+                    }
+
                 };
             }
         }
     }
     private void HandleSelection(PlayerAction currentAction, int popupIndex, POPSelectionFunctionality selectionFunctionality)
     {
-        if (popupIndex == 3)
-        {
-            if (isPlantGrowthCompleted && !WeaponAttackEvent.isGunActive)
-            {
-                SelectPopup(currentAction, popupIndex, selectionFunctionality);
-            }
-        }
-        else
-        {
-            if (!WeaponAttackEvent.isGunActive)
-            {
-                SelectPopup(currentAction, popupIndex, selectionFunctionality);
-            }
-        }
+        /* if (popupIndex == 3)
+         {
+             if (currentFGrid.isPlantGrowthCompleted && !WeaponAttackEvent.isGunActive)
+             {
+                 SelectPopup(currentAction, popupIndex, selectionFunctionality);
+             }
+         }
+         else
+         {
+             if (!WeaponAttackEvent.isGunActive)
+             {
+                 SelectPopup(currentAction, popupIndex, selectionFunctionality);
+             }
+         }*/
+
+        SelectPopup(currentAction, popupIndex, selectionFunctionality);
     }
     private void SelectPopup(PlayerAction currentAction, int popupIndex, POPSelectionFunctionality selectionFunctionality)
     {
@@ -552,17 +608,35 @@ public class UI_Manager : MonoBehaviour
             currentSelectedPopUp.IsSelected = false;
         }
         oldcurrentAction = popupIndex;
+        FieldManager.OldfieldSteps[currentFGrid.fieldID] = popupIndex;
+
         selectionFunctionality.IsSelected = true;
         currentSelectedPopUp = selectionFunctionality;
-        GameManager.Instance.StartPlayerAction(currentAction);
+        GameManager.Instance.StartPlayerAction(currentAction, currentFGrid);
         GameManager.Instance.isOneWorkingActionCompleted = false;
         oldcurrentStep = popupIndex;
     }
-    internal void HideFieldPopup()
+
+    internal void InstantiateFieldPopUp()
     {
+        for (int i = 0; i < cropActionPopUpContainer.transform.childCount; i++)
+        {
+            Destroy(cropActionPopUpContainer.transform.GetChild(i).gameObject);
+            fieldPopUpImg.Clear();
+        }
+
         for (int i = 0; i < PopupImg.Length; i++)
         {
-            PopupImg[i].SetActive(false);
+            var Insta = Instantiate(PopupImg[i], cropActionPopUpContainer.transform);
+            Insta.transform.SetParent(cropActionPopUpContainer.transform);
+            fieldPopUpImg.Add(Insta);
+        }
+    }
+    internal void HideFieldPopup()
+    {
+        for (int i = 0; i < fieldPopUpImg.Count; i++)
+        {
+            fieldPopUpImg[i].SetActive(false);
         }
         sickleWeapon.SetActive(false);
         wateringTool.SetActive(false);
@@ -571,10 +645,11 @@ public class UI_Manager : MonoBehaviour
         seedsBag.gameObject.SetActive(false);
         GameManager.Instance.StopCurrentAnimations(); // Stop any active animations
     }
-    public void ShowPopUpNotEnoughPoints(string text)
+    public void ShowPopUpNotEnoughPoints(string text,Sprite Icon)
     {
         warningPopupPanelEnergy.SetActive(true);
         warningTextEnergy.text = text;
+        warningPopIcon.sprite = Icon;
         PanelManager.RegisterPanel(warningPopupPanelEnergy);
     }
     void HideShowPopUpNotEnoughPoints()
@@ -585,7 +660,7 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
-    internal void ToInstantiateLandHealthbar(int fieldID)
+    internal void ToInstantiateLandHealthbar(int fieldID, FieldGrid fGrid)
     {
         string landName = "";
         ref bool isSpawned = ref isCarrotHealthBarspawn;
@@ -593,15 +668,15 @@ public class UI_Manager : MonoBehaviour
         switch (fieldID)
         {
             case 0:
-                landName = "CarrotField";
+                landName = fGrid.fieldName;
                 isSpawned = ref isCarrotHealthBarspawn;
                 break;
             case 1:
-                landName = "WheatField";
+                landName = fGrid.fieldName;
                 isSpawned = ref isWheatHealthBarspawn;
                 break;
             case 2:
-                landName = "TomatoField";
+                landName = fGrid.fieldName;
                 isSpawned = ref isTomatoHealthBarspawn;
                 break;
             default:
@@ -621,6 +696,8 @@ public class UI_Manager : MonoBehaviour
              rectTransform.offsetMax = Vector2.zero;*/
 
             go.GetComponent<LandHealth>().CurrentLandName = landName;
+            go.GetComponent<LandHealth>().CurrentLandHealth = fGrid.fieldHealth;
+
         }
 
     }

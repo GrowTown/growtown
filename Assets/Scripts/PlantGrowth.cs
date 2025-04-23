@@ -15,9 +15,9 @@ public class PlantGrowth : MonoBehaviour
     float cuttingHight = 0.2f;
     private WaveManager waveManager;
     internal bool IsTileWatered;
-    public int initialgrowthTime = 1;
-    public int AfterWateredgrowthTime = 1;
-    public int AfterHarvestWitherTime = 1;
+    public int initialgrowthTime ;
+    public int AfterWateredgrowthTime ;
+    public int AfterHarvestWitherTime ;
     float _currentGrowth;
     float _afterWaterGrowth;
     float _afterHarvest;
@@ -25,6 +25,9 @@ public class PlantGrowth : MonoBehaviour
     internal Coroutine InitialCoroutine;
     internal Coroutine AfterWateredCoroutine;
     internal Coroutine AfterHarvestCoroutine;
+    internal PlantGrowthState currentGrowthState;
+
+
 
     public float CurrentGrowth
     {
@@ -53,12 +56,13 @@ public class PlantGrowth : MonoBehaviour
     void Start()
     {
         waveManager = FindObjectOfType<WaveManager>();
+       
 
     }
 
     internal bool isWateredDuringWithering = false;
     internal bool isNotWateredDuringWithering = false;
-    internal IEnumerator InitialGrowPlant()
+    internal IEnumerator InitialGrowPlant(FieldGrid fGrid)
     {
 
         _initialGrowTimer = this.gameObject.AddComponent<Timer>();
@@ -77,29 +81,34 @@ public class PlantGrowth : MonoBehaviour
             {
                 plantMesh.SetBlendShapeWeight(0, growthProgress * 100f);
                 CurrentGrowth = growthProgress;
-                if (UI_Manager.Instance.FieldManager.CurrentFieldID == 2)
-                {
-                    GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+                float remainingSeconds = (float)_initialGrowTimer.secondsLeft;
+                float remainingMinutes = remainingSeconds / 60f;
 
-                }
-                else if (UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
+                fGrid.FieldCropRemainingCount = remainingMinutes;
+                if (fGrid.fieldID == 2)
                 {
-                    GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+                    GameManager.Instance.SetCropTimerBar(fGrid.fieldID, this.gameObject);
+                }
+
+                else if (fGrid.fieldID == 1)
+                {
+                    GameManager.Instance.SetCropTimerBar(fGrid.fieldID, this.gameObject);
                 }
                 else
                 {
-                    GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+                    GameManager.Instance.SetCropTimerBar(fGrid.fieldID, this.gameObject);
                 }
+
                 if (growthProgress >= 0.5f && !isWateredDuringWithering)
                 {
-                    GameManager.Instance.Withering();
+                    Withering(fGrid);
                     isNotWateredDuringWithering = true;
                     _initialGrowTimer.StopTimer();
-                    if (!GameManager.Instance.isplantGrowthCompleted)
+                    if (!fGrid.isInitialPlantGrowthCompleted)
                     {
-                        UI_Manager.Instance.FieldGrid.coveredtiles.Clear();
-                        UI_Manager.Instance.TriggerZoneCallBacks.CompleteAction();
-                        GameManager.Instance.isplantGrowthCompleted = true;
+                        fGrid.coveredtiles.Clear();
+                        fGrid.CompleteAction();
+                        fGrid.isInitialPlantGrowthCompleted = true;
                     }
                     Destroy(_initialGrowTimer);
                     yield break;
@@ -109,7 +118,7 @@ public class PlantGrowth : MonoBehaviour
         }
 
     }
-    public IEnumerator AfterWateredTileGrowth(double currentTimer)
+    public IEnumerator AfterWateredTileGrowth(double currentTimer, FieldGrid fGrid)
     {
 
         _afterwateredGrowTimer = this.gameObject.AddComponent<Timer>();
@@ -122,22 +131,26 @@ public class PlantGrowth : MonoBehaviour
 
             float growthProgress = Mathf.Lerp(CurrentGrowth, 1.0f, (float)(1.0f - (_afterwateredGrowTimer.secondsLeft / totalGrowthTime)));
             CurrentGrowthAfterWater = growthProgress;
-            if (UI_Manager.Instance.FieldManager.CurrentFieldID == 2)
-            {
-                GameManager.Instance.iswateredField3 = true;
-                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+            float remainingMinutes = (float)_afterwateredGrowTimer.secondsLeft / 60f;
+            fGrid.FieldCropRemainingCount = remainingMinutes;
 
-            }
-            else if (UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
+            if (fGrid.fieldID == 2)
             {
-                GameManager.Instance.iswateredField2= true;
-                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+
+                GameManager.Instance.iswateredField3 = true;
+                GameManager.Instance.SetCropTimerBar(fGrid.fieldID, this.gameObject);
+            }
+            else if (fGrid.fieldID == 1)
+            {
+                GameManager.Instance.iswateredField2 = true;
+                GameManager.Instance.SetCropTimerBar(fGrid.fieldID, this.gameObject);
             }
             else
             {
                 GameManager.Instance.iswateredField1 = true;
-                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+                GameManager.Instance.SetCropTimerBar(fGrid.fieldID, this.gameObject);
             }
+
             Debug.Log("AfterWatered :: " + _afterwateredGrowTimer.secondsLeft);
 
             if (!isNotWateredDuringWithering)
@@ -153,15 +166,15 @@ public class PlantGrowth : MonoBehaviour
         {
             OnGrowthComplete();
 
-           /* StopCoroutine(AfterWateredCoroutine);
-            Destroy(_afterwateredGrowTimer);*/
-           
+            /* StopCoroutine(AfterWateredCoroutine);
+             Destroy(_afterwateredGrowTimer);*/
+
         });
     }
 
     public IEnumerator AfterHarvestPlantWither()
     {
-
+        var tileInfo = this.gameObject.transform.parent.parent.GetComponent<TileInfo>();
         _afterHarvestWitherTimer = this.gameObject.AddComponent<Timer>();
         var updatedTime = Mathf.Max(0, (int)(AfterHarvestWitherTime * 60)); // Convert to seconds
         _afterHarvestWitherTimer.Initialize("Plant Wither - After Harvest", DateTime.Now, TimeSpan.FromSeconds(updatedTime));
@@ -173,21 +186,21 @@ public class PlantGrowth : MonoBehaviour
             float growthProgress = Mathf.Lerp(CurrentGrowthAfterWater, 2.0f, (float)(1.0f - (_afterHarvestWitherTimer.secondsLeft / totalGrowthTime)));
             CurrentGrowthAfterHarvest = growthProgress;
             Debug.Log("AfterWatered :: " + _afterHarvestWitherTimer.secondsLeft);
-            if (UI_Manager.Instance.FieldManager.CurrentFieldID == 2)
+            if (tileInfo.fieldGrid.fieldID == 2)
             {
                 GameManager.Instance.isHarvestField3 = true;
-                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+                GameManager.Instance.SetCropTimerBar(tileInfo.fieldGrid.fieldID, this.gameObject);
 
             }
-            else if (UI_Manager.Instance.FieldManager.CurrentFieldID == 1)
+            else if (tileInfo.fieldGrid.fieldID == 1)
             {
                 GameManager.Instance.isHarvestField2 = true;
-                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+                GameManager.Instance.SetCropTimerBar(tileInfo.fieldGrid.fieldID, this.gameObject);
             }
             else
             {
                 GameManager.Instance.isHarvestField1 = true;
-                GameManager.Instance.SetCropTimerBar(UI_Manager.Instance.FieldManager.CurrentFieldID, this.gameObject);
+                GameManager.Instance.SetCropTimerBar(tileInfo.fieldGrid.fieldID, this.gameObject);
             }
 
             yield return null;
@@ -197,13 +210,13 @@ public class PlantGrowth : MonoBehaviour
         {
             if (this.gameObject != null)
             {
-               if(!GameManager.Instance.witheredPlants.Contains(this.gameObject))
+                if (!GameManager.Instance.witheredPlants.Contains(this.gameObject))
                 {
-                    plantMesh.material.color=Color.red;
+                    plantMesh.material.color = Color.red;
                     GameManager.Instance.witheredPlants.Add(this.gameObject);
                 }
             }
-            _afterHarvestWitherTimer.StopTimer(); 
+            _afterHarvestWitherTimer.StopTimer();
             StopCoroutine(AfterHarvestCoroutine);
             Destroy(_afterHarvestWitherTimer);
         });
@@ -226,43 +239,70 @@ public class PlantGrowth : MonoBehaviour
             StopCoroutine(AfterWateredCoroutine);
             Destroy(_afterwateredGrowTimer);
         }
-       AfterHarvestCoroutine= StartCoroutine("AfterHarvestPlantWither");
+        AfterHarvestCoroutine = StartCoroutine("AfterHarvestPlantWither");
     }
-
 
     private void SpawnTomatoes()
     {
-        foreach (Transform spawnPoint in tomatoSpawnPoints)
+        var tileInfo = transform.parent.parent.GetComponentInParent<TileInfo>();
+        if (tileInfo.fieldGrid.fieldID == 2)
         {
-            var insta = Instantiate(UI_Manager.Instance.tomato, spawnPoint.position, Quaternion.identity);
-            insta.transform.SetParent(spawnPoint.transform);
-            UI_Manager.Instance.spawnTomatosForGrowth.Add(insta);
 
+            foreach (Transform spawnPoint in tomatoSpawnPoints)
+            {
+                var insta = Instantiate(UI_Manager.Instance.tomato, spawnPoint.position, Quaternion.identity);
+                tileInfo.fieldGrid.spawnTomatosForGrowth.Add(insta);
+                insta.transform.SetParent(spawnPoint.transform);
+
+            }
+            Debug.Log("Tomatoes spawned at designated points.");
+            var plantCount = tileInfo.fieldGrid.GrowthStartedPlants.Count;
+            tileInfo.fieldGrid.spawnedTomatoesCount = plantCount * 5;
+            if (tileInfo.fieldGrid.spawnTomatosForGrowth.Count == tileInfo.fieldGrid.spawnedTomatoesCount)
+            {
+                tileInfo.fieldGrid.isPlantGrowthCompleted = true;
+            }
         }
-        Debug.Log("Tomatoes spawned at designated points.");
-        var plantCount = UI_Manager.Instance.GrowthStartedPlants.Count;
-        GameManager.Instance.spawnedTomatoesCount = plantCount * 5;
-        if (UI_Manager.Instance.spawnTomatosForGrowth.Count == GameManager.Instance.spawnedTomatoesCount)
+        else
         {
-            UI_Manager.Instance.isPlantGrowthCompleted = true;
+
+            tileInfo.fieldGrid.isPlantGrowthCompleted = true;
         }
     }
+
+    public void Withering(FieldGrid fGrid)
+    {
+        foreach (var item in fGrid.spawnPlantsForInitialGrowth)
+        {
+            if (!fGrid.GrowthStartedPlants.Contains(item))
+            {
+                item.GetComponent<PlantGrowth>().plantMesh.material.color = Color.red;
+                fGrid.witheredPlants.Add(item);
+            }
+        }
+
+    }
+
+
+
     bool loopOnce = false;
     private void OnTriggerEnter(Collider other)
     {
 
         if (other.CompareTag("Player"))
         {
-            if (!UI_Manager.Instance.sickleWeapon.activeSelf && GameManager.Instance.isCutting)
+            var tileInfo = transform.parent.parent.GetComponentInParent<TileInfo>();
+            if (!GameManager.Instance.HasEnoughPoints(3, 0, tileInfo.fieldGrid)) return;
+            if (!UI_Manager.Instance.sickleWeapon.activeSelf && tileInfo.fieldGrid.isCutting)
             {
                 UI_Manager.Instance.sickleWeapon.SetActive(true);
             }
 
-            if (GameManager.Instance.isCutting && UI_Manager.Instance.sickleWeapon.activeSelf)
+            if (tileInfo.fieldGrid.isCutting && UI_Manager.Instance.sickleWeapon.activeSelf)
             {
                 this.gameObject.transform.DOMoveY(cuttingHight, 0.1f);
                 GameManager.Instance.isHarvestCompleted = true;
-                var fieldID = UI_Manager.Instance.FieldManager.CurrentFieldID;
+                var fieldID = tileInfo.fieldGrid.fieldID;
                 /*
                                 if (UI_Manager.Instance.GrownPlantsToCut.Contains(this.gameObject))
                                 {
@@ -277,49 +317,39 @@ public class PlantGrowth : MonoBehaviour
 
 
                     // Loop through the plants associated with tiles
-                    foreach (var entry in UI_Manager.Instance.spawnPlantsForGrowth)
+                    foreach (var entry in tileInfo.fieldGrid.spawnPlantsForGrowth)
                     {
-                        GameObject tile = entry.Key; 
-                        List<GameObject> plants = entry.Value; 
+                        GameObject tile = entry.Key;
+                        List<GameObject> plants = entry.Value;
 
-                        if (plants.Contains(this.gameObject)) 
+                        if (plants.Contains(this.gameObject))
                         {
-                            plants.Remove(this.gameObject); 
+                            plants.Remove(this.gameObject);
 
                             if (plants.Count == 0)
                             {
-                                UI_Manager.Instance.FieldGrid.AddCoveredTile(tile);
+                                tile.GetComponent<TileInfo>().fieldGrid.AddCoveredTile(tile);
                             }
 
-                            break;   
+                            break;
                         }
                     }
 
                     if (plantList.Contains(this.gameObject))
                     {
-                        plantList.Remove(this.gameObject); // Remove the GameObject from the list
+                        plantList.Remove(this.gameObject);
 
                         if (plantList.Count == 0)
                         {
-                           
+
                             UI_Manager.Instance.GrownPlantsToCut.Remove(fieldID);
                             GameManager.Instance.ReSetCropTimerBar(fieldID);
-                             
-                        }
-                        Destroy(this.gameObject); // Destroy the GameObject
-                        if (fieldID == 0)
-                        {
 
                         }
-                        else if (fieldID == 1)
-                        {
 
-                        }
-                        else
-                        {
-
-                        }
-                         UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.tomatoUIAnimation, UI_Manager.Instance.CharacterMovements.transform, UI_Manager.Instance.ShopManager.invetoryBagPos, 4);
+                        if (!tileInfo.GetComponent<TileInfo>().fieldGrid.witheredPlants.Contains(this.gameObject))
+                            UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(tileInfo.GetComponent<TileInfo>().fieldGrid.fieldPlantUIAnimation, UI_Manager.Instance.CharacterMovements.transform, UI_Manager.Instance.ShopManager.invetoryBagPos, 4);
+                        Destroy(this.gameObject);
 
                     }
                 }
@@ -329,6 +359,14 @@ public class PlantGrowth : MonoBehaviour
 
     }
 
+}
+
+public enum PlantGrowthState
+{
+    Seedling,
+    Growing,
+    Mature,
+    Withering
 }
 
 
