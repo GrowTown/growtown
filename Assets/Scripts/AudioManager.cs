@@ -1,4 +1,4 @@
-using CandyCoded.HapticFeedback;
+//using CandyCoded.HapticFeedback;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -26,7 +26,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _musicValueText;
     [SerializeField] private TextMeshProUGUI _sfxValueText;
 
-    public HapticFeedbackController hapticFeedbackController;
+   // public HapticFeedbackController hapticFeedbackController;
 
     private const string MusicVolumeKey = "MusicVolume";
     private const string SFXVolumeKey = "SFXVolume";

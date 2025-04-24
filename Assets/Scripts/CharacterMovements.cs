@@ -170,6 +170,16 @@ public class CharacterMovements : MonoBehaviour
             idleTime = 0f; // Reset after triggering (optional)
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+
+           
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        }
+
     }
 
     void OnIdle()
