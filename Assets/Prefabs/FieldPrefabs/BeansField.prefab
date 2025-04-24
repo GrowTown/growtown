@@ -65,9 +65,12 @@ MonoBehaviour:
   fieldHealth: 100
   fieldPlantPrefab: {fileID: 215779084800657990, guid: d7504c96a6a2b864b9fc4f5a75f71bca,
     type: 3}
-  fieldPlantUIAnimation: {fileID: 21300000, guid: 77ac7b90756a96842b4176f28777c08d,
+  fieldPlantUIAnimation: {fileID: 21300000, guid: 845e395be9a0bab42b9243b54d4c4b2f,
     type: 3}
   playerInZone: 0
+  hiddenPosition: {x: 0, y: 800}
+  visiblePosition: {x: 0, y: 0}
+  moveDuration: 0.5
 --- !u!65 &3203123571691392616
 BoxCollider:
   m_ObjectHideFlags: 0

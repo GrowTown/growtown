@@ -223,11 +223,8 @@ MonoBehaviour:
   fieldHealth: 100
   fieldPlantPrefab: {fileID: 3014015423220970484, guid: f6adbff48bb8eb84e8143ff27dba30a8,
     type: 3}
-  fieldCropTimerShowPanel: {fileID: 0}
-  fieldPlantUIAnimation: {fileID: 21300000, guid: 5ed0ef522f9b5cd4c8a05f80cb6b8f76,
+  fieldPlantUIAnimation: {fileID: 21300000, guid: b5df5af883bf5434e8f73ab96b2d11f1,
     type: 3}
-  fieldCropTimer: {fileID: 0}
-  fieldCropTimerIcon: {fileID: 0}
   playerInZone: 0
   hiddenPosition: {x: 30, y: 115}
   visiblePosition: {x: 30, y: 0}
