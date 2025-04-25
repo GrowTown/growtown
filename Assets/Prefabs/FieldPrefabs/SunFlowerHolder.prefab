@@ -48,9 +48,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   plantMesh: {fileID: 5028524416246869357}
   tomatoSpawnPoints: []
-  initialgrowthTime: 5
-  AfterWateredgrowthTime: 5
-  AfterHarvestWitherTime: 1
+  initialgrowthTime: 3
+  AfterWateredgrowthTime: 3
+  AfterHarvestWitherTime: 11
 --- !u!136 &6178250624220256395
 CapsuleCollider:
   m_ObjectHideFlags: 0
