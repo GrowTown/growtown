@@ -386,12 +386,18 @@ public class FieldGrid : MonoBehaviour
 
     internal void ShowCropRemainingTimer(float remainingMinutes)
     {
+        UI_Manager.Instance.fieldCropTimer.text = " ";
+        UI_Manager.Instance.fieldCropTimerIcon.sprite = null;
         TimeSpan remainingTime = TimeSpan.FromMinutes(remainingMinutes);
         UI_Manager.Instance.fieldCropTimer.text = string.Format("{0:D2}:{1:D2}", remainingTime.Minutes, remainingTime.Seconds);
         UI_Manager.Instance.fieldCropTimerIcon.sprite = this.fieldPlantUIAnimation;
-        UI_Manager.Instance.fieldCropTimerShowPanel.GetComponent<RectTransform>().DOAnchorPos(visiblePosition, moveDuration).SetEase(Ease.OutBack);
     }
 
+    internal void ShowCropRemainingTimerPanel()
+    {
+
+        UI_Manager.Instance.fieldCropTimerShowPanel.GetComponent<RectTransform>().DOAnchorPos(visiblePosition, moveDuration).SetEase(Ease.OutBack);
+    }
     internal void HideShowCropRemainingTimer()
     {
         UI_Manager.Instance.fieldCropTimerShowPanel.GetComponent<RectTransform>().DOAnchorPos(hiddenPosition, moveDuration).SetEase(Ease.OutBack);

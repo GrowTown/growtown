@@ -9,7 +9,7 @@ public class ShopItemHolder : MonoBehaviour
     internal ShopItem Item;
     internal string dummyName=string.Empty;
     //[SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private TextMeshProUGUI amountText;
+    [SerializeField] internal TextMeshProUGUI inventoryCountText;
     [SerializeField] internal Image iconImage;
     [SerializeField] internal TextMeshProUGUI priceText;
     [SerializeField] internal Button buyBT;

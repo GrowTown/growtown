@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7edd4b1b15babef4598b33fb0cc2c949, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amountText: {fileID: 1791717576228990503}
+  inventoryCountText: {fileID: 1791717576228990503}
   iconImage: {fileID: 6165971729284927852}
   priceText: {fileID: 1712707062627790604}
   buyBT: {fileID: 3688999324657434013}
@@ -615,7 +615,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &9162891698985216546
 RectTransform:
   m_ObjectHideFlags: 0

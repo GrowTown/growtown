@@ -55,6 +55,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
                         GameManager.Instance.CurrentFieldID = fieldID;
                         UI_Manager.Instance.FieldManager.EnterField(fieldGrid);
                         fieldGrid.ShowCropRemainingTimer(fieldGrid.FieldCropRemainingCount);
+                        fieldGrid.ShowCropRemainingTimerPanel();
                         UI_Manager.Instance.ToInstantiateLandHealthbar(fieldID, this.gameObject.GetComponentInParent<FieldGrid>());
                         UI_Manager.Instance.ShowLandHealthBar(fieldID);
                         UI_Manager.Instance.ToInstantiateCropTimerbar(fieldID);

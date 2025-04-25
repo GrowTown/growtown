@@ -28,7 +28,7 @@ public class InventoryManager : MonoBehaviour
 
         inventoryButtonActions = new Dictionary<string, Action>
         {
-            
+
             { "SuperXp", () =>GameManager.Instance.SuperXpToUse()},
             { "F", () => Debug.Log("Third Button Pressed") },
             { "F1", () => Debug.Log("Third Button Pressed") },
@@ -40,19 +40,19 @@ public class InventoryManager : MonoBehaviour
         Transform parent = GetParentTransform(item.Item.type);
         if (inventoryItems.ContainsKey(item.Item.itemName))
         {
-            if (item.Item.itemName != "TomatoSeed" || item.Item.itemName != "WheatSeed" || item.Item.itemName != "BeansSeed")
+            if (item.Item.itemName != "TomatoSeed" || item.Item.itemName != "WheatSeed" || item.Item.itemName != "BeansSeed" || item.Item.itemName != "WaterPoints" || item.Item.itemName != "EnergyPoints")
+            {
+
                 inventoryItems[item.Item.itemName].Itemcount += 1;
+                item.inventoryCountText.text = inventoryItems[item.Item.itemName].Itemcount.ToString();
+            }
         }
         else
         {
             if (item.Item.itemName == "TomatoSeed")
             {
 
-                GameObject newItem = Instantiate(inventoryItemPrefab, parent);
-                InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
-                inventoryItem.Initialize(item, 50);
-                inventoryItem.useBT.gameObject.SetActive(false);
-                inventoryItems.Add(item.Item.itemName, inventoryItem);
+                AddCountForInventoryItems(item, parent, 50); ;
             }
             else if (item.Item.itemName == "SuperXp")
             {
@@ -64,63 +64,64 @@ public class InventoryManager : MonoBehaviour
                 {
                     inventoryItem.useBT.onClick.AddListener(() => inventoryButtonActions[item.Item.itemName]());
                 }
+                item.inventoryCountText.text = inventoryItems[item.Item.itemName].Itemcount.ToString();
+            }
+            else if (item.Item.itemName == "WaterPoints")
+            {
+                AddCountForInventoryItems(item, parent, 500);
+            }
+            else if (item.Item.itemName == "EnergyPoints")
+            {
+                AddCountForInventoryItems(item, parent, 500);
             }
             else
             {
-                GameObject newItem = Instantiate(inventoryItemPrefab, parent);
-                InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
-                inventoryItem.Initialize(item, 1);
-                inventoryItem.useBT.gameObject.SetActive(false);
-                inventoryItems.Add(item.Item.itemName, inventoryItem);
+                if (item.Item.itemName != "TomatoSeed" || item.Item.itemName != "WheatSeed" || item.Item.itemName != "BeansSeed" || item.Item.itemName != "WaterPoints" || item.Item.itemName != "EnergyPoints")
+                {
+
+                    AddCountForInventoryItems(item, parent, 1);
+                }
             }
         }
     }
-    public void AddToInventory(ShopItemHolder item,int count)
+
+
+    void AddCountForInventoryItems(ShopItemHolder item, Transform parent, int count)
+    {
+        GameObject newItem = Instantiate(inventoryItemPrefab, parent);
+        InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
+        inventoryItem.Initialize(item, count);
+        inventoryItem.useBT.gameObject.SetActive(false);
+        inventoryItems.Add(item.Item.itemName, inventoryItem);
+        item.inventoryCountText.text = inventoryItems[item.Item.itemName].Itemcount.ToString();
+    }
+
+    internal void UpdatingTheInventoryCountToMarket(string item, int count)
+    {
+        var shopItemHolder = UI_Manager.Instance.ShopManager.FindShopItemHolder(item);
+        if (shopItemHolder != null)
+        {
+            AddToInventory(shopItemHolder, count);
+        }
+    }
+    public void AddToInventory(ShopItemHolder item, int count)
 
     {
         Transform parent = GetParentTransform(item.Item.type);
         if (inventoryItems.ContainsKey(item.Item.itemName))
         {
-            if (item.Item.itemName != "TomatoSeed" || item.Item.itemName != "WheatSeed" || item.Item.itemName != "BeansSeed")
-            {
 
-                inventoryItems[item.Item.itemName].Itemcount += 1;
-            }
-            else
-            {
-                inventoryItems[item.Item.itemName].Itemcount += count;
-            }
+            inventoryItems[item.Item.itemName].Itemcount = count;
+            item.inventoryCountText.text = inventoryItems[item.Item.itemName].Itemcount.ToString();
         }
         else
         {
-            if (item.Item.itemName == "TomatoSeed")
-            {
-
-                GameObject newItem = Instantiate(inventoryItemPrefab, parent);
-                InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
-                inventoryItem.Initialize(item, 50);
-                inventoryItem.useBT.gameObject.SetActive(false);
-                inventoryItems.Add(item.Item.itemName, inventoryItem);
-            }
-            else if (item.Item.itemName == "SuperXp")
-            {
-                GameObject newItem = Instantiate(inventoryItemPrefab, parent);
-                InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
-                inventoryItem.Initialize(item, 1);
-                inventoryItems.Add(item.Item.itemName, inventoryItem);
-                if (inventoryButtonActions.ContainsKey(item.Item.itemName))
-                {
-                    inventoryItem.useBT.onClick.AddListener(() => inventoryButtonActions[item.Item.itemName]());
-                }
-            }
-            else
-            {
-                GameObject newItem = Instantiate(inventoryItemPrefab, parent);
-                InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
-                inventoryItem.Initialize(item, count);
-                inventoryItem.useBT.gameObject.SetActive(false);
-                inventoryItems.Add(item.Item.itemName, inventoryItem);
-            }
+            GameObject newItem = Instantiate(inventoryItemPrefab, parent);
+            InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
+            inventoryItem.Initialize(item, count);
+            inventoryItem.useBT.gameObject.SetActive(false);
+            inventoryItems.Add(item.Item.itemName, inventoryItem);
+            item.inventoryCountText.text = inventoryItems[item.Item.itemName].Itemcount.ToString();
         }
     }
 

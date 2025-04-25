@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 
 public class GameManager : MonoBehaviour
@@ -69,11 +70,8 @@ public class GameManager : MonoBehaviour
         set
         {
             _currentStrawberriesSeedCount = value;
-            if (UI_Manager.Instance.InventoryManager.inventoryItems.ContainsKey("BeansSeed"))
-            {
-                var item = UI_Manager.Instance.InventoryManager.inventoryItems["BeansSeed"];
-                item.Itemcount = _currentTomatoSeedCount;
-            }
+            UI_Manager.Instance.InventoryManager.UpdatingTheInventoryCountToMarket("BeansSeed", _currentStrawberriesSeedCount);
+           
         }
     }
     public int CurrentWheatSeedCount
@@ -82,11 +80,8 @@ public class GameManager : MonoBehaviour
         set
         {
             _currentWheatSeedCount = value;
-            if (UI_Manager.Instance.InventoryManager.inventoryItems.ContainsKey("WheatSeed"))
-            {
-                var item = UI_Manager.Instance.InventoryManager.inventoryItems["WheatSeed"];
-                item.Itemcount = _currentTomatoSeedCount;
-            }
+            UI_Manager.Instance.InventoryManager.UpdatingTheInventoryCountToMarket("WheatSeed", _currentWheatSeedCount);
+          
         }
     }
     public int CurrentTomatoSeedCount
@@ -95,11 +90,7 @@ public class GameManager : MonoBehaviour
         set
         {
             _currentTomatoSeedCount = value;
-            if (UI_Manager.Instance.InventoryManager.inventoryItems.ContainsKey("TomatoSeed"))
-            {
-                var item = UI_Manager.Instance.InventoryManager.inventoryItems["TomatoSeed"];
-                item.Itemcount = _currentTomatoSeedCount;
-            }
+            UI_Manager.Instance.InventoryManager.UpdatingTheInventoryCountToMarket("TomatoSeed", _currentTomatoSeedCount);
 
         }
     }
@@ -111,6 +102,8 @@ public class GameManager : MonoBehaviour
             _currentEnergyCount = Mathf.Clamp(value, 0, 500);
             UI_Manager.Instance.energyText.text = value.ToString();
             UI_Manager.Instance.energySlider.value = _currentEnergyCount / (float)500;
+            UI_Manager.Instance.InventoryManager.UpdatingTheInventoryCountToMarket("EnergyPoints", _currentEnergyCount);
+            
         }
     }
     public int CurrentWaterCount
@@ -121,6 +114,7 @@ public class GameManager : MonoBehaviour
             _currentWaterCount = Mathf.Clamp(value, 0, 500);
             UI_Manager.Instance.waterText.text = value.ToString();
             UI_Manager.Instance.waterSlider.value = _currentWaterCount / (float)500;
+            UI_Manager.Instance.InventoryManager.UpdatingTheInventoryCountToMarket("WaterPoints", _currentWaterCount);
         }
     }
     public int CurrentPasticideCount
@@ -418,7 +412,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    List<string> startPackName = new List<string>() { "CleaningTool", "WateringTool", "CuttingTool", "TomatoSeed" };
+    List<string> startPackName = new List<string>() { "CleaningTool", "WateringTool", "CuttingTool", "EnergyPoints", "WaterPoints" };
     public void StartPackToBuy()
     {
         var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();
