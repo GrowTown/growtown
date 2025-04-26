@@ -135,8 +135,7 @@ public class UI_Manager : MonoBehaviour
 
 
     [Header("References")]
-    [SerializeField]
-    private TriggerZoneCallBacks _triggerCallBacks;
+
     [SerializeField]
     private ShopManager _shopManager;
     [SerializeField]
@@ -169,6 +168,8 @@ public class UI_Manager : MonoBehaviour
     private Unit _unit;
     [SerializeField]
     private MapHandler _mapHandler;
+    [SerializeField]
+    private TriggerZoneForMarket _triggerZoneForMarket;
 
     internal int oldcurrentStep = -1;
     public int currentIndex;
@@ -213,6 +214,12 @@ public class UI_Manager : MonoBehaviour
     #endregion
 
     #region Properties
+
+    public TriggerZoneForMarket TriggerZoneForMarket
+    {
+        get => _triggerZoneForMarket;
+        set => _triggerZoneForMarket = value;
+    }
 
     public MapHandler MapHandler
     {
@@ -293,11 +300,7 @@ public class UI_Manager : MonoBehaviour
         get => _shopManager;
         set => _shopManager = value;
     }
-    public TriggerZoneCallBacks TriggerZoneCallBacks
-    {
-        get => _triggerCallBacks;
-        set => _triggerCallBacks = value;
-    }
+    
     public CharacterMovements CharacterMovements
     {
         get => _characterMovements;
@@ -432,7 +435,7 @@ public class UI_Manager : MonoBehaviour
     public bool seedBought;
     void CallBackEvents()
     {
-        TriggerZoneCallBacks.onPlayerEnter += (a) =>
+        TriggerZoneForMarket.onPlayerEnter += (a) =>
         {
             /* if (!GameManager.Instance.isHarvestCompleted)
              {
@@ -444,7 +447,7 @@ public class UI_Manager : MonoBehaviour
              }*/
             marketPopUp.SetActive(true);
         };
-        TriggerZoneCallBacks.onPlayerExit += (e) =>
+        TriggerZoneForMarket.onPlayerExit += (e) =>
         {
             marketPopUp.SetActive(false);
             sellPopupPanel.SetActive(false);
@@ -534,7 +537,7 @@ public class UI_Manager : MonoBehaviour
             currentSelectionFunctionality = selectionFunctionality;
             currentFGrid = fGrid;
             selectionFunctionality.onClick = null;
-            if (FieldManager.OldfieldSteps.ContainsKey(fGrid.fieldID) && !GameManager.Instance.isOneWorkingActionCompleted)
+            if (FieldManager.OldfieldSteps.ContainsKey(fGrid.fieldID) && !fGrid.isOneWorkingActionCompleted)
             {
                 GameManager.Instance.StartPlayerAction(currentAction, fGrid);
             }

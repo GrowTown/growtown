@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static UnityEditor.Progress;
+
 
 
 public class GameManager : MonoBehaviour
@@ -265,7 +265,7 @@ public class GameManager : MonoBehaviour
 
     internal void StartPlayerAction(PlayerAction action,FieldGrid fGrid)
     {
-        UI_Manager.Instance.TriggerZoneCallBacks.playerInZone = true;
+        fGrid.GetComponentInChildren<TriggerZoneCallBacks>().playerInZone = true;
         fGrid.StartCoverageTracking(action);
     }
 
@@ -408,11 +408,11 @@ public class GameManager : MonoBehaviour
             UI_Manager.Instance.ListOfHarvestCount1[fGrid.fieldName].Add(1);
         }
 
-        UI_Manager.Instance.ShopManager.InstantiateSellPrefab(UI_Manager.Instance.ListOfHarvestCount1[fGrid.fieldName].Count, fGrid.fieldName);
+        UI_Manager.Instance.ShopManager.InstantiateSellPrefab(UI_Manager.Instance.ListOfHarvestCount1[fGrid.fieldName].Count,fGrid);
     }
 
 
-    List<string> startPackName = new List<string>() { "CleaningTool", "WateringTool", "CuttingTool", "EnergyPoints", "WaterPoints" };
+    List<string> startPackName = new List<string>() { "CleaningTool", "WateringTool", "CuttingTool", };
     public void StartPackToBuy()
     {
         var Cam = UI_Manager.Instance.CharacterMovements.gameObject.GetComponent<CamerasSwitch>();

@@ -29,6 +29,7 @@ public class FieldManager : MonoBehaviour
     public void EnterField(FieldGrid fGrid)
     {
        UI_Manager.Instance.oldcurrentStep = fieldSteps.ContainsKey(fGrid.fieldID) ? fieldSteps[fGrid.fieldID] : -1;
+        var trigger = fGrid.GetComponentInChildren<TriggerZoneCallBacks>();
         if (!fieldSteps.ContainsKey(fGrid.fieldID) || fGrid.IsCoverageComplete())
         {
             CurrentFieldID = fGrid.fieldID;
@@ -37,17 +38,17 @@ public class FieldManager : MonoBehaviour
                 fieldSteps[fGrid.fieldID] = 0;
             }
             CurrentStepID = fieldSteps[fGrid.fieldID];
-            if (CurrentStepID < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length)
+            if (CurrentStepID < trigger.actionSequence.Length)
             {
                 Debug.Log("index :::  " + CurrentStepID);
 
-                  GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[CurrentStepID], fGrid);
+                  GameManager.Instance.ShowFieldPopup(trigger.actionSequence[CurrentStepID], fGrid);
             }
         }
         else
         {
         
-            GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[UI_Manager.Instance.oldcurrentStep], fGrid);
+            GameManager.Instance.ShowFieldPopup(trigger.actionSequence[UI_Manager.Instance.oldcurrentStep], fGrid);
         }
     }
 

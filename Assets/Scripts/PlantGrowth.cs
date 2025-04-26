@@ -85,6 +85,7 @@ public class PlantGrowth : MonoBehaviour
                 float remainingMinutes = remainingSeconds / 60f;
 
                 fGrid.FieldCropRemainingCount = remainingMinutes;
+
                 if (fGrid.fieldID == 2)
                 {
                     GameManager.Instance.SetCropTimerBar(fGrid.fieldID, this.gameObject);
@@ -133,6 +134,7 @@ public class PlantGrowth : MonoBehaviour
             CurrentGrowthAfterWater = growthProgress;
             float remainingMinutes = (float)_afterwateredGrowTimer.secondsLeft / 60f;
             fGrid.FieldCropRemainingCount = remainingMinutes;
+            
 
             if (fGrid.fieldID == 2)
             {
@@ -261,13 +263,18 @@ public class PlantGrowth : MonoBehaviour
             if (tileInfo.fieldGrid.spawnTomatosForGrowth.Count == tileInfo.fieldGrid.spawnedTomatoesCount)
             {
                 tileInfo.fieldGrid.isPlantGrowthCompleted = true;
+                tileInfo.fieldGrid.FieldCropRemainingCount = 0;
+
             }
         }
         else
         {
 
             tileInfo.fieldGrid.isPlantGrowthCompleted = true;
+            tileInfo.fieldGrid.FieldCropRemainingCount = 0;
+
         }
+        
     }
 
     public void Withering(FieldGrid fGrid)

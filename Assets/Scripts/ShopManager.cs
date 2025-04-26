@@ -292,7 +292,7 @@ public class ShopManager : MonoBehaviour
                     var nameR = spItemListForrdl.Find(x => x.Item.itemName == reward.Name);
 
                     rewardItem.Initialize(nameR, reward.Value);
-                    if(nameR.Item.itemName != "BeansLand"|| nameR.Item.itemName != "WheatLand")
+                    if(nameR.Item.itemName != "BeansLand" && nameR.Item.itemName != "WheatLand")
                     UI_Manager.Instance.InventoryManager.AddToInventory(nameR,reward.Value);
 
                 }
@@ -514,14 +514,14 @@ public class ShopManager : MonoBehaviour
     }
 
     int hCountToSell;
-    public void InstantiateSellPrefab(int count, string name)
+    public void InstantiateSellPrefab(int count, FieldGrid fGrid)
     {
         Transform container = UI_Manager.Instance.sellContainerTransForm;
 
         foreach (Transform child in container)
         {
             var sellPref = child.GetComponent<SellItemProperties>();
-            if (sellPref.itemName == name)
+            if (sellPref.itemName == fGrid.fieldName)
             {
                 sellPref.countTx.text = count.ToString();
                 return;
@@ -529,9 +529,9 @@ public class ShopManager : MonoBehaviour
         }
 
         var newSellItem = Instantiate(sellItemPrefab, container).GetComponent<SellItemProperties>();
-        newSellItem.itemName = name;
+        newSellItem.itemName = fGrid.fieldName;
         newSellItem.countTx.text = count.ToString();
-        newSellItem.seedIcon.sprite = tomatoICON;
+        newSellItem.seedIcon.sprite = fGrid.fieldPlantUIAnimation;
         newSellItem.increaseBT.onClick.AddListener(() =>
         {
             hCountToSell += 1;

@@ -15,7 +15,7 @@ public class WaterCollision : MonoBehaviour
         {
             if (!tile._hasColorChanged)
             {
-                if (GameManager.Instance.isPlantStartGrowing)
+                if (tile.fieldGrid.isPlantStartGrowing)
                 {
                     tile.GetComponentInParent<FieldGrid>().OnWaterTile(tile.gameObject);
                 }

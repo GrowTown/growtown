@@ -22,6 +22,9 @@ public class FieldGrid : MonoBehaviour
     internal bool isInitialPlantGrowthCompleted = false;
     internal bool isPlantGrowthCompleted = false;
     internal bool isAllPlantsWithered = false;
+    internal bool checkPlayerInZone = false;
+    internal bool updateValue = false;
+    internal bool isOneWorkingActionCompleted = false;
     [SerializeField] internal int fieldID;
     [SerializeField] internal string fieldName;
     [SerializeField] internal int fieldHealth;
@@ -67,7 +70,7 @@ public class FieldGrid : MonoBehaviour
         set
         {
             _fieldCropRemainingCount = value;
-            ShowCropRemainingTimer(_fieldCropRemainingCount);
+            ShowCropRemainingTimer();
 
         }
     }
@@ -166,7 +169,7 @@ public class FieldGrid : MonoBehaviour
             checkedOnce = true;
             if (!GameManager.Instance.HasEnoughPoints(5, 10, this)) return;
         }
-        if (UI_Manager.Instance.FieldManager.CurrentStepID == 1)
+        if (UI_Manager.Instance.FieldManager.fieldSteps[fieldID] == 1)
         {
             if (!GameManager.Instance.HasNotEnoughSeed(1, this) && isThroughingseeds) return;
         }
@@ -384,19 +387,20 @@ public class FieldGrid : MonoBehaviour
         }
     }
 
-    internal void ShowCropRemainingTimer(float remainingMinutes)
+    public void ShowCropRemainingTimer()
     {
-        UI_Manager.Instance.fieldCropTimer.text = " ";
-        UI_Manager.Instance.fieldCropTimerIcon.sprite = null;
-        TimeSpan remainingTime = TimeSpan.FromMinutes(remainingMinutes);
-        UI_Manager.Instance.fieldCropTimer.text = string.Format("{0:D2}:{1:D2}", remainingTime.Minutes, remainingTime.Seconds);
-        UI_Manager.Instance.fieldCropTimerIcon.sprite = this.fieldPlantUIAnimation;
+        if (updateValue)
+        {
+
+            TimeSpan time = TimeSpan.FromMinutes(_fieldCropRemainingCount);
+            UI_Manager.Instance.fieldCropTimer.text = $"{time.Minutes:D2}:{time.Seconds:D2}";
+        }
     }
 
-    internal void ShowCropRemainingTimerPanel()
+    public void ShowCropRemainingTimerPanel()
     {
 
-        UI_Manager.Instance.fieldCropTimerShowPanel.GetComponent<RectTransform>().DOAnchorPos(visiblePosition, moveDuration).SetEase(Ease.OutBack);
+            UI_Manager.Instance.fieldCropTimerShowPanel.GetComponent<RectTransform>().DOAnchorPos(visiblePosition, moveDuration).SetEase(Ease.OutBack);
     }
     internal void HideShowCropRemainingTimer()
     {
@@ -406,20 +410,21 @@ public class FieldGrid : MonoBehaviour
     public void CompleteAction()
     {
         GameManager.Instance.HideFieldPopup();
+        var trigger=this.gameObject.GetComponentInChildren<TriggerZoneCallBacks>();
         int currentStep = UI_Manager.Instance.FieldManager.fieldSteps[fieldID];
 
-        if (currentStep < UI_Manager.Instance.TriggerZoneCallBacks.actionSequence.Length - 1)
+        if (currentStep < trigger.actionSequence.Length - 1)
         {
-            GameManager.Instance.isOneWorkingActionCompleted = true;
+            isOneWorkingActionCompleted = true;
 
             if (currentStep == 1)
             {
-                GameManager.Instance.isPlantStartGrowing = true;
+                isPlantStartGrowing = true;
             }
 
             currentStep++;
             UI_Manager.Instance.FieldManager.SaveFieldStep(fieldID, currentStep);
-            UI_Manager.Instance.FieldManager.CurrentStepID = currentStep;
+            //UI_Manager.Instance.FieldManager.CurrentStepID = currentStep;
             UI_Manager.Instance.oldcurrentStep = currentStep;
             if (currentStep == 2)
             {
@@ -429,14 +434,14 @@ public class FieldGrid : MonoBehaviour
             if (currentStep == 3) // Additional logic for step 3
             {
 
-                if (GameManager.Instance.checkPlayerInZone)
+                if (this.checkPlayerInZone)
                 {
-                    GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[currentStep], this);
+                    GameManager.Instance.ShowFieldPopup(trigger.actionSequence[currentStep], this);
                 }
             }
             else
             {
-                GameManager.Instance.ShowFieldPopup(UI_Manager.Instance.TriggerZoneCallBacks.actionSequence[currentStep], this);
+                GameManager.Instance.ShowFieldPopup(trigger.actionSequence[currentStep], this);
 
             }
         }

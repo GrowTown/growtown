@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,20 +12,11 @@ public class TriggerZoneCallBacks : MonoBehaviour
     int currentStep = 0;
     public bool playerInZone = false;
 
-    public Action<TriggerZoneCallBacks> onPlayerEnter;
-    public Action<TriggerZoneCallBacks> onPlayerExit;
-
-    private FieldGrid fieldGrid;
-    private void Start()
-    {
-        fieldGrid = FindObjectOfType<FieldGrid>();
-    }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            var fieldGrid = this.gameObject.GetComponentInParent<FieldGrid>();
             GameManager.Instance.checkPlayerInZone = true;
             playerInZone = true;
             UI_Manager.Instance.isPlayerInField = true;
@@ -35,26 +27,16 @@ public class TriggerZoneCallBacks : MonoBehaviour
                 case ZoneType.Field:
                     if (!UI_Manager.Instance.starterPackInfoPopUpPanel.activeSelf)
                     {
+                      var fieldGrid = this.gameObject.GetComponentInParent<FieldGrid>();
+                          fieldGrid.checkPlayerInZone = true;
                         UI_Manager.Instance.InstantiateFieldPopUp();
-                        /*if (fieldID == 2)
-                        {
-                            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(1);
-                            UI_Manager.Instance.ActiveAllInventory(-232);
-                            AudioManager.Instance.hapticFeedbackController.LightFeedback();
-                        }
-                        else if (fieldID == 1)
-                        {
-                            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(3);
-                        }
-                        else
-                        {
-                            other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(4);
-                           
-                        }*/
                         UI_Manager.Instance.ActiveAllInventory(-232);
                         GameManager.Instance.CurrentFieldID = fieldID;
                         UI_Manager.Instance.FieldManager.EnterField(fieldGrid);
-                        fieldGrid.ShowCropRemainingTimer(fieldGrid.FieldCropRemainingCount);
+                        UI_Manager.Instance.fieldCropTimer.text = "00:00";
+                        UI_Manager.Instance.fieldCropTimerIcon.sprite = fieldGrid.fieldPlantUIAnimation;
+                        fieldGrid.updateValue = true;
+                        fieldGrid.ShowCropRemainingTimer();
                         fieldGrid.ShowCropRemainingTimerPanel();
                         UI_Manager.Instance.ToInstantiateLandHealthbar(fieldID, this.gameObject.GetComponentInParent<FieldGrid>());
                         UI_Manager.Instance.ShowLandHealthBar(fieldID);
@@ -62,14 +44,6 @@ public class TriggerZoneCallBacks : MonoBehaviour
                         UI_Manager.Instance.ShowCropTimer(fieldID);
                     }
 
-                    break;
-                case ZoneType.Market:
-                    onPlayerEnter?.Invoke(this);
-                  /* if (!GameManager.Instance.isShowingnewLand)
-                    {
-                        other.gameObject.GetComponent<CamerasSwitch>().SwitchToCam(2);
-                        AudioManager.Instance.hapticFeedbackController.LightFeedback();
-                    }*/
                     break;
             }
         }
@@ -81,6 +55,7 @@ public class TriggerZoneCallBacks : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             var fieldGrid = this.gameObject.GetComponentInParent<FieldGrid>();
+            fieldGrid.checkPlayerInZone = false;
             GameManager.Instance.checkPlayerInZone = false;
             playerInZone = false;
             UI_Manager.Instance.isPlayerInField = false;
@@ -94,26 +69,12 @@ public class TriggerZoneCallBacks : MonoBehaviour
                     UI_Manager.Instance.HideLandHealthBar();
                     UI_Manager.Instance.HideCropTimerBar();
                     GameManager.Instance.StopCurrentAction(fieldGrid);
-
+                    fieldGrid.updateValue = false;
                     fieldGrid.HideShowCropRemainingTimer();
                     UI_Manager.Instance.LandHealthBarImg.SetActive(false);
                  
                     break;
 
-                case ZoneType.Market:
-                    
-                  if (UI_Manager.Instance.ShopManager.isCuttingToolBought &&
-                        UI_Manager.Instance.ShopManager.isWateringToolBought &&
-                        UI_Manager.Instance.ShopManager.isCleningToolBought)
-                    {
-                        UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(false);
-                    }
-                    else
-                    {
-                        UI_Manager.Instance.starterPackInfoPopUpPanel.SetActive(true);
-                    }
-                    onPlayerExit?.Invoke(this);
-                    break;
             }
         }
     }

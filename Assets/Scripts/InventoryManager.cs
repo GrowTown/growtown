@@ -40,7 +40,7 @@ public class InventoryManager : MonoBehaviour
         Transform parent = GetParentTransform(item.Item.type);
         if (inventoryItems.ContainsKey(item.Item.itemName))
         {
-            if (item.Item.itemName != "TomatoSeed" || item.Item.itemName != "WheatSeed" || item.Item.itemName != "BeansSeed" || item.Item.itemName != "WaterPoints" || item.Item.itemName != "EnergyPoints")
+            if (item.Item.itemName != "TomatoSeed" && item.Item.itemName != "WheatSeed" && item.Item.itemName != "BeansSeed" && item.Item.itemName != "WaterPoints" && item.Item.itemName != "EnergyPoints")
             {
 
                 inventoryItems[item.Item.itemName].Itemcount += 1;
@@ -76,7 +76,7 @@ public class InventoryManager : MonoBehaviour
             }
             else
             {
-                if (item.Item.itemName != "TomatoSeed" || item.Item.itemName != "WheatSeed" || item.Item.itemName != "BeansSeed" || item.Item.itemName != "WaterPoints" || item.Item.itemName != "EnergyPoints")
+                if (item.Item.itemName != "TomatoSeed" && item.Item.itemName != "WheatSeed" && item.Item.itemName != "BeansSeed" && item.Item.itemName != "WaterPoints" && item.Item.itemName != "EnergyPoints")
                 {
 
                     AddCountForInventoryItems(item, parent, 1);
