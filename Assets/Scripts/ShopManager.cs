@@ -300,6 +300,7 @@ public class ShopManager : MonoBehaviour
             UI_Manager.Instance.levelUpPopupTxt.text = LVinfo.ToString();
             UI_Manager.Instance.levelUpPopUpPanel.SetActive(true);
             isLevelPopItemInstantiated = true;
+            AudioManager.Instance.PlayMusic(AudioManager.Instance.levelUpMusic, AudioManager.Instance.sfxVolume);
 
         }
     }
@@ -552,7 +553,7 @@ public class ShopManager : MonoBehaviour
                 newSellItem.countTx.text = updatedCvalue.ToString();
                 SellHarvest(newSellItem.itemName, value, updatedCvalue);
                 UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(UI_Manager.Instance.scoreUIAnimation, newSellItem.sellBT.GetComponent<RectTransform>(), UI_Manager.Instance.score.GetComponent<RectTransform>(), 10);
-                
+                AudioManager.Instance.sfxSource.PlayOneShot(AudioManager.Instance.sellMusic, AudioManager.Instance.sfxVolume);
             }
             else
             {

@@ -30,10 +30,12 @@ public class AnimationEventTrigger : MonoBehaviour
     public void TriggerForCleaningEffectStart()
     {
         UI_Manager.Instance.cleanigEffect.SetActive(true);
+        AudioManager.Instance.PlayMusic(AudioManager.Instance.cleaningMusic, AudioManager.Instance.sfxVolume);
     }
     public void TriggerForCleanigEffectStop()
     {
         UI_Manager.Instance.cleanigEffect.SetActive(false);
+        
     }
     public void TriggerAnimationEvent()
     {

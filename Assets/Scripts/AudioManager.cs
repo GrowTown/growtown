@@ -15,6 +15,12 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Clip")]
     public AudioClip bgMusic;
     public AudioClip sfxMusic;
+    public AudioClip cleaningMusic;
+    public AudioClip wateringMusic;
+    public AudioClip levelUpMusic;
+    public AudioClip cuttingMusic;
+    public AudioClip buyMusic;
+    public AudioClip sellMusic;
 
     [Header("Volume Settings (0–1 Internally)")]
     [Range(0, 1)] public float musicVolume = 1f;
@@ -54,16 +60,16 @@ public class AudioManager : MonoBehaviour
 
     public void OnMusicVolumeSliderChanged(float volume)
     {
-        float normalizedVolume = volume / 100f; // Convert from 0–100 to 0–1
+        float normalizedVolume = volume / 100f; 
         SetMusicVolume(normalizedVolume);
-        _musicValueText.text = ((int)volume).ToString(); // Update UI text
+        _musicValueText.text = ((int)volume).ToString(); 
     }
 
     public void OnSFXVolumeSliderChanged(float volume)
     {
-        float normalizedVolume = volume / 100f; // Convert from 0–100 to 0–1
+        float normalizedVolume = volume / 100f; 
         SetSFXVolume(normalizedVolume);
-        _sfxValueText.text = ((int)volume).ToString(); // Update UI text
+        _sfxValueText.text = ((int)volume).ToString(); 
     }
 
     public void PlayBackgroundMusic()
@@ -86,6 +92,23 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void PlayMusic(AudioClip clip, float volume)
+    {
+        if (sfxSource != null && clip != null)
+        {
+            sfxSource.clip = clip;
+            sfxSource.volume = volume;
+            sfxSource.Play();
+        }
+    }
+
+    public void StopMusic()
+    {
+        if (sfxSource != null && sfxSource.isPlaying)
+        {
+            sfxSource.Stop();
+        }
+    }
     public void StopBackgroundMusic()
     {
         if (backgroundMusicSource != null)

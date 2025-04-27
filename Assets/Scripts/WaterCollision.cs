@@ -9,8 +9,9 @@ public class WaterCollision : MonoBehaviour
 
     private void OnParticleCollision(GameObject other)
     {
-
+        
         TileInfo tile = other.GetComponent<TileInfo>();
+        
         if (tile != null)
         {
             if (!tile._hasColorChanged)
@@ -27,6 +28,7 @@ public class WaterCollision : MonoBehaviour
                     tile.GetComponentInParent<FieldGrid>().StopCoverageTracking();
                     Debug.Log("All Collected");
                     tile.GetComponentInParent<FieldGrid>().CompleteAction();
+                    AudioManager.Instance.StopMusic();
                 }
                 tile._hasColorChanged = true;
             }

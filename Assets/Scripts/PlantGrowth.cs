@@ -356,7 +356,9 @@ public class PlantGrowth : MonoBehaviour
 
                         if (!tileInfo.GetComponent<TileInfo>().fieldGrid.witheredPlants.Contains(this.gameObject))
                             UI_Manager.Instance.UIAnimationM.PlayMoveToUIAnimation(tileInfo.GetComponent<TileInfo>().fieldGrid.fieldPlantUIAnimation, UI_Manager.Instance.CharacterMovements.transform, UI_Manager.Instance.ShopManager.invetoryBagPos, 4);
+                        AudioManager.Instance.PlayMusic(AudioManager.Instance.cuttingMusic, AudioManager.Instance.sfxVolume);
                         Destroy(this.gameObject);
+                        
 
                     }
                 }

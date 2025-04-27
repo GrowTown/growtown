@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class FieldGrid : MonoBehaviour
@@ -278,11 +279,13 @@ public class FieldGrid : MonoBehaviour
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(4, 1);
                 break;
             case PlayerAction.Water:
+
                 GameManager.Instance.TimerStartAfterPlants = true;
                 isThroughingseeds = false;
                 checkedOnce = false;
                 if (!GameManager.Instance.HasEnoughPoints(2, 10, this)) return;
                 UI_Manager.Instance.wateringTool.SetActive(true);
+                AudioManager.Instance.PlayMusic(AudioManager.Instance.wateringMusic, AudioManager.Instance.sfxVolume);
                 UI_Manager.Instance.CharacterMovements.animator.SetLayerWeight(5, 1);
 
                 break;
@@ -471,6 +474,8 @@ public class FieldGrid : MonoBehaviour
 
         UI_Manager.Instance.oldcurrentStep = -1;
         UI_Manager.Instance.FieldManager.CurrentStepID = -1;
+
+        UI_Manager.Instance.GrownPlantForHarvest.Remove(fieldName);
         isCutting = false;
         isPlantGrowthCompleted = false;
         isInitialPlantGrowthCompleted = false;

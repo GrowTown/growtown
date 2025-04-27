@@ -56,9 +56,11 @@ public class PlayerInteraction : MonoBehaviour
                 if (UI_Manager.Instance.FieldManager.fieldSteps[hit.collider.gameObject.GetComponent<TileInfo>().fieldGrid.fieldID] == 3)
                 {
                     ChangetheValues(hitTileGameObject.GetComponent<TileInfo>().fieldGrid);
+                    AudioManager.Instance.StopMusic();
                 }
                 else
-                { 
+                {
+                    AudioManager.Instance.StopMusic();
                     ChangetheValues(hitTileGameObject.GetComponent<TileInfo>().fieldGrid);
                 }
 
