@@ -26,7 +26,7 @@ public class UIAnimationM : MonoBehaviour
         movingItemRect.DOMove(targetUIPosition.position, 0.8f).SetEase(Ease.InOutQuad).OnComplete(() => Destroy(movingItem));
     }
 
-    public void PlayMoveToUIAnimation(Sprite itemSprite, RectTransform startTransform, RectTransform targetUIPosition, int count)
+    /*public void PlayMoveToUIAnimation(Sprite itemSprite, RectTransform startTransform, RectTransform targetUIPosition, int count)
     {
         Canvas mainCanvasComponent = mainCanvas.GetComponent<Canvas>();
         RectTransform mainCanvasRect = mainCanvas.GetComponent<RectTransform>();
@@ -45,9 +45,9 @@ public class UIAnimationM : MonoBehaviour
             // Calculate a curved path (Bezier-like motion)
             Vector3 midPoint = (startTransform.position + targetUIPosition.position) / 2;
             midPoint.y +=80f;
-            /*midPoint.y += Random.Range(50f, 100f); // Add height for arc effect
+            *//*midPoint.y += Random.Range(50f, 100f); // Add height for arc effect
             midPoint.x += Random.Range(-30f, 30f); // Add variation in x-axis
-*/
+*//*
             Vector3[] path = new Vector3[] { startTransform.anchoredPosition, midPoint, targetUIPosition.anchoredPosition };
 
             // Animate using a curved path
@@ -77,7 +77,7 @@ public class UIAnimationM : MonoBehaviour
             });
         }
     }
-
+*/
     GameObject particleEffect;
 
     /*  public void PlayMoveToUIAnimation(Sprite itemSprite, Transform startTransform, RectTransform targetUIPosition, int count)
@@ -214,6 +214,60 @@ public class UIAnimationM : MonoBehaviour
                   });
           }
       }*/
+    public void PlayMoveToUIAnimation(Sprite itemSprite, RectTransform startTransform, RectTransform targetUIPosition, int count)
+    {
+        Canvas mainCanvasComponent = mainCanvas.GetComponent<Canvas>();
+        RectTransform mainCanvasRect = mainCanvas.GetComponent<RectTransform>();
+
+        for (int i = 0; i < count; i++)
+        {
+            GameObject movingItem = Instantiate(movingItemPrefab, mainCanvas.transform);
+            Image itemImage = movingItem.transform.GetChild(0).GetComponent<Image>();
+            RectTransform movingItemRect = movingItem.GetComponent<RectTransform>();
+            itemImage.sprite = itemSprite;
+            Vector3 screenPos = startTransform.position;
+          
+            movingItemRect.position = startTransform.position;
+
+            Vector2 targetPos = mainCanvasRect.InverseTransformPoint(targetUIPosition.position);
+
+            Vector3 midPoint = (startTransform.position + targetUIPosition.position) / 2;
+            //midPoint.y += Random.Range(80f, 120f);
+
+            Vector3[] path = new Vector3[] { startTransform.position, midPoint, targetPos };
+            //Vector2 randomOffset = new Vector2(Random.Range(-10f, 10f), Random.Range(-10f, 10f));
+
+          
+
+            movingItemRect.DOLocalPath(path, 1f)
+                 .SetEase(Ease.InOutQuad)
+                 .SetDelay(i * 0.1f)
+                 .OnComplete(() =>
+                 {
+                     Destroy(movingItem);
+
+                     if (particleEffect == null)
+                     {
+                         GameObject atvparticleEffect = Instantiate(particleEffectPrefab, targetUIPosition.position, Quaternion.identity);
+
+                         particleEffect = atvparticleEffect;
+
+                         ParticleSystemRenderer particleRenderer = particleEffect.GetComponent<ParticleSystemRenderer>();
+                         if (particleRenderer != null)
+                         {
+                             Material particleMaterial = particleRenderer.material;
+                             if (particleMaterial != null)
+                             {
+                                 particleMaterial.mainTexture = itemSprite.texture;
+                             }
+                         }
+                     }
+
+                     Destroy(particleEffect, 0.5f);
+                     particleEffect = null;
+                 });
+        }
+    }
 
     public void PlayMoveToUIAnimation(Sprite itemSprite, Transform startTransform, RectTransform targetUIPosition, int count)
     {

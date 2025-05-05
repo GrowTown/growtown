@@ -617,7 +617,7 @@ public class UI_Manager : MonoBehaviour
         selectionFunctionality.IsSelected = true;
         currentSelectedPopUp = selectionFunctionality;
         GameManager.Instance.StartPlayerAction(currentAction, currentFGrid);
-        GameManager.Instance.isOneWorkingActionCompleted = false;
+        currentFGrid.isOneWorkingActionCompleted = false;
         oldcurrentStep = popupIndex;
     }
 

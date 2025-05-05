@@ -98,6 +98,7 @@ public class AudioManager : MonoBehaviour
         {
             sfxSource.clip = clip;
             sfxSource.volume = volume;
+            sfxSource.loop = true;
             sfxSource.Play();
         }
     }
@@ -107,6 +108,7 @@ public class AudioManager : MonoBehaviour
         if (sfxSource != null && sfxSource.isPlaying)
         {
             sfxSource.Stop();
+            sfxSource.loop=false;
         }
     }
     public void StopBackgroundMusic()

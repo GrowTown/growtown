@@ -6,7 +6,8 @@ Shader "Polytope Studio/PT_Vegetation_Opaque_Shader"
 	{
 		[HideInInspector] _EmissionColor("Emission Color", Color) = (1,1,1,1)
 		[HideInInspector] _AlphaCutoff("Alpha Cutoff ", Range(0, 1)) = 0.5
-		[NoScaleOffset]_BaseTexture("Base Texture", 2D) = "white" {}
+		[NoScaleOffset] ("Base Texture", 2D) = "white" {}
+		
 		[Toggle]_CUSTOMCOLORSTINTING("CUSTOM COLORS  TINTING", Float) = 0
 		[HDR]_GroundColor("Ground Color", Color) = (0.08490568,0.05234205,0.04846032,1)
 		[HDR]_TopColor("Top Color", Color) = (0.4811321,0.4036026,0.2382966,1)
@@ -310,6 +311,7 @@ Shader "Polytope Studio/PT_Vegetation_Opaque_Shader"
 			float _SnowFade;
 			float _SnowCoverage;
 			float _Smoothness;
+			
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
 			#endif
@@ -341,6 +343,7 @@ Shader "Polytope Studio/PT_Vegetation_Opaque_Shader"
 			#endif
 
 			sampler2D _BaseTexture;
+			
 
 
 			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }

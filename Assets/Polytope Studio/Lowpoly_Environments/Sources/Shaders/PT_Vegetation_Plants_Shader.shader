@@ -7,6 +7,8 @@ Shader "Polytope Studio/PT_Vegetation_Plants_Shader"
 		[HideInInspector] _EmissionColor("Emission Color", Color) = (1,1,1,1)
 		[HideInInspector] _AlphaCutoff("Alpha Cutoff ", Range(0, 1)) = 0.5
 		[NoScaleOffset]_BaseTexture("Base Texture", 2D) = "white" {}
+		[Normal][NoScaleOffset]_NormalMap("Normal Map", 2D) = "bump" {}
+        _NormalStrength("Normal Strength", Range(0, 2)) = 1
 		[Toggle]_CUSTOMCOLORSTINTING("CUSTOM COLORS  TINTING", Float) = 0
 		[HDR]_TopColor("Top Color", Color) = (0,0.2178235,1,1)
 		[HDR]_GroundColor("Ground Color", Color) = (1,0,0,1)
@@ -314,6 +316,7 @@ Shader "Polytope Studio/PT_Vegetation_Plants_Shader"
 			float _SnowGradient;
 			float _SnowCoverage;
 			float _Smoothness;
+			float _NormalStrength;
 			float _LeavesThickness;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -346,6 +349,7 @@ Shader "Polytope Studio/PT_Vegetation_Plants_Shader"
 			#endif
 
 			sampler2D _BaseTexture;
+			sampler2D _NormalMap;
 
 
 			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
