@@ -63,9 +63,15 @@ namespace IC.GameKit
 
         public void OpenBrowser()
         {
-            if (mTestICPAgent == null || mTestICPAgent.TestIdentity == null)
+            if (mTestICPAgent == null)
             {
-                Debug.LogError("❌ TestICPAgent or TestIdentity is NULL. Cannot initiate login.");
+                Debug.LogError("❌ mTestICPAgent is NULL. Ensure TestICPAgent is present in the scene.");
+                return;
+            }
+
+            if (mTestICPAgent.TestIdentity == null)
+            {
+                Debug.LogError("❌ TestIdentity is NULL. Ensure TestICPAgent initializes TestIdentity.");
                 return;
             }
 
@@ -73,6 +79,8 @@ namespace IC.GameKit
             string route = IsRunningOnMobile() ? "/app" : "/";
             string maxTimeToLive = "604800000000000"; // 1 week in nanoseconds
             string targetUrl = $"{mTestICPAgent.greetFrontend}{route}?sessionkey={sessionKeyHex}&maxTimeToLive={maxTimeToLive}";
+
+            Debug.Log($"🔗 Constructed target URL: {targetUrl}");
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log($"🔄 WebGL: Initiating login flow with session key: {sessionKeyHex} at route: {route}");
@@ -82,6 +90,8 @@ namespace IC.GameKit
 #elif UNITY_ANDROID || UNITY_IOS
             Debug.Log($"🔗 Opening browser for Native App login: {targetUrl}");
             Application.OpenURL(targetUrl);
+#else
+            Debug.LogError("❌ Unsupported platform or platform-specific code not executed.");
 #endif
         }
 
