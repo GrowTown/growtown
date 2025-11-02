@@ -1,0 +1,227 @@
+        if (mashUIButton != null) mashUIButton.onClick.AddListener(() => mashButtonRequested = true);
+        EnsureMashUIButton();
+
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class FishingMinigameUI : MonoBehaviour
+{
+    [Header("Canvas/UI")]
+    [Tooltip("Optional: the Canvas that contains the minigame UI. Used to force sorting order and enable it.")]
+    public Canvas rootCanvas;
+
+    [Tooltip("Full-screen overlay panel to show/hide during the minigame.")]
+    public GameObject panel;
+
+    [Header("Optional Widgets")]
+    public TMP_Text resultText;
+    public Slider timingSlider;
+    public RectTransform targetZone;
+
+    [Header("Timing / Difficulty")]
+    [SerializeField] private float baseStruggleDuration = 4f;
+    [SerializeField, Range(0.2f, 5f)] private float baseDecayRate = 1.4f;
+    [SerializeField, Range(0.05f, 0.5f)] private float baseFillPerPress = 0.12f;
+    [SerializeField] private float resultDisplayDuration = 1.5f;
+    [SerializeField] private KeyCode mashKey = KeyCode.Space;
+
+    private bool running;
+
+    private void Awake()
+    {
+        if (rootCanvas != null && rootCanvas.sortingOrder < 100)
+            rootCanvas.sortingOrder = 100;
+
+        if (panel != null)
+            panel.SetActive(false);
+
+        if (resultText != null)
+        {
+            resultText.text = string.Empty;
+            resultText.gameObject.SetActive(false);
+        }
+    }
+
+    public void RunMinigame(
+        Fish fish,
+        System.Action<bool, Fish> onResult,
+        Vector2 biteTimeRange,
+        System.Action<float> onFightStarted = null,
+        System.Action<float> onProgressChanged = null)
+    {
+        if (running)
+            return;
+
+        StartCoroutine(CoRunMinigame(fish, onResult, biteTimeRange, onFightStarted, onProgressChanged));
+    }
+
+    private IEnumerator CoRunMinigame(
+        Fish fish,
+        System.Action<bool, Fish> onResult,
+        Vector2 biteTimeRange,
+        System.Action<float> onFightStarted,
+        System.Action<float> onProgressChanged)
+    {
+        running = true;
+        Show(true);
+        EnsureMashUIButton();
+
+        if (resultText != null)
+        {
+            resultText.gameObject.SetActive(true);
+            resultText.text = string.Empty;
+        }
+
+        float minWait = Mathf.Min(biteTimeRange.x, biteTimeRange.y);
+        float maxWait = Mathf.Max(biteTimeRange.x, biteTimeRange.y);
+        float wait = Random.Range(minWait, maxWait);
+
+        if (resultText != null)
+            resultText.text = ".waiting for a bite.";
+
+        yield return new WaitForSeconds(wait);
+
+        float fishDifficulty = fish != null ? Mathf.Max(0.1f, fish.catchDifficulty) : 1f;
+        float struggleDuration = baseStruggleDuration * fishDifficulty;
+        float decayRate = baseDecayRate * fishDifficulty;
+        float fillPerPress = baseFillPerPress / Mathf.Max(0.25f, fishDifficulty);
+        float progress = 0f;
+        const float target = 1f;
+
+        onFightStarted?.Invoke(struggleDuration);
+
+        if (resultText != null)
+            resultText.text = "Mash " + mashKey.ToString().ToUpper() + " (or click/tap)!";
+
+        if (timingSlider != null)
+        {
+            timingSlider.minValue = 0f;
+            timingSlider.maxValue = target;
+            timingSlider.value = progress;
+        }
+
+        float timer = 0f;
+        bool caught = false;
+
+        while (timer < struggleDuration)
+        {
+            if (Input.GetKeyDown(mashKey) || Input.GetButtonDown("Jump"))
+            {
+                progress += fillPerPress;
+            }
+
+            progress -= decayRate * Time.deltaTime;
+            progress = Mathf.Clamp01(progress);
+
+            float normalizedTime = Mathf.Clamp01(timer / Mathf.Max(0.01f, struggleDuration));
+            float visualProgress = Mathf.Max(progress, normalizedTime * 0.65f);
+
+            onProgressChanged?.Invoke(visualProgress);
+
+            if (timingSlider != null)
+                timingSlider.value = visualProgress;
+
+            if (progress >= target)
+            {
+                caught = true;
+                onProgressChanged?.Invoke(1f);
+                if (timingSlider != null)
+                    timingSlider.value = 1f;
+                break;
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        if (!caught)
+            onProgressChanged?.Invoke(progress);
+
+        if (!caught)
+            onProgressChanged?.Invoke(progress);
+
+        if (resultText != null)
+            resultText.text = caught ? "Caught!" : "Escaped.";
+
+        onResult?.Invoke(caught, fish);
+
+        float waitAfterResult = Mathf.Max(0f, resultDisplayDuration);
+        if (waitAfterResult > 0f)
+            yield return new WaitForSeconds(waitAfterResult);
+
+        HideResultMessage();
+        running = false;
+    }
+
+    private void Show(bool value)
+    {
+        if (rootCanvas != null)
+            rootCanvas.enabled = true;
+
+        if (panel != null)
+            panel.SetActive(value);
+    }
+
+    private void HideResultMessage()
+    {
+        if (resultText != null)
+        {
+            resultText.text = string.Empty;
+            resultText.gameObject.SetActive(false);
+        }
+
+        if (timingSlider != null)
+            timingSlider.value = 0f;
+
+        Show(false);
+    }
+    private void EnsureMashUIButton()
+    {
+        if (!autoCreateMashButton || mashUIButton != null)
+            return;
+
+        Transform parent = null;
+        if (panel != null) parent = panel.transform;
+        else if (rootCanvas != null) parent = rootCanvas.transform;
+        else
+        {
+            var foundCanvas = FindObjectOfType<Canvas>(true);
+            if (foundCanvas != null) parent = foundCanvas.transform;
+        }
+        if (parent == null) return;
+
+        var go = new GameObject("MashButton", typeof(RectTransform), typeof(UnityEngine.UI.Image), typeof(UnityEngine.UI.Button));
+        go.transform.SetParent(parent, worldPositionStays: false);
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = mashButtonAnchorMin;
+        rt.anchorMax = mashButtonAnchorMax;
+        rt.anchoredPosition = Vector2.zero;
+        rt.sizeDelta = mashButtonSize;
+
+        var img = go.GetComponent<UnityEngine.UI.Image>();
+        img.color = new Color(1f, 1f, 1f, 0.6f);
+        var btn = go.GetComponent<UnityEngine.UI.Button>();
+        var colors = btn.colors; colors.fadeDuration = 0.05f; btn.colors = colors;
+
+        // Add label
+        GameObject labelGO = new GameObject("Label", typeof(RectTransform));
+        labelGO.transform.SetParent(go.transform, worldPositionStays: false);
+        var lrt = labelGO.GetComponent<RectTransform>();
+        lrt.anchorMin = Vector2.zero; lrt.anchorMax = Vector2.one; lrt.offsetMin = Vector2.zero; lrt.offsetMax = Vector2.zero;
+#if TMP_PRESENT
+        var tmp = labelGO.AddComponent<TMPro.TextMeshProUGUI>();
+        tmp.text = mashButtonLabel; tmp.alignment = TMPro.TextAlignmentOptions.Center; tmp.fontSize = 28f; tmp.raycastTarget = false;
+#else
+        var ut = labelGO.AddComponent<UnityEngine.UI.Text>();
+        ut.text = mashButtonLabel; ut.alignment = TextAnchor.MiddleCenter; ut.fontSize = 24; ut.raycastTarget = false;
+#endif
+
+        mashUIButton = btn;
+        mashUIButton.onClick.AddListener(() => mashButtonRequested = true);
+    }
+}
+
+
+

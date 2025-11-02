@@ -293,7 +293,7 @@ public class ShopManager : MonoBehaviour
 
                     rewardItem.Initialize(nameR, reward.Value);
                     if(nameR.Item.itemName != "BeansLand" && nameR.Item.itemName != "WheatLand")
-                    UI_Manager.Instance.InventoryManager.AddToInventory(nameR,reward.Value);
+                    UI_Manager.Instance.InventoryManager.AddToInventory(nameR, reward.Value);
 
                 }
             }

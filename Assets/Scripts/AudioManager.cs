@@ -22,9 +22,9 @@ public class AudioManager : MonoBehaviour
     public AudioClip buyMusic;
     public AudioClip sellMusic;
 
-    [Header("Volume Settings (0–1 Internally)")]
-    [Range(0, 1)] public float musicVolume = 1f;
-    [Range(0, 1)] public float sfxVolume = 1f;
+    [Header("Volume Settings (0ï¿½1 Internally)")]
+    [Range(0, 1)] public float musicVolume = 0.1f;
+    [Range(0, 1)] public float sfxVolume = 0.1f;
 
     [Header("UI References")]
     [SerializeField] private Slider _sliderBG;

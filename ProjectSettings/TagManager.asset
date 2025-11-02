@@ -14,6 +14,10 @@ TagManager:
   - Undefined
   - Seed
   - Arrow
+  - Fishing Zone
+  - FishingZone
+  - Hammer
+  - Boss
   layers:
   - Default
   - TransparentFX
@@ -31,8 +35,8 @@ TagManager:
   - Tile
   - Seed
   - Particle
-  - 
-  - 
+  - Ground
+  - Hammer
   - 
   - 
   - 
