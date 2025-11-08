@@ -21,19 +21,18 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Tomato_PlantMat
-  m_Shader: {fileID: 4800000, guid: 233be0623027421449b81f7423abaf79, type: 3}
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _CUSTOMWIND_ON
-  - _TRANSLUCENCYONOFF_ON
-  m_InvalidKeywords:
   - _NORMALMAP
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
@@ -130,7 +129,9 @@ Material:
     - _Glossiness: 0.73636365
     - _GlossyReflections: 1
     - _Gradient: 0
+    - _GradientPower: 1
     - _LeavesThickness: 0.5
+    - _MaskClipValue: 0.5
     - _Metallic: 0
     - _Mode: 0
     - _NormalStrength: 1
@@ -153,15 +154,18 @@ Material:
     - _TransAmbient: 0
     - _TransDirect: 0.9
     - _TransNormal: 0.5
+    - _TransNormalDistortion: 0.1
     - _TransScattering: 2
     - _TransShadow: 0
     - _TransStrength: 1
+    - _Translucency: 1
     - _UVSec: 0
     - _WindDensity: 3.3
     - _WindMovement: 0.5
     - _WindStrength: 0.3
     - _WorkflowMode: 1
     - _ZWrite: 1
+    - __dirty: 1
     m_Colors:
     - _BaseColor: {r: 0.9924528, g: 0.9924528, b: 0.9924528, a: 1}
     - _Color: {r: 0.9924528, g: 0.9924528, b: 0.9924528, a: 1}

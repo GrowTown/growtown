@@ -99,7 +99,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1578518499832823217
 Transform:
   m_ObjectHideFlags: 0
@@ -451,7 +451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48c84af43e6b7df4a85dbfff2be22b74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plantMesh: {fileID: 5725092950197792382}
+  plantMesh: {fileID: 5558913327503026516}
   tomatoSpawnPoints:
   - {fileID: 4330698615905976236}
   - {fileID: 4653045102656473365}
@@ -756,6 +756,21 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
       objectReference: {fileID: 0}
@@ -804,6 +819,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -3887185075125053422, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
         type: 3}
       propertyPath: m_DirtyAABB
@@ -842,12 +862,12 @@ PrefabInstance:
     - target: {fileID: -3887185075125053422, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
         type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[0]
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: -3887185075125053422, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
         type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[1]
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -3887185075125053422, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
         type: 3}
@@ -862,7 +882,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -872,12 +892,6 @@ PrefabInstance:
 --- !u!4 &213029334622146951 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
-    type: 3}
-  m_PrefabInstance: {fileID: 395873047264458348}
-  m_PrefabAsset: {fileID: 0}
---- !u!137 &5725092950197792382 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -3887185075125053422, guid: 5068f25a7ef7d8b4bbc01aadc5f167d4,
     type: 3}
   m_PrefabInstance: {fileID: 395873047264458348}
   m_PrefabAsset: {fileID: 0}
