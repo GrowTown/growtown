@@ -10,6 +10,18 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CharacterController))]
 public class pPlayerController : MonoBehaviour
 {
+    public static pPlayerController Instance;
+    public bool canMove = true;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    public void SetCanMove(bool value)
+    {
+        canMove = value;
+    }
     // =========================
     // Movement
     // =========================
@@ -207,6 +219,10 @@ public class pPlayerController : MonoBehaviour
 
     void Update()
     {
+
+
+   
+        
         if (!isFishing)
             HandleMovement();
 

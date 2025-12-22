@@ -410,6 +410,8 @@ GameObject:
   - component: {fileID: 488707298189121428}
   - component: {fileID: 264204328520834349}
   - component: {fileID: 7189689854157555782}
+  - component: {fileID: 4163420017400620626}
+  - component: {fileID: -6633773297617328448}
   m_Layer: 0
   m_Name: TomatoHolder1
   m_TagString: Untagged
@@ -484,6 +486,59 @@ CapsuleCollider:
   m_Height: 0.99554104
   m_Direction: 1
   m_Center: {x: 0, y: 0.4362075, z: 0.10419297}
+--- !u!114 &4163420017400620626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5148165166098257824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae774deeafc197b478092c1996a0a515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resourceName: Resource Node
+  category: 1
+  requiredTool: 2
+  hitsToBreak: 3
+  respawnDelay: -1
+  intactVisual: {fileID: 0}
+  harvestedVisual: {fileID: 0}
+  drops: []
+  hitParticles: {fileID: 0}
+  harvestParticles: {fileID: 0}
+  audioSource: {fileID: 0}
+  hitClip: {fileID: 0}
+  harvestClip: {fileID: 0}
+  playerTag: Player
+  interactKey: 101
+  interactionUIRoot: {fileID: 0}
+  interactionFillImage: {fileID: 0}
+  debugLogging: 0
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  onHarvested:
+    m_PersistentCalls:
+      m_Calls: []
+  onRespawned:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &-6633773297617328448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5148165166098257824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b13d6045e0571f142bd0dc6820a88992, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  harvestGoal: {fileID: 0}
+  tomatoesAwarded: 1
 --- !u!1 &5576151193402830097
 GameObject:
   m_ObjectHideFlags: 0
