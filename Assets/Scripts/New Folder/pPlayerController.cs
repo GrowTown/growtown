@@ -47,6 +47,13 @@ public class pPlayerController : MonoBehaviour
     public Animator gatherAnimator; // Can be same as main animator
     public string gatherAnimationTrigger = "Hit"; // Trigger name in Animator
     [Min(1)] public int smashCyclesRequired = 2;
+    public KeyCode hammerKey = KeyCode.H;
+    public string hammerTrigger = "Attack";
+    [Header("Hammer Camera Shake")]
+    public float hammerShakeAmplitude = 1.2f;
+    public float hammerShakeFrequency = 2f;
+    public float hammerShakeDuration = 0.2f;
+    [SerializeField] private CamerasSwitch camerasSwitch;
 
     [Header("Gathering UI Prompt")]
     public GameObject interactUI; // “Press E to mine” prompt
@@ -192,6 +199,8 @@ public class pPlayerController : MonoBehaviour
 
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        if (camerasSwitch == null)
+            camerasSwitch = GetComponent<CamerasSwitch>();
         CacheAnimationStateHash();
         ResetFishingAnimatorState(forceIdle: true, resetCastTrigger: true);
 
@@ -234,6 +243,13 @@ public class pPlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.J) && fishJournal != null)
             fishJournal.ToggleJournal();
+
+        if (Input.GetKeyDown(hammerKey))
+        {
+            Animator targetAnimator = gatherAnimator != null ? gatherAnimator : animator;
+            if (targetAnimator != null && !string.IsNullOrWhiteSpace(hammerTrigger))
+                targetAnimator.SetTrigger(hammerTrigger);
+        }
 
         currentLineSagMultiplier = Mathf.MoveTowards(currentLineSagMultiplier, targetLineSagMultiplier, lineTensionRecoverSpeed * Time.deltaTime);
 
@@ -294,6 +310,15 @@ public class pPlayerController : MonoBehaviour
     {
         if (gatherAnimator != null)
             gatherAnimator.SetTrigger(gatherAnimationTrigger);
+    }
+
+    public void AnimationEvent_HammerShake()
+    {
+        if (camerasSwitch == null)
+            camerasSwitch = GetComponent<CamerasSwitch>();
+
+        if (camerasSwitch != null)
+            camerasSwitch.ShakeCamera(hammerShakeAmplitude, hammerShakeFrequency, hammerShakeDuration);
     }
 
     // --- Movement ---------------------------------------------------------

@@ -63,7 +63,8 @@ public sealed class GatherableResource : MonoBehaviour
     [SerializeField] private ResourceToolType requiredTool = ResourceToolType.Any;
 
     [Header("Durability")]
-    [Min(1)] [SerializeField] private int hitsToBreak = 3;
+    [Min(1)] [SerializeField] private int minHitsToBreak = 2;
+    [Min(1)] [SerializeField] private int maxHitsToBreak = 3;
     [Tooltip("Delay before the node respawns. Use a negative value to disable respawn.")]
     [SerializeField] private float respawnDelay = -1f;
 
@@ -102,6 +103,7 @@ public sealed class GatherableResource : MonoBehaviour
     public UnityEvent onRespawned;
 
     private int hitsRemaining;
+    private int currentHitsToBreak;
     private bool isHarvested;
     private float respawnTime;
     private float interactTimer;
@@ -124,7 +126,7 @@ public sealed class GatherableResource : MonoBehaviour
 
     void Awake()
     {
-        hitsRemaining = Mathf.Max(1, hitsToBreak);
+        ResetDurability();
         ApplyVisualState();
         UpdateInteractionVisuals(false, 0f);
     }
@@ -293,7 +295,7 @@ public sealed class GatherableResource : MonoBehaviour
     private void Respawn()
     {
         isHarvested = false;
-        hitsRemaining = Mathf.Max(1, hitsToBreak);
+        ResetDurability();
         ApplyVisualState();
         interactTimer = 0f;
         if (currentInteractor != null)
@@ -344,6 +346,15 @@ public sealed class GatherableResource : MonoBehaviour
         hitsRemaining = 0;
         HandleHarvested();
         LogDebug("BreakInstantly triggered.");
+    }
+
+    private void ResetDurability()
+    {
+        int minHits = Mathf.Max(1, minHitsToBreak);
+        int maxHits = Mathf.Max(minHits, maxHitsToBreak);
+        currentHitsToBreak = UnityEngine.Random.Range(minHits, maxHits + 1);
+        hitsRemaining = currentHitsToBreak;
+        LogDebug($"Durability reset. HitsToBreak={currentHitsToBreak}");
     }
 
     private void UpdateInteractionVisuals(bool visible, float fill)

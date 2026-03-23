@@ -12,6 +12,24 @@ public class Enemy : MonoBehaviour
 
     public Animator animator;
     public ParticleSystem gameObjectDestroyedEffect;
+    [Header("Death Feedback")]
+    public AudioClip deathSfx;
+    public GameObject deathVfxPrefab;
+    public Vector3 deathVfxOffset = Vector3.up * 0.5f;
+    [Header("Death")]
+    public string deathTrigger = "IsDead";
+    public float destroyDelay = 1f;
+    public string hammerTag = "Hammer";
+    private bool isDead;
+    private Collider cachedCollider;
+
+    private void Awake()
+    {
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
+
+        cachedCollider = GetComponent<Collider>();
+    }
 
     /// <summary>
     /// Initialize the enemy with a target and start moving toward it
@@ -67,13 +85,43 @@ public class Enemy : MonoBehaviour
 
     public void Die()
     {
+        if (isDead)
+            return;
+
+        isDead = true;
         DOTween.Kill(transform); // Stop any ongoing movement
-        gameObject.SetActive(false);
+
+        if (cachedCollider != null)
+            cachedCollider.enabled = false;
+
+        if (animator != null && !string.IsNullOrWhiteSpace(deathTrigger))
+            animator.SetTrigger(deathTrigger);
+
+        if (deathVfxPrefab != null)
+            Instantiate(deathVfxPrefab, transform.position + deathVfxOffset, Quaternion.identity);
+
+        if (deathSfx != null)
+            AudioSource.PlayClipAtPoint(deathSfx, transform.position);
+
+        Destroy(gameObject, Mathf.Max(0f, destroyDelay));
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!isDead && other.CompareTag(hammerTag))
+            Die();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!isDead && collision.collider.CompareTag(hammerTag))
+            Die();
     }
 
     private void OnDestroy()
     {
-        gameObjectDestroyedEffect.Play();
+        if (gameObjectDestroyedEffect != null)
+            gameObjectDestroyedEffect.Play();
     }
 }
 

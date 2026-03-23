@@ -5,7 +5,7 @@ public class PlayerResourceInteractor : MonoBehaviour
 {
     [Header("Interaction Settings")]
     public KeyCode interactKey = KeyCode.E;
-    public ToolType equippedTool = ToolType.Pickaxe;
+    public ToolType equippedTool = ToolType.Hammer;
     public float interactHoldTime = 1.0f;
     [Min(1)] public int smashCyclesRequired = 2;
 

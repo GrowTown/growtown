@@ -83,6 +83,10 @@ public class CharacterMovements : MonoBehaviour
     public float gunYawLimit = 60f; 
     public float gunPitchLimit = 60; 
 
+    [Header("Hammer")]
+    public KeyCode hammerKey = KeyCode.H;
+    public string hammerTrigger = "Attack";
+
 
     // Public fields for camera rotation
     public float CinemachineTargetYaw { get; private set; } 
@@ -120,6 +124,9 @@ public class CharacterMovements : MonoBehaviour
 #else
             isAndroid = false;
 #endif
+
+        if (animator == null)
+            animator = GetComponent<Animator>();
 
        
         // Disable joystick if not on Android
@@ -178,6 +185,16 @@ public class CharacterMovements : MonoBehaviour
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #endif
+        }
+
+        if (Input.GetKeyDown(hammerKey) || Input.GetKeyDown(KeyCode.H))
+        {
+            if (animator != null)
+            {
+                if (string.IsNullOrWhiteSpace(hammerTrigger))
+                    hammerTrigger = "Attack";
+                animator.SetTrigger(hammerTrigger);
+            }
         }
 
     }

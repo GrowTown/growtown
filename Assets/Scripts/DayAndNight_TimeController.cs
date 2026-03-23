@@ -132,19 +132,19 @@ public class DayAndNight_TimeController : MonoBehaviour
     {
         bool isNight = _currentTime.TimeOfDay >= _sunsetTime || _currentTime.TimeOfDay < _sunriseTime;
 
+        // Always apply time-of-day fog/sun so scene defaults don't override on startup.
+        RenderSettings.sun = isNight ? _moonLight : _sunLight;
+        RenderSettings.fogColor = isNight ? _nightTimeFog : _dayTimeFog;
+
         if (isNight && !_isCampfireActive)
         {
             _campfire.SetActive(true);
             _campfireLight.gameObject.SetActive(true);
             _isCampfireActive = true;
-            RenderSettings.sun = _moonLight;
-            RenderSettings.fogColor = _nightTimeFog; // Set fog color
 
         }
         else if (!isNight && _isCampfireActive)
         {
-            RenderSettings.sun = _sunLight;
-            RenderSettings.fogColor = _dayTimeFog; // Set fog color
             _campfire.SetActive(false);
             _campfireLight.gameObject.SetActive(false);
             _isCampfireActive = false;

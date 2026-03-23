@@ -128,10 +128,10 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 0.01585233, y: 0.010869911, z: 0.028887104}
-  m_Center: {x: -0.00002303347, y: -0.00008271984, z: 0.014210291}
+  m_Size: {x: 0.01585233, y: 0.010869911, z: 0.010670285}
+  m_Center: {x: -0.000023033608, y: -0.000082719955, z: 0.023318706}
 --- !u!135 &4605746731115126237
 SphereCollider:
   m_ObjectHideFlags: 0

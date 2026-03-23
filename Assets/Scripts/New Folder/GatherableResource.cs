@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -39,10 +36,11 @@ public sealed class GatherableResource : MonoBehaviour
     [Header("Identity")]
     [SerializeField] private string resourceName = "Resource Node";
     [SerializeField] private ResourceType category = ResourceType.Stone;
-    [SerializeField] private ToolType requiredTool = ToolType.Pickaxe;
+    [SerializeField] private ToolType requiredTool = ToolType.Hammer;
 
     [Header("Durability")]
-    [Min(1)] [SerializeField] private int hitsToBreak = 3;
+    [Min(1)] [SerializeField] private int minHitsToBreak = 2;
+    [Min(1)] [SerializeField] private int maxHitsToBreak = 3;
     [SerializeField] private float respawnDelay = -1f;
 
     [Header("Visual State")]
@@ -70,6 +68,7 @@ public sealed class GatherableResource : MonoBehaviour
     public UnityEvent onRespawned;
 
     private int hitsRemaining;
+    private int currentHitsToBreak;
     private bool isHarvested;
     private float respawnTime;
     private Collider currentInteractor;
@@ -81,7 +80,7 @@ public sealed class GatherableResource : MonoBehaviour
 
     void Awake()
     {
-        hitsRemaining = Mathf.Max(1, hitsToBreak);
+        ResetDurability();
         ApplyVisualState();
         UpdateInteractionVisuals(false, 0f);
     }
@@ -112,22 +111,17 @@ public sealed class GatherableResource : MonoBehaviour
         bool hitApplied = ApplyHit(requiredTool);
         if (hitApplied)
         {
-            float progress = 1f - (float)hitsRemaining / hitsToBreak;
+            float progress = 1f - (float)hitsRemaining / Mathf.Max(1, currentHitsToBreak);
             UpdateInteractionVisuals(true, progress);
             LogDebug($"Hit applied! Remaining hits: {hitsRemaining}");
         }
     }
 
-    // ---------------- Hammer Auto-Break ----------------
- private void OnCollisionEnter(Collision collision)
-{
-    // Only break if the resource category is Stone AND it's hit by a hammer
-    if (category == ResourceType.Stone && collision.gameObject.CompareTag("Hammer"))
+    // ---------------- Hammer Hits ----------------
+    private void OnCollisionEnter(Collision collision)
     {
-        LogDebug($"Hammer hit {resourceName} — breaking instantly!");
-        BreakInstantly();
+        TryApplyHammerHit(collision.gameObject);
     }
-}
 
     // If you’re using triggers instead of collisions:
     private void OnTriggerEnter(Collider other)
@@ -141,12 +135,7 @@ public sealed class GatherableResource : MonoBehaviour
             LogDebug($"Interactor '{other.name}' entered range.");
         }
 
-        // Also check if a Hammer entered as a trigger collider
-        if (other.CompareTag("Hammer"))
-        {
-            LogDebug($"Hammer trigger detected with {other.name} — breaking instantly.");
-            BreakInstantly();
-        }
+        TryApplyHammerHit(other.gameObject);
     }
 
     private void OnTriggerExit(Collider other)
@@ -183,16 +172,6 @@ public sealed class GatherableResource : MonoBehaviour
     }
 
     // ---------------- Break / Respawn / Visuals ----------------
-    private void BreakInstantly()
-    {
-        if (isHarvested)
-            return;
-
-        hitsRemaining = 0;
-        HandleHarvested();
-        LogDebug("BreakInstantly triggered by hammer.");
-    }
-
     private void HandleHarvested()
     {
         isHarvested = true;
@@ -225,7 +204,7 @@ public sealed class GatherableResource : MonoBehaviour
     private void Respawn()
     {
         isHarvested = false;
-        hitsRemaining = Mathf.Max(1, hitsToBreak);
+        ResetDurability();
         ApplyVisualState();
         UpdateInteractionVisuals(true, 0f);
         onRespawned?.Invoke();
@@ -284,5 +263,27 @@ public sealed class GatherableResource : MonoBehaviour
     {
         if (!debugLogging) return;
         Debug.Log($"[GatherableResource] {resourceName}: {message}", this);
+    }
+
+    private void ResetDurability()
+    {
+        int minHits = Mathf.Max(1, minHitsToBreak);
+        int maxHits = Mathf.Max(minHits, maxHitsToBreak);
+        currentHitsToBreak = UnityEngine.Random.Range(minHits, maxHits + 1);
+        hitsRemaining = currentHitsToBreak;
+        LogDebug($"Durability reset to {currentHitsToBreak} hits.");
+    }
+
+    private void TryApplyHammerHit(GameObject source)
+    {
+        if (source == null || !source.CompareTag("Hammer"))
+            return;
+
+        if (isHarvested)
+            return;
+
+        bool hitApplied = ApplyHit(ToolType.Hammer);
+        if (hitApplied)
+            LogDebug($"Hammer hit applied from '{source.name}'. Remaining hits: {hitsRemaining}");
     }
 }
